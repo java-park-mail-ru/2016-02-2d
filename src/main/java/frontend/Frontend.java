@@ -17,6 +17,7 @@ public class Frontend extends HttpServlet {
 
     private String login = "";
 
+    @Override
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
 
@@ -30,6 +31,7 @@ public class Frontend extends HttpServlet {
 
     }
 
+    @Override
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response) throws ServletException, IOException {
 
