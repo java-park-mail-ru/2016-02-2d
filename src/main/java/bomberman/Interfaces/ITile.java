@@ -1,5 +1,6 @@
-package bomberman.Interfaces;
+package bomberman.interfaces;
 
 public interface ITile extends Describable, Destructible, Passable, Updateable, Actable {
-    void destroy();
+    int[] getCoordinates();
+    boolean shouldBeDestroyed();
 }

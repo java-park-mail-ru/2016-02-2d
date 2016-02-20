@@ -1,4 +1,4 @@
-package bomberman.Interfaces;
+package bomberman.interfaces;
 
 import java.util.ArrayList;
 
