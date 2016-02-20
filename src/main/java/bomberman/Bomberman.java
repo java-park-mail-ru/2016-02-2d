@@ -1,38 +1,17 @@
 package bomberman;
 
-import bomberman.Interfaces.EntityType;
-import bomberman.Interfaces.IEntity;
+import bomberman.interfaces.EntityType;
+import bomberman.interfaces.IEntity;
 
 public class Bomberman implements IEntity {
+
     public Bomberman(int id) {
         super();
         this.id = id;
         bombSpawnTimerInitValue = BOMB_SPAWN_TIMER_BASE_VALUE;
-    }
-
-    @Override
-    public int hashCode() {
-        return getID();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
+        bombExplosionRange = BOMB_BASE_RANGE;
+        maxHealth = MAX_HEALTH_BASE_VALUE;
+        health = maxHealth;
     }
 
     @Override
@@ -50,6 +29,12 @@ public class Bomberman implements IEntity {
     @Override
     public void affectHealth(int amount) {
         health -= amount;
+        if (health > maxHealth) health = maxHealth;
+    }
+
+    public void increaseMaxHealth() {
+        maxHealth += MAX_HEALTH_INCREMENT;
+        health += MAX_HEALTH_INCREMENT;
     }
 
     @Override
@@ -78,9 +63,21 @@ public class Bomberman implements IEntity {
         return false;
     }
 
+    public int getBombExplosionRange() {
+        return bombExplosionRange;
+    }
+
+    public void increaseExplosionRange()
+    {
+        bombExplosionRange += BOMB_RANGE_INCREMENT;
+    }
 
     public int getHealth() {
         return health;
+    }
+
+    public int getMaxHealth() {
+        return maxHealth;
     }
 
     private void shortenBombSpawnTimer()
@@ -88,17 +85,28 @@ public class Bomberman implements IEntity {
          bombSpawnTimerInitValue *= BOMB_SPAWN_TIMER_MULTIPLIER;
     }
 
-    private int health;
-
+    // In-World desctription
     private float x;        // I know they're short, but I don't think that 'x' may mean something else than "xCoordinate"
     private float y;        // "yCoordinate" -> 'y'
-
     private int id;         // "uniqueIdentificationNumber" -> "id"
 
+    // Health Description
+    private int health;
+    private int maxHealth;
+    public static final int MAX_HEALTH_BASE_VALUE = 100;
+    public static final int MAX_HEALTH_INCREMENT = 50;   // One powerup for double life. Three powerups for triple life. ()
+
+
+    // Bomb Description
     private float bombSpawnTimer;
     private float bombSpawnTimerInitValue;
-
     public static final float BOMB_SPAWN_TIMER_BASE_VALUE = 2.5f; // 2.5 seconds
     public static final float BOMB_SPAWN_TIMER_MULTIPLIER = 0.8f; // Will be reduced by 1/5 of current value evry time. i.e 2.5->2->1.6->1.28
+
+    private int bombExplosionRange;
+    public static final int BOMB_BASE_RANGE = 1;    // 1 tile
+    public static final int BOMB_RANGE_INCREMENT = 1;
+
+
 
 }
