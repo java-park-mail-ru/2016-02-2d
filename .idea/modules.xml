@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/2016-02-2d.iml" filepath="$PROJECT_DIR$/.idea/2016-02-2d.iml" />
-      <module fileurl="file://$PROJECT_DIR$/LBomberman-server.iml" filepath="$PROJECT_DIR$/LBomberman-server.iml" />
-    </modules>
-  </component>
-</project>
