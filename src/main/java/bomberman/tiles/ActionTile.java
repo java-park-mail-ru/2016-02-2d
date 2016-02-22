@@ -1,10 +1,12 @@
 package bomberman.tiles;
 
+import bomberman.Bomberman;
 import bomberman.interfaces.EntityType;
 import bomberman.tiles.behaviors.ActionTileAbstractBehavior;
 import bomberman.tiles.functors.ActionTileAbstractFunctor;
 
 public class ActionTile extends AbstractTile {
+
     public ActionTile(int id, int x, int y, ActionTileAbstractFunctor functor, ActionTileAbstractBehavior behavior, EntityType entityType ) {
         super(id, x, y);
         this.functor = functor;
@@ -34,6 +36,12 @@ public class ActionTile extends AbstractTile {
     public void update(float deltaTime) {
         behavior.behave(deltaTime);
     }
+
+    @Override
+    public void applyAction(Bomberman bomberman) {
+        functor.applyAction(bomberman);
+    }
+
 
     public void markForDestruction() {
         shouldBeDestroyed = true;

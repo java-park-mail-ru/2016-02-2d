@@ -1,8 +1,11 @@
 package bomberman.interfaces;
 
-import java.util.ArrayList;
+// Can I call it interface with "safe" default implementation?
 
-public interface IWorldBuilder {
-    //getITileArray(int width, int height);
-    ArrayList<ITile> getITileArray();
+public abstract class IWorldBuilder {
+    public ITile[][] getITileArray(UniqueIDManager supplicant) { throw new UnsupportedOperationException(); }
+    public ITile[][] getITileArray(int height, int width, UniqueIDManager supplicant) { throw new UnsupportedOperationException(); }
+
+    public static final int DEFAULT_WORLD_HEIGHT = 16;
+    public static final int DEFAULT_WORLD_WIDTH = 32;
 }
