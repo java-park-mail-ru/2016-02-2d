@@ -22,6 +22,7 @@ public class Frontend extends HttpServlet {
                       HttpServletResponse response) throws ServletException, IOException {
 
         Map<String, Object> pageVariables = new HashMap<>();
+
         pageVariables.put("lastLogin", login == null ? "" : login);
 
         response.getWriter().println(PageGenerator.getPage("authform.html", pageVariables));
