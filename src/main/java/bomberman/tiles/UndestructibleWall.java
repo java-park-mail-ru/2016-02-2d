@@ -2,8 +2,8 @@ package bomberman.tiles;
 
 import bomberman.interfaces.EntityType;
 
-public class UndestuctibleWall extends AbstractTile{
-    public UndestuctibleWall(int id, int x, int y) {
+public class UndestructibleWall extends AbstractTile{
+    public UndestructibleWall(int id, int x, int y) {
         super(id, x, y);
     }
 
