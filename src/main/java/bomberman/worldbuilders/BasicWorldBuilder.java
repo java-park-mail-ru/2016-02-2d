@@ -33,4 +33,9 @@ public class BasicWorldBuilder extends IWorldBuilder {
 
         return tileArray;
     }
+
+    @Override// x y
+    public float[][] getBombermenSpawn() {
+        return new float[][]{{1.0f, 1.0f},{1.0f, (float)(DEFAULT_WORLD_HEIGHT - 1)},{(float)(DEFAULT_WORLD_WIDTH - 1), 1.0f},{(float)(DEFAULT_WORLD_HEIGHT - 1), (float)(DEFAULT_WORLD_WIDTH - 1)}};
+    }
 }

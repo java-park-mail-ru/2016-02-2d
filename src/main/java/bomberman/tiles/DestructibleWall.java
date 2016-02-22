@@ -8,7 +8,7 @@ public class DestructibleWall extends AbstractTile {
     }
 
     @Override
-    public boolean isDestuctible() {
+    public boolean isDestructible() {
         return true;
     }
 

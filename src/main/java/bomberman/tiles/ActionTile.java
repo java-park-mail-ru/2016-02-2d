@@ -18,11 +18,6 @@ public class ActionTile extends AbstractTile {
     }
 
     @Override
-    public boolean isDestuctible() {
-        return super.isDestuctible();
-    }
-
-    @Override
     public EntityType getType() {
         return entityType;
     }

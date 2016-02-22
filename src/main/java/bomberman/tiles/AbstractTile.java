@@ -35,7 +35,7 @@ public abstract class AbstractTile implements ITile{
 
     // May be overriden later.
     @Override
-    public boolean isDestuctible() {
+    public boolean isDestructible() {
         return false;
     }
 
