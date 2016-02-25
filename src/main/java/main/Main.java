@@ -1,21 +1,35 @@
 package main;
 
-import frontend.Frontend;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        Frontend frontend = new Frontend();
+        setCustomPort(args);
+        System.out.format("Starting at port: %d\n", port);
 
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.addServlet(new ServletHolder(frontend), "/authform");
+        final Server server = new Server(port);
+        final ServletContextHandler contextHandler = new ServletContextHandler(server, "/api/", ServletContextHandler.SESSIONS);
 
-        Server server = new Server(8080);
-        server.setHandler(context);
+        final ServletHolder servletHolder = new ServletHolder(ServletContainer.class);
+        servletHolder.setInitParameter("javax.ws.rs.Application","main.RestApplication");
 
+        contextHandler.addServlet(servletHolder, "/*");
         server.start();
         server.join();
     }
+
+     private static void setCustomPort(String[] args) {
+        if (args.length == 1)
+            port = Integer.valueOf(args[0]);
+        else {
+            System.err.format("Port is not specified, setting it to %d\n", DEFAULT_PORT);
+            port = DEFAULT_PORT;
+        }
+    }
+
+    private static int port;
+    private static final int DEFAULT_PORT = 8080;
 }
