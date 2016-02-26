@@ -45,10 +45,7 @@ public class Bomberman implements IEntity {
     }
 
     public boolean canSpawnBomb() {
-        if (bombSpawnTimer <= 0 && currentPlaceableBombs >= 0) {
-            return true;
-        }
-        return false;
+        return bombSpawnTimer <= 0 && currentPlaceableBombs >= 0;
     }
 
 

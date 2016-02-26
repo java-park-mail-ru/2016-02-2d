@@ -1,6 +1,7 @@
 package bomberman.interfaces;
 
-public interface Describable{
+public interface
+Describable{
     EntityType getType();
     int getID();
 }
