@@ -12,19 +12,15 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     public World(WorldType type, int numberOfPlayers) {
         IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(type);
 
-        tileArray = builder.getITileArray(this);
-        spawnBombermen(numberOfPlayers, builder.getBombermenSpawn());
-        registerNewTiles();
-        isWorldReady = true;
+        tileArray = builder.getITileArray(this, this);
+        spawnBombermenRegisterTilesAndsetWorldReady(numberOfPlayers, builder.getBombermenSpawns());
     }
 
     public World(WorldType type, int numberOfPlayers, int width, int height) {
         IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(type);
 
-        tileArray = builder.getITileArray(height, width, this);
-        spawnBombermen(numberOfPlayers, builder.getBombermenSpawn());               // Copy-paste from this line. Java lacks parameters by-default. :(
-        registerNewTiles();
-        isWorldReady = true;
+        tileArray = builder.getITileArray(height, width, this, this);
+        spawnBombermenRegisterTilesAndsetWorldReady(numberOfPlayers, builder.getBombermenSpawns());
     }
 
     @Override
@@ -81,6 +77,14 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
     }
 
+    // Dirty hack to avoid copy-paste
+    private void spawnBombermenRegisterTilesAndsetWorldReady(int amount_of_players, float[][] spawn_locations)
+    {
+        spawnBombermen(amount_of_players, spawn_locations);
+        registerNewTiles();
+        isWorldReady = true;
+    }
+
     Queue<WorldEvent> newEventQueue;       // Here are new events are stashed
     Queue<WorldEvent> processedEventQueue; // State describer will take events from this list.
 
@@ -88,5 +92,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     private ITile[][] tileArray;
     private boolean isWorldReady = false;
     private ArrayList<Bomberman> bombermen;
+
+
 
 }

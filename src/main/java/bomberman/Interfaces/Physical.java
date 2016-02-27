@@ -1,5 +1,6 @@
 package bomberman.interfaces;
 
-public interface Destructible {
+public interface Physical {
     boolean isDestructible();
+    boolean isPassable();
 }

@@ -2,15 +2,15 @@ package bomberman.worldbuilders;
 
 
 import bomberman.TileFactory;
-import bomberman.interfaces.EntityType;
-import bomberman.interfaces.ITile;
-import bomberman.interfaces.IWorldBuilder;
-import bomberman.interfaces.UniqueIDManager;
+import bomberman.interfaces.*;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class BasicWorldBuilder extends IWorldBuilder {
 
     @Override
-    public ITile[][] getITileArray(UniqueIDManager supplicant) {
+    public ITile[][] getITileArray(UniqueIDManager supplicant, EventStashable eventQueue) {
         // Array has dimensions YxX because java multi-dimensional arrays are arrays of arrays.
         // This means [first][] bracket pair is number of array we want to access.
         // And [][second] bracket pair is true position of an element we want to access.
@@ -35,7 +35,7 @@ public class BasicWorldBuilder extends IWorldBuilder {
     }
 
     @Override// x y
-    public float[][] getBombermenSpawn() {
+    public float[][] getBombermenSpawns() {
         return new float[][]{{1.0f, 1.0f},{1.0f, (float)(DEFAULT_WORLD_HEIGHT - 1)},{(float)(DEFAULT_WORLD_WIDTH - 1), 1.0f},{(float)(DEFAULT_WORLD_HEIGHT - 1), (float)(DEFAULT_WORLD_WIDTH - 1)}};
     }
 }

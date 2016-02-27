@@ -12,6 +12,9 @@ import bomberman.tiles.behaviors.BombRayBehavior;
 import bomberman.tiles.behaviors.NullBehavior;
 import bomberman.tiles.functors.*;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class TileFactory {
     public static TileFactory getInstance()
     {

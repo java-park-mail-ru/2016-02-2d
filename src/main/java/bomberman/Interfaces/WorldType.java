@@ -1,5 +1,5 @@
 package bomberman.interfaces;
 
 public enum WorldType {
-    BASIC_WORLD
+    BASIC_WORLD, TEXT_SPIRAL_WORLD
 }
