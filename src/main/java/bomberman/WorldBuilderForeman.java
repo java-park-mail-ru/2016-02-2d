@@ -5,15 +5,13 @@ import bomberman.interfaces.WorldType;
 import bomberman.worldbuilders.BasicWorldBuilder;
 import bomberman.worldbuilders.TextWorldBuilder;
 
-import javax.inject.Singleton;
-
 public class WorldBuilderForeman {
 
     public static IWorldBuilder getWorldBuilderInstance(WorldType type){
         switch (type)
         {
             case BASIC_WORLD:
-                return basicWorldBuilder;
+                return BASIC_WORLD_BUILDER;
             case TEXT_SPIRAL_WORLD:
                 return new TextWorldBuilder(type);
             default:
@@ -21,5 +19,5 @@ public class WorldBuilderForeman {
         }
     }
 
-    private static IWorldBuilder basicWorldBuilder = new BasicWorldBuilder();
+    private static final IWorldBuilder BASIC_WORLD_BUILDER = new BasicWorldBuilder();
 }

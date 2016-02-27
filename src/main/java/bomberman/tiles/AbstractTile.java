@@ -57,7 +57,17 @@ public abstract class AbstractTile implements ITile{
     //   return 0;
     //}
 
-    private int id;
-    private int x;
-    private int y;
+    //
+    // Describers
+    //
+
+    // How am I supposed to name these? certainAbstractTileIdentificator?
+    // certainAbstractTileXCoordinate? certainAbstractTileYCoordinate? But they differ only in one position.
+    // Having long names is much more confusing than simple self-describing "x".
+    @SuppressWarnings("InstanceVariableNamingConvention")
+    private final int id;
+    @SuppressWarnings("InstanceVariableNamingConvention")
+    private final int x;
+    @SuppressWarnings("InstanceVariableNamingConvention")
+    private final int y;
 }

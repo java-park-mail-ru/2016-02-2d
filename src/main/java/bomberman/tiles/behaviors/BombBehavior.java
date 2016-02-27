@@ -3,7 +3,6 @@ package bomberman.tiles.behaviors;
 import bomberman.WorldEvent;
 import bomberman.interfaces.EventStashable;
 import bomberman.interfaces.EventType;
-import bomberman.tiles.ActionTile;
 
 public class BombBehavior extends ActionTileAbstractBehavior {
     public BombBehavior(EventStashable eventList, float timer) {

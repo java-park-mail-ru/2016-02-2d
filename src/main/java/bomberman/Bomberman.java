@@ -140,9 +140,12 @@ public class Bomberman implements IEntity {
 
 
     // In-World desctription
-    private float x;        // I know they're short, but I don't think that 'x' may mean something else than "xCoordinate"
-    private float y;        // "yCoordinate" -> 'y'
-    private int id;         // "uniqueIdentificationNumber" -> "id"
+    @SuppressWarnings("InstanceVariableNamingConvention")
+    private float x;                // I know they're short, but I don't think that 'x' may mean something else than "xCoordinate"
+    @SuppressWarnings("InstanceVariableNamingConvention")
+    private float y;                // "yCoordinate" -> 'y'
+    @SuppressWarnings("InstanceVariableNamingConvention")
+    private final int id;           // "uniqueIdentificationNumber" -> "id"
 
 
     // Health Description

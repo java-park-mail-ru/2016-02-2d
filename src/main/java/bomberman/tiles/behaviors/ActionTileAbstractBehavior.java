@@ -10,13 +10,13 @@ public abstract class ActionTileAbstractBehavior {
         this.eventList = eventList;
     }
 
-    public void linkWithTile(ActionTile owner)
+    public void linkWithTile(ActionTile newOwner)
     {
-        this.owner = owner;
+        owner = newOwner;
     }
 
     public abstract void behave(float deltaTime);
 
     protected ActionTile owner;
-    protected EventStashable eventList;
+    protected final EventStashable eventList;
 }

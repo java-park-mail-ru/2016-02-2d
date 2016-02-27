@@ -18,7 +18,7 @@ import javax.inject.Singleton;
 public class TileFactory {
     public static TileFactory getInstance()
     {
-        return singleton;
+        return SINGLETON;
     }
 
     public ITile getNewTile(EntityType type, int id, int x, int y) throws IllegalArgumentException {
@@ -34,6 +34,7 @@ public class TileFactory {
 
     }
 
+    // ATTENTION! FALSE WARNING! It is just not fully implemented yet. We will use much more parameters soon.
     public ITile getNewTile(EntityType type, EventStashable list, int id, int x, int y) throws IllegalArgumentException {
         switch (type)
         {
@@ -95,5 +96,5 @@ public class TileFactory {
     }
 
 
-    private static TileFactory singleton = new TileFactory();
+    private static final TileFactory SINGLETON = new TileFactory();
 }

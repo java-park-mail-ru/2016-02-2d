@@ -5,7 +5,6 @@ import bomberman.interfaces.*;
 import bomberman.worldbuilders.blueprints.SpiralWorldBlueprint;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -23,9 +22,9 @@ public class TextWorldBuilder extends IWorldBuilder {
     }
 
     @Override
-    public ITile[][] getITileArray(int height, int width, UniqueIDManager supplicant, EventStashable eventQueue) {
-        this.supplicant = supplicant;
-        this.eventQueue = eventQueue;
+    public ITile[][] getITileArray(int height, int width, UniqueIDManager newSupplicant, EventStashable newEventQueue) {
+        supplicant = newSupplicant;
+        eventQueue = newEventQueue;
         generateWorldFromText();
         return tileArray;
     }
@@ -35,7 +34,7 @@ public class TextWorldBuilder extends IWorldBuilder {
         if (spawnList.isEmpty())
             generateWorldFromText();
 
-        float[][] spawnArray = new float[spawnList.size()][2];  // 2 for x and y coordinates
+        final float[][] spawnArray = new float[spawnList.size()][2];  // 2 for x and y coordinates
         int i = 0;
 
         for(float[] onePoint : spawnList)
@@ -87,6 +86,6 @@ public class TextWorldBuilder extends IWorldBuilder {
     private UniqueIDManager supplicant;
     private EventStashable eventQueue;
     private ITile[][] tileArray;
-    private Queue<float[]> spawnList = new LinkedList<>();
+    private final Queue<float[]> spawnList = new LinkedList<>();
 
 }

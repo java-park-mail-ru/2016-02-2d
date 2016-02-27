@@ -15,7 +15,7 @@ public class BasicWorldBuilder extends IWorldBuilder {
         // This means [first][] bracket pair is number of array we want to access.
         // And [][second] bracket pair is true position of an element we want to access.
         // Thus [Y][X] element means Xth element in Yth row.
-        ITile[][] tileArray = new ITile[DEFAULT_WORLD_HEIGHT][DEFAULT_WORLD_WIDTH];
+        final ITile[][] tileArray = new ITile[DEFAULT_WORLD_HEIGHT][DEFAULT_WORLD_WIDTH];
 
         // Filling left and right borders
         for (int j = 0; j <= tileArray.length; ++j)

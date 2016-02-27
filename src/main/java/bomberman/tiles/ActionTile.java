@@ -43,7 +43,7 @@ public class ActionTile extends AbstractTile {
     }
 
     private boolean shouldBeDestroyed;
-    private ActionTileAbstractFunctor functor;
-    private ActionTileAbstractBehavior behavior;
-    private EntityType entityType;
+    private final ActionTileAbstractFunctor functor;
+    private final ActionTileAbstractBehavior behavior;
+    private final EntityType entityType;
 }

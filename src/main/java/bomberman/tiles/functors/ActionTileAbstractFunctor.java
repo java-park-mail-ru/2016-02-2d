@@ -9,12 +9,12 @@ public abstract class ActionTileAbstractFunctor implements Actable{
         this.eventList = eventList;
     }
 
-    public void linkWithTile(ActionTile owner)
+    public void linkWithTile(ActionTile newOwner)
     {
-        this.owner = owner;
+       owner = newOwner;
     }
 
 
     protected ActionTile owner;
-    protected EventStashable eventList;
+    protected final EventStashable eventList;
 }

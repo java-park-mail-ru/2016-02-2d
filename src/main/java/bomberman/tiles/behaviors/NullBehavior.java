@@ -1,10 +1,6 @@
 package bomberman.tiles.behaviors;
 
-import bomberman.Bomberman;
-import bomberman.WorldEvent;
 import bomberman.interfaces.EventStashable;
-import bomberman.interfaces.EventType;
-import bomberman.tiles.functors.ActionTileAbstractFunctor;
 
 /**
  * Created by Frog on 22.02.2016.

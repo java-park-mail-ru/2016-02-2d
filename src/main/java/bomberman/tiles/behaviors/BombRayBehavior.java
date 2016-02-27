@@ -3,7 +3,6 @@ package bomberman.tiles.behaviors;
 import bomberman.WorldEvent;
 import bomberman.interfaces.EventStashable;
 import bomberman.interfaces.EventType;
-import bomberman.tiles.ActionTile;
 
 public class BombRayBehavior extends ActionTileAbstractBehavior {
     public BombRayBehavior(EventStashable eventList) {
@@ -25,5 +24,5 @@ public class BombRayBehavior extends ActionTileAbstractBehavior {
     private float bombTimer;
     private boolean hasDissipated;
 
-    public final float BOMB_RAY_DURATION = 1.0f;
+    public static final float BOMB_RAY_DURATION = 1.0f;
 }

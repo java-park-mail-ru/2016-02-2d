@@ -10,17 +10,17 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
 
     public World(WorldType type, int numberOfPlayers) {
-        IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(type);
+        final IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(type);
 
         tileArray = builder.getITileArray(this, this);
-        spawnBombermenRegisterTilesAndsetWorldReady(numberOfPlayers, builder.getBombermenSpawns());
+        spawnBombermenRegisterTilesAndSetWorldReady(numberOfPlayers, builder.getBombermenSpawns());
     }
 
     public World(WorldType type, int numberOfPlayers, int width, int height) {
-        IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(type);
+        final IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(type);
 
         tileArray = builder.getITileArray(height, width, this, this);
-        spawnBombermenRegisterTilesAndsetWorldReady(numberOfPlayers, builder.getBombermenSpawns());
+        spawnBombermenRegisterTilesAndSetWorldReady(numberOfPlayers, builder.getBombermenSpawns());
     }
 
     @Override
@@ -36,7 +36,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
     @Override
     public Queue<WorldEvent> getFreshEvents() {
-        Queue<WorldEvent> newQueue = new LinkedList<>(processedEventQueue);     // Java has static typing? For real?
+        final Queue<WorldEvent> newQueue = new LinkedList<>(processedEventQueue);     // Java has static typing? For real?
         processedEventQueue.clear();
         return newQueue;
     }
@@ -47,7 +47,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
     // For linking to Players via Room
     public int[] getBombermenIDs(){
-        int[] ids = new int[bombermen.size()];
+        final int[] ids = new int[bombermen.size()];
         int i = 0;
 
         for (Bomberman bomberman : bombermen)
@@ -60,7 +60,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         if (locations.length < amount)
             throw new ArrayIndexOutOfBoundsException();
         for (int i = 0; i < amount; ++i) {
-            Bomberman newBomberman = new Bomberman(getNextID());
+            final Bomberman newBomberman = new Bomberman(getNextID());
             bombermen.add(newBomberman);
             processedEventQueue.add(new WorldEvent(EventType.ENTITY_UPDATED, newBomberman.getType(), newBomberman.getID()));
         }
@@ -78,9 +78,9 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     }
 
     // Dirty hack to avoid copy-paste
-    private void spawnBombermenRegisterTilesAndsetWorldReady(int amount_of_players, float[][] spawn_locations)
+    private void spawnBombermenRegisterTilesAndSetWorldReady(int numberOfPlayers, float[][] spawnLocations)
     {
-        spawnBombermen(amount_of_players, spawn_locations);
+        spawnBombermen(numberOfPlayers, spawnLocations);
         registerNewTiles();
         isWorldReady = true;
     }
@@ -89,7 +89,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     Queue<WorldEvent> processedEventQueue; // State describer will take events from this list.
 
     private int previousNextID = 0;
-    private ITile[][] tileArray;
+    private final ITile[][] tileArray;
     private boolean isWorldReady = false;
     private ArrayList<Bomberman> bombermen;
 

@@ -23,7 +23,7 @@ public class WorldEvent {
         return entityID;
     }
 
-    private EventType eventType;
-    private EntityType entityType;
-    private int entityID;
+    private final EventType eventType;
+    private final EntityType entityType;
+    private final int entityID;
 }

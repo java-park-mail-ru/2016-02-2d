@@ -18,7 +18,7 @@ public class OwnedActionTile extends ActionTile implements Ownable {
         return owner;
     }
 
-    private Bomberman owner;
+    private final Bomberman owner;
 }
 
 // This class is giant, huge KOCTblJIb!!!

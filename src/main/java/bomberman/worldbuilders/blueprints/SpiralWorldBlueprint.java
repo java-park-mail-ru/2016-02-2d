@@ -2,9 +2,6 @@ package bomberman.worldbuilders.blueprints;
 
 import bomberman.interfaces.Blueprintable;
 
-import javax.inject.Singleton;
-import java.util.Arrays;
-
 public class SpiralWorldBlueprint extends Blueprintable {
 
     @Override

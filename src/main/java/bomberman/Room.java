@@ -12,6 +12,6 @@ public class Room {
         world = new World(type, playerMap.size());
     }
 
-    Map<Integer, Player> playerMap = new HashMap<>();
+    final Map<Integer, Player> playerMap = new HashMap<>();
     World world;
 }
