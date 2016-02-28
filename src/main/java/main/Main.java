@@ -5,10 +5,21 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.servlet.ServletContainer;
 
+/**
+ * @author esin88
+ */
 public class Main {
+    @SuppressWarnings("OverlyBroadThrowsClause")
     public static void main(String[] args) throws Exception {
-        setCustomPort(args);
-        System.out.format("Starting at port: %d\n", port);
+        int port = -1;
+        if (args.length == 1) {
+            port = Integer.valueOf(args[0]);
+        } else {
+            System.err.println("Specify port");
+            System.exit(1);
+        }
+
+        System.out.append("Starting at port: ").append(String.valueOf(port)).append('\n');
 
         final Server server = new Server(port);
         final ServletContextHandler contextHandler = new ServletContextHandler(server, "/api/", ServletContextHandler.SESSIONS);
@@ -20,16 +31,4 @@ public class Main {
         server.start();
         server.join();
     }
-
-     private static void setCustomPort(String[] args) {
-        if (args.length == 1)
-            port = Integer.valueOf(args[0]);
-        else {
-            System.err.format("Port is not specified, setting it to %d\n", DEFAULT_PORT);
-            port = DEFAULT_PORT;
-        }
-    }
-
-    private static int port;
-    private static final int DEFAULT_PORT = 8080;
 }

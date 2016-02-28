@@ -10,6 +10,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Collection;
 
+/**
+ * Created by e.shubin on 25.02.2016.
+ */
 @Singleton
 @Path("/user")
 public class Users {
@@ -27,10 +30,10 @@ public class Users {
     }
 
     @GET
-    @Path("{name}")
+    @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserByName(@PathParam("name") String name) {
-        final UserProfile user = accountService.getUser(name);
+    public Response getUserByName(@PathParam("id") Long id) {
+        final UserProfile user = accountService.getUser(id);
         if(user == null){
             return Response.status(Response.Status.FORBIDDEN).build();
         }else {
@@ -44,6 +47,18 @@ public class Users {
     public Response createUser(UserProfile user, @Context HttpHeaders headers){
         if(accountService.addUser(user.getLogin(), user)){
             return Response.status(Response.Status.OK).entity(user.getLogin()).build();
+        } else {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+    }
+
+    @DELETE
+    @Path("{id}")
+    //@Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteUser(@PathParam("id") Long id, @Context HttpHeaders headers){
+        if(accountService.delUser(id)){
+            return Response.status(Response.Status.OK).build();
         } else {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
