@@ -2,30 +2,57 @@ package main;
 
 import rest.UserProfile;
 
+import javax.servlet.http.Cookie;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author esin88
+ */
 public class AccountService {
-    private Map<String, UserProfile> users = new HashMap<>();
+    private Map<Cookie, String> cookies = new HashMap<>();
+    DataBase users = new DataBase();
 
     public AccountService() {
-        users.put("admin", new UserProfile("admin", "admin"));
-        users.put("guest", new UserProfile("guest", "12345"));
+        users.addUser("admin", "admin");
+        users.addUser("guest", "12345");
     }
 
     public Collection<UserProfile> getAllUsers() {
-        return users.values();
+        return users.getUsers();
     }
 
     public boolean addUser(String userName, UserProfile userProfile) {
-        if (users.containsKey(userName))
+
+        if (users.containsLogin(userName))
             return false;
-        users.put(userName, userProfile);
+        users.addUser(userName, userProfile.getPassword());
         return true;
     }
 
-    public UserProfile getUser(String userName) {
-        return users.get(userName);
+    public UserProfile getUser(Long id) {
+        return users.getById(id);
+    }
+
+    public UserProfile getUser(String login) {
+        return users.getByLogin(login);
+    }
+
+    public boolean delUser (Long id) {
+
+        if (users.containsID(id))
+            return false;
+        users.deleteUser(id);
+        return true;
+    }
+
+    public void addNewCookie(Cookie cookie, String name){
+        cookies.put(cookie, name);
+    }
+
+    public String getByCookie(String cookie){
+        if(cookies.containsKey(cookie)) return cookies.get(cookie);
+        else return null;
     }
 }
