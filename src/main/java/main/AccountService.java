@@ -1,5 +1,6 @@
 package main;
 
+import com.sun.istack.internal.Nullable;
 import rest.UserProfile;
 
 import javax.servlet.http.Cookie;
@@ -7,52 +8,77 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author esin88
- */
 public class AccountService {
-    private Map<Cookie, String> cookies = new HashMap<>();
-    DataBase users = new DataBase();
 
+    // Store some dummies.
     public AccountService() {
-        users.addUser("admin", "admin");
-        users.addUser("guest", "12345");
+        registeredUsers.addUser("admin", "admin", "admin@admin");
+        registeredUsers.addUser("guest", "12345", "lol@memes");
     }
 
+    //
+    // /api/sessions
+    //
+
+    // Create
+    @Nullable
+    public UserProfile loginUser(Cookie cookie, String login){
+        if (activeUsers.put(cookie, login) != null)
+            return registeredUsers.getByLogin(login);
+        return null;
+    }
+
+    // Read, Update
+    @Nullable
+    public UserProfile getByCookie(Cookie cookie){
+        if (activeUsers.containsKey(cookie))
+            return registeredUsers.getByLogin(activeUsers.get(cookie));
+        return null;
+    }
+
+    // Delete
+    public void logoutUser(Cookie cookie){
+        activeUsers.remove(cookie);
+    }
+
+    //
+    // /api/user
+    //
+
+    // Create
+    public boolean createNewUser(String login, String password, String email) {
+        if (registeredUsers.containsLogin(login))
+            return false;
+        registeredUsers.addUser(login, password, email);
+        return true;
+    }
+
+    // Read, Update
     public Collection<UserProfile> getAllUsers() {
-        return users.getUsers();
+        return registeredUsers.getUsers();
     }
 
-    public boolean addUser(String userName, UserProfile userProfile) {
-
-        if (users.containsLogin(userName))
-            return false;
-        users.addUser(userName, userProfile.getPassword());
-        return true;
-    }
-
+    @Nullable
     public UserProfile getUser(Long id) {
-        return users.getById(id);
+        return registeredUsers.getById(id);
     }
 
+    @Nullable
     public UserProfile getUser(String login) {
-        return users.getByLogin(login);
+        return registeredUsers.getByLogin(login);
     }
 
-    public boolean delUser (Long id) {
+    // Delete
+    public boolean deleteUser(Long id) {
 
-        if (users.containsID(id))
+        if (registeredUsers.containsID(id))
             return false;
-        users.deleteUser(id);
+        registeredUsers.deleteUser(id);
         return true;
     }
 
-    public void addNewCookie(Cookie cookie, String name){
-        cookies.put(cookie, name);
-    }
 
-    public String getByCookie(String cookie){
-        if(cookies.containsKey(cookie)) return cookies.get(cookie);
-        else return null;
-    }
+
+    private Map<Cookie, String> activeUsers = new HashMap<>();
+    private DataBase registeredUsers = new DataBase();
 }

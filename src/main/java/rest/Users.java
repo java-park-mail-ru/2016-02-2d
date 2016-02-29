@@ -45,7 +45,7 @@ public class Users {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createUser(UserProfile user, @Context HttpHeaders headers){
-        if(accountService.addUser(user.getLogin(), user)){
+        if(accountService.createNewUser(user.getLogin(), user)){
             return Response.status(Response.Status.OK).entity(user.getLogin()).build();
         } else {
             return Response.status(Response.Status.FORBIDDEN).build();
@@ -57,7 +57,7 @@ public class Users {
     //@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteUser(@PathParam("id") Long id, @Context HttpHeaders headers){
-        if(accountService.delUser(id)){
+        if(accountService.deleteUser(id)){
             return Response.status(Response.Status.OK).build();
         } else {
             return Response.status(Response.Status.FORBIDDEN).build();

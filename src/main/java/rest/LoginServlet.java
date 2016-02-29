@@ -1,7 +1,6 @@
 package rest;
 
 import main.AccountService;
-import main.DataBase;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -40,7 +39,7 @@ public class LoginServlet extends HttpServlet {
 
         if(accountService.getUser(user) != null) {
             Cookie loginCookie = new Cookie("user",user);
-            accountService.addNewCookie(loginCookie, user);
+            accountService.loginUser(loginCookie, user);
             //setting cookie to expiry in 30 mins
             loginCookie.setMaxAge(30*60);
             response.addCookie(loginCookie);
