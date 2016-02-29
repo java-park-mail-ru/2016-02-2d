@@ -4,24 +4,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * @author esin88
- */
 public class UserProfile {
-    private static final AtomicLong ID_GENETATOR = new AtomicLong(0);
-    @NotNull
-    private String login;
-    @NotNull
-    private String password;
-    private long id;
 
     public UserProfile() {
         login = "";
         password = "";
+        email = "";
         id = ID_GENETATOR.getAndIncrement();
     }
 
-    public UserProfile(@NotNull String login, @NotNull String password) {
+    public UserProfile(@NotNull String login, @NotNull String password, @NotNull String email) {
         this.login = login;
         this.password = password;
         id = ID_GENETATOR.getAndIncrement();
@@ -45,8 +37,27 @@ public class UserProfile {
         this.password = password;
     }
 
-    @NotNull
     public long getId() {
         return id;
     }
+
+    @NotNull
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@NotNull String email) {
+        this.email = email;
+    }
+
+
+    @NotNull
+    private String login;
+    @NotNull
+    private String password;
+    @NotNull
+    private String email;
+    private long id;
+
+    private static final AtomicLong ID_GENETATOR = new AtomicLong(0);
 }
