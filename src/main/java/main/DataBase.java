@@ -10,13 +10,12 @@ import java.util.Map;
 public class DataBase {
 
     // Create
-    public boolean addUser(String login, String password, String email){
+    public void addUser(String login, String password, String email){
         if (containsLogin(login))
-            return false;
+            return;
         UserProfile newUser = new UserProfile(login, password, email);
         loginToUser.put(login, newUser);
         idToUser.put(newUser.getId(), newUser);
-        return true;
     }
 
     // Read, Update
@@ -52,7 +51,7 @@ public class DataBase {
 
 
 
-    private Map<String, UserProfile> loginToUser = new HashMap<>();
-    private Map<Long, UserProfile> idToUser = new HashMap<>();
+    private final Map<String, UserProfile> loginToUser = new HashMap<>();
+    private final Map<Long, UserProfile> idToUser = new HashMap<>();
 
 }

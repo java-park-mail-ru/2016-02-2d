@@ -2,14 +2,12 @@ package rest;
 
 import main.AccountService;
 import main.RestApplication;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.util.Date;
 
 @Singleton
 @Path("/session")
@@ -87,5 +85,5 @@ public class Sessions {
 
 
 
-    private AccountService accountService;
+    private final AccountService accountService;
 }

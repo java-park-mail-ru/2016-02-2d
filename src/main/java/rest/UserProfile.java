@@ -7,13 +7,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class UserProfile {
 
-    public UserProfile() {
-        login = "";
-        password = "";
-        email = "";
-        id = ID_GENETATOR.getAndIncrement();
-    }
-
     public UserProfile(@NotNull String newLogin, @NotNull String newPassword, @NotNull String newEmail) {
         login = newLogin;
         password = newPassword;
@@ -24,10 +17,6 @@ public class UserProfile {
     @NotNull
     public String getLogin() {
         return login;
-    }
-
-    public void setLogin(@NotNull String login) {
-        this.login = login;
     }
 
     @NotNull
@@ -44,7 +33,7 @@ public class UserProfile {
     }
 
     @NotNull
-    public String getEmail() {
+    public String getEmail() {  // Yes, I doubt we will need it. It is question about API.
         return email;
     }
 
@@ -53,16 +42,17 @@ public class UserProfile {
     }
 
     public JSONObject toJson(){
-        return new JSONObject().put("id", getId()).put("login", getLogin()).put("email", getEmail());
+        return new JSONObject().put("id", id).put("login", login).put("email", email);
     }
 
     @NotNull
-    private String login;
+    private final String login;
     @NotNull
     private String password;
     @NotNull
     private String email;
-    private long id;
+    @SuppressWarnings("InstanceVariableNamingConvention")   // "id" is quite standart name.
+    private final long id;
 
     private static final AtomicLong ID_GENETATOR = new AtomicLong(0);
 }

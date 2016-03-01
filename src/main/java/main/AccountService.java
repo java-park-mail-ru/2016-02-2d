@@ -21,11 +21,8 @@ public class AccountService {
     //
 
     // Create
-    @Nullable
-    public UserProfile loginUser(Cookie cookie, long id){
-        if (activeUsers.put(cookie, id) != null)
-            return registeredUsers.getById(id);
-        return null;
+    public void loginUser(Cookie cookie, long id){
+        activeUsers.put(cookie, id);
     }
 
     // Read, Update
@@ -80,6 +77,6 @@ public class AccountService {
 
 
 
-    private Map<Cookie, Long> activeUsers = new HashMap<>();
-    private DataBase registeredUsers = new DataBase();
+    private final Map<Cookie, Long> activeUsers = new HashMap<>();
+    private final DataBase registeredUsers = new DataBase();
 }
