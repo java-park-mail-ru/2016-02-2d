@@ -1,0 +1,554 @@
+<Project>
+  <Name>Bomberman</Name>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>UML</Name>
+    <Language>CSharp</Language>
+    <Entities>
+      <Entity type="Class">
+        <Name>Bomberman</Name>
+        <Access>Public</Access>
+        <Location left="933" top="1153" />
+        <Size width="162" height="216" />
+        <Collapsed>True</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>World</Name>
+        <Access>Public</Access>
+        <Location left="1230" top="715" />
+        <Size width="222" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">private array&lt;IEntity&gt; players</Member>
+        <Member type="Field">private list&lt;ITile&gt; tiles</Member>
+        <Member type="Field">int worldType</Member>
+        <Member type="Field">StateDescriber describer</Member>
+        <Member type="Method">private void generateDescriberEventsOnStartup()</Member>
+        <Member type="Method">public string getDescribedState()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Interface">
+        <Name>ITile</Name>
+        <Access>Public</Access>
+        <Location left="1561" top="1222" />
+        <Size width="251" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">bool isPassable()</Member>
+        <Member type="Method">bool isDestructible()</Member>
+        <Member type="Method">void destroy()</Member>
+        <Member type="Method">bool hasAction()</Member>
+        <Member type="Method">void applyAction(Bomberman bomberman)</Member>
+        <Member type="Method">void update(float deltaTime)</Member>
+        <Member type="Method">int getType()</Member>
+        <Member type="Method">Vector2D getCoordinates()</Member>
+        <Member type="Method">float getSideSize()</Member>
+      </Entity>
+      <Entity type="Class">
+        <Name>UndestructibleWall</Name>
+        <Access>Public</Access>
+        <Location left="1609" top="1505" />
+        <Size width="162" height="216" />
+        <Collapsed>True</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>DestructibleWall</Name>
+        <Access>Public</Access>
+        <Location left="1797" top="1505" />
+        <Size width="162" height="77" />
+        <Collapsed>True</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>ActionTile</Name>
+        <Access>Public</Access>
+        <Location left="1419" top="1505" />
+        <Size width="162" height="77" />
+        <Collapsed>True</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IEntity</Name>
+        <Access>Public</Access>
+        <Location left="915" top="861" />
+        <Size width="200" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">void affectHealth(int amount)</Member>
+        <Member type="Method">void update(float deltaTime)</Member>
+        <Member type="Method">int getType()</Member>
+        <Member type="Method">Vector2D getCoordinates()</Member>
+        <Member type="Method">float getRadius()</Member>
+      </Entity>
+      <Entity type="Class">
+        <Name>StateDescriber</Name>
+        <Access>Public</Access>
+        <Location left="1561" top="703" />
+        <Size width="287" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">list&lt;WorldEvent&gt; newEvents</Member>
+        <Member type="Method">public string getIncrementalState()</Member>
+        <Member type="Method">public void addNewEvent(int eventType, int objectType)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Structure">
+        <Name>WorldEvent</Name>
+        <Access>Public</Access>
+        <Location left="1650" top="1033" />
+        <Size width="162" height="111" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">int eventType</Member>
+        <Member type="Field">int objectType</Member>
+      </Entity>
+      <Entity type="Class">
+        <Name>TileFactory</Name>
+        <Access>Public</Access>
+        <Location left="1887" top="1131" />
+        <Size width="260" height="162" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public ITile createNewTile(int type)</Member>
+        <Member type="Method">public static void getInstance()</Member>
+        <Member type="Method">private ITile newUndestructibleWall()</Member>
+        <Member type="Method">private ITile newDestructibleWall()</Member>
+        <Member type="Method">private ITile newActionTile(int type)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>WorldBuilder1</Name>
+        <Access>Public</Access>
+        <Location left="2104" top="817" />
+        <Size width="222" height="173" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">list&lt;ITile&gt; tiles</Member>
+        <Member type="Method">public WorldBuilder getInstance()</Member>
+        <Member type="Method">public list&lt;ITile&gt; getITileList()</Member>
+        <Member type="Method">private void buildWorld()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>ActionTileFunctor</Name>
+        <Access>Public</Access>
+        <Location left="1419" top="1630" />
+        <Size width="162" height="94" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public void act(Bomberman bomberman)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Room</Name>
+        <Access>Public</Access>
+        <Location left="1230" top="422" />
+        <Size width="222" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">array&lt;Player&gt; players</Member>
+        <Member type="Field">World world</Member>
+        <Member type="Field">int roomID</Member>
+        <Member type="Method">public bool isFilled()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>GameManager</Name>
+        <Access>Public</Access>
+        <Location left="1215" top="154" />
+        <Size width="260" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">list&lt;Room&gt; roomList</Member>
+        <Member type="Field">SomeKindOfWebsocket websocket</Member>
+        <Member type="Field">list&lt;Player&gt; players</Member>
+        <Member type="Method">public void tryConnectingToRoom(int roomNumber)</Member>
+        <Member type="Method">public void connectToAnyFreeRoomOrCreateNew()</Member>
+        <Member type="Method">public RoomManager getInstance()</Member>
+        <Member type="Method">public string getRoomListString()</Member>
+        <Member type="Method">public string getPlayerListString()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Player</Name>
+        <Access>Public</Access>
+        <Location left="1586" top="268" />
+        <Size width="206" height="162" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">string playerName</Member>
+        <Member type="Field">int playerID</Member>
+        <Member type="Field">Room currentRoom</Member>
+        <Member type="Field">int newField</Member>
+        <Member type="Field">SomeKindOfWebsocket websocket</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>SomeKindOfWebsocket</Name>
+        <Access>Public</Access>
+        <Location left="1586" top="10" />
+        <Size width="169" height="77" />
+        <Collapsed>True</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Main</Name>
+        <Access>Public</Access>
+        <Location left="1017" top="10" />
+        <Size width="162" height="216" />
+        <Collapsed>True</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>WorldBuilderManager</Name>
+        <Access>Public</Access>
+        <Location left="1922" top="530" />
+        <Size width="191" height="128" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">WorldBuilder1 wb1</Member>
+        <Member type="Field">WorldBuilderRand wbr</Member>
+        <Member type="Method">public IWorldBuilder getInstance(int type = 0)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IWorldBuilder</Name>
+        <Access>Public</Access>
+        <Location left="1922" top="715" />
+        <Size width="162" height="90" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">list&lt;ITile&gt; getITileList()</Member>
+      </Entity>
+      <Entity type="Class">
+        <Name>WorldBuilderRand</Name>
+        <Access>Public</Access>
+        <Location left="2381" top="817" />
+        <Size width="222" height="173" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">list&lt;ITile&gt; tiles</Member>
+        <Member type="Method">public WorldBuilder getInstance()</Member>
+        <Member type="Method">public list&lt;ITile&gt; getITileList()</Member>
+        <Member type="Method">private void buildWorld()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+    </Entities>
+    <Relationships>
+      <Relationship type="Association" first="1" second="0">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1190</X>
+          <Y>840</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1143</X>
+          <Y>1181</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>2..4</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="1" second="2">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1495</X>
+          <Y>885</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1536</X>
+          <Y>1244</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>1..*</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Realization" first="3" second="2">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>1693</X>
+          <Y>1472</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Realization" first="4" second="2">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1878</X>
+          <Y>1480</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1776</X>
+          <Y>1476</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Realization" first="5" second="2">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>1611</X>
+          <Y>1474</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Realization" first="0" second="6">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>991</X>
+          <Y>1125</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>991</X>
+          <Y>1123</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Association" first="1" second="7">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1519</X>
+          <Y>815</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="7" second="8">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1732</X>
+          <Y>1024</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1732</X>
+          <Y>1000</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Aggregation</AssociationType>
+        <StartMultiplicity>0..*</StartMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="9" second="4">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>2018</X>
+          <Y>1318</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1984</X>
+          <Y>1517</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <EndRole>creates</EndRole>
+      </Relationship>
+      <Relationship type="Association" first="9" second="3">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>1690</X>
+          <Y>1586</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <EndRole>creates</EndRole>
+      </Relationship>
+      <Relationship type="Association" first="9" second="5">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>1522</X>
+          <Y>1587</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <EndRole>creates</EndRole>
+      </Relationship>
+      <Relationship type="Association" first="1" second="8">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1477</X>
+          <Y>850</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1606</X>
+          <Y>1088</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <EndRole>acknowledged</EndRole>
+      </Relationship>
+      <Relationship type="Association" first="11" second="5">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1452</X>
+          <Y>1596</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="11" second="0">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1354</X>
+          <Y>1682</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <EndRole>modifies</EndRole>
+      </Relationship>
+      <Relationship type="Association" first="12" second="1">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="13" second="12">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>0..*</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="12" second="14">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Aggregation</AssociationType>
+        <StartMultiplicity>1..4</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="14" second="13">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>1500</X>
+          <Y>290</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <EndRole>acknowledged</EndRole>
+      </Relationship>
+      <Relationship type="Association" first="14" second="15">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="16" second="13">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1102</X>
+          <Y>83</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="1" second="17">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1477</X>
+          <Y>759</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1601</X>
+          <Y>610</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <EndRole>acknowldeged</EndRole>
+      </Relationship>
+      <Relationship type="Association" first="17" second="18">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>2003</X>
+          <Y>690</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <EndRole>acknowledged</EndRole>
+      </Relationship>
+      <Relationship type="Association" first="17" second="10">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>2147</X>
+          <Y>638</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="10" second="9">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>2116</X>
+          <Y>1015</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <EndRole>acknowledged</EndRole>
+      </Relationship>
+      <Relationship type="Association" first="17" second="19">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>2138</X>
+          <Y>599</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Composition</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="19" second="9">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>2188</X>
+          <Y>1148</Y>
+        </BendPoint>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <EndRole>acknowledged</EndRole>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+</Project>
