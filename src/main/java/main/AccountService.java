@@ -3,7 +3,7 @@ package main;
 import com.sun.istack.internal.Nullable;
 import rest.UserProfile;
 
-import javax.servlet.http.Cookie;
+import javax.ws.rs.core.Cookie;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,9 +22,9 @@ public class AccountService {
 
     // Create
     @Nullable
-    public UserProfile loginUser(Cookie cookie, String login){
-        if (activeUsers.put(cookie, login) != null)
-            return registeredUsers.getByLogin(login);
+    public UserProfile loginUser(Cookie cookie, long id){
+        if (activeUsers.put(cookie, id) != null)
+            return registeredUsers.getById(id);
         return null;
     }
 
@@ -32,9 +32,10 @@ public class AccountService {
     @Nullable
     public UserProfile getByCookie(Cookie cookie){
         if (activeUsers.containsKey(cookie))
-            return registeredUsers.getByLogin(activeUsers.get(cookie));
+            return registeredUsers.getById(activeUsers.get(cookie));
         return null;
     }
+    
 
     // Delete
     public void logoutUser(Cookie cookie){
@@ -79,6 +80,6 @@ public class AccountService {
 
 
 
-    private Map<Cookie, String> activeUsers = new HashMap<>();
+    private Map<Cookie, Long> activeUsers = new HashMap<>();
     private DataBase registeredUsers = new DataBase();
 }

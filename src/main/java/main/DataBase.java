@@ -40,7 +40,7 @@ public class DataBase {
     }
 
     public boolean containsLogin (String name){
-        return idToUser.containsKey(name);
+        return loginToUser.containsKey(name);
     }
 
     // Delete

@@ -16,6 +16,7 @@
         <org.eclipse.jetty.version>9.3.7.v20160115</org.eclipse.jetty.version>
         <org.glassfish.jersey.version>2.22.2</org.glassfish.jersey.version>
         <com.intellij.version>12.0</com.intellij.version>
+        <org.json.version>20160212</org.json.version>
     </properties>
 
     <build>
@@ -95,6 +96,11 @@
             <groupId>com.intellij</groupId>
             <artifactId>annotations</artifactId>
             <version>${com.intellij.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>${org.json.version}</version>
         </dependency>
     </dependencies>
 
