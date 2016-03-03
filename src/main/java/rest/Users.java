@@ -23,7 +23,7 @@ public class Users {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createUser(String jsonString){
-        JSONObject jsonRequest;
+        final JSONObject jsonRequest;
 
         try {
             jsonRequest = new JSONObject(jsonString);
@@ -31,19 +31,19 @@ public class Users {
             return WebErrorManager.badJSON();
         }
         // TODO: Rewrite copy-paste into separate function?
-        String login;
+        final String login;
         if (jsonRequest.has("login"))
             login = jsonRequest.get("login").toString();
         else
             return WebErrorManager.accessForbidden();  // Here should be clear explanation what went wrong, but API restricts it. O_o
 
-        String password;
+        final String password;
         if (jsonRequest.has("password"))
             password = jsonRequest.get("password").toString();
         else
             return WebErrorManager.accessForbidden();
 
-        String email;
+        final String email;
         if (jsonRequest.has("email"))
             email = jsonRequest.get("email").toString();
         else
@@ -60,7 +60,7 @@ public class Users {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers() {
-        JSONArray responseJSON = new JSONArray();
+        final JSONArray responseJSON = new JSONArray();
 
         for (UserProfile user : accountService.getAllUsers())
             responseJSON.put(user.toJson());
@@ -86,7 +86,7 @@ public class Users {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateUser(String jsonString, @Context HttpHeaders headers){
-        JSONObject jsonRequest;
+        final JSONObject jsonRequest;
 
         try {
             jsonRequest = new JSONObject(jsonString);
@@ -94,30 +94,30 @@ public class Users {
             return WebErrorManager.badJSON();
         }
 
-        String login;
+        final String login;
         if (jsonRequest.has("login"))
             login = jsonRequest.get("login").toString();
         else
             return WebErrorManager.accessForbidden();  // Here should be clear explanation what went wrong, but API restricts it. O_o
 
-        String password;
+        final String password;
         if (jsonRequest.has("password"))
             password = jsonRequest.get("password").toString();
         else
             return WebErrorManager.accessForbidden();
 
-        String email;
+        final String email;
         if (jsonRequest.has("email"))
             email = jsonRequest.get("email").toString();
         else
             return WebErrorManager.accessForbidden();
 
-        Cookie cookie = headers.getCookies().get(RestApplication.SESSION_COOKIE_NAME);
+        final Cookie cookie = headers.getCookies().get(RestApplication.SESSION_COOKIE_NAME);
         if (cookie == null)
             return WebErrorManager.accessForbidden("Not your user!");
 
         if (accountService.getByCookie(cookie).getLogin().equals(login)) {      // Not sure if great idea to compare by login, yet they are unique.
-            UserProfile user = accountService.getUser(login);
+            final UserProfile user = accountService.getUser(login);
             if (password.equals(user.getPassword())){
                 user.setPassword(password);
                 user.setEmail(email);
@@ -136,7 +136,7 @@ public class Users {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteUser(@PathParam("id") Long id, @Context HttpHeaders headers){
-        Cookie cookie = headers.getCookies().get(RestApplication.SESSION_COOKIE_NAME);
+        final Cookie cookie = headers.getCookies().get(RestApplication.SESSION_COOKIE_NAME);
         if (cookie == null)
             return WebErrorManager.accessForbidden("Not your user!");
 

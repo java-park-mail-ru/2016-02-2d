@@ -13,7 +13,7 @@ public class DataBase {
     public void addUser(String login, String password, String email){
         if (containsLogin(login))
             return;
-        UserProfile newUser = new UserProfile(login, password, email);
+        final UserProfile newUser = new UserProfile(login, password, email);
         loginToUser.put(login, newUser);
         idToUser.put(newUser.getId(), newUser);
     }
@@ -44,7 +44,7 @@ public class DataBase {
 
     // Delete
     public void deleteUser(Long id){
-        UserProfile deletingUser = idToUser.get(id);
+        final UserProfile deletingUser = idToUser.get(id);
         idToUser.remove(id);
         loginToUser.remove(deletingUser.getLogin());
     }
