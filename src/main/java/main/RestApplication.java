@@ -15,7 +15,7 @@ public class RestApplication extends Application {
         final HashSet<Object> objects = new HashSet<>();
         final AccountService accountService = new AccountService();
         objects.add(new Users(accountService));
-        objects.add(new Sessions(accountService)); //TODO.
+        objects.add(new Sessions(accountService));
         return objects;
     }
 

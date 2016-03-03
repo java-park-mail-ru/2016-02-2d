@@ -45,6 +45,7 @@ public class Sessions {
         if (accountService.getUser(login) != null && accountService.getUser(login).getPassword().equals(password)){
             final UserProfile user = accountService.getUser(login);
 
+            //                                                                    TODO: Should be different every time!
             final Cookie cookie = new Cookie(RestApplication.SESSION_COOKIE_NAME, Integer.toUnsignedString((user.getLogin()+user.getPassword()).hashCode(), 9), "/api", null, 1);
             final NewCookie cookie1 = new NewCookie(cookie, null, NewCookie.DEFAULT_MAX_AGE, true);
 
@@ -70,7 +71,7 @@ public class Sessions {
     // Delete
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteUser(@Context HttpHeaders headers){
+    public Response logoutUser(@Context HttpHeaders headers){
         final Cookie cookie = headers.getCookies().get(RestApplication.SESSION_COOKIE_NAME);
         if (cookie != null)
         {
