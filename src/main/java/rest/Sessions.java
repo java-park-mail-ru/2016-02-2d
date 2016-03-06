@@ -1,11 +1,12 @@
 package rest;
 
 import main.AccountService;
-import main.RestApplication;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
@@ -21,7 +22,7 @@ public class Sessions {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response loginUser(String jsonString, @Context HttpHeaders headers){
+    public Response loginUser(String jsonString, @Context HttpServletRequest request){
         final JSONObject jsonRequest;
 
         try {
@@ -29,59 +30,57 @@ public class Sessions {
         } catch (JSONException ex) {
             return WebErrorManager.badJSON();
         }
-        // TODO: Rewrite copy-paste into separate function?
+
         final String login;
-        if (jsonRequest.has("login"))
-            login = jsonRequest.get("login").toString();
-        else
-            return WebErrorManager.accessForbidden();  // Here should be clear explanation what went wrong, but API restricts it. O_o
-
         final String password;
-        if (jsonRequest.has("password"))
+        final JSONArray errorList = WebErrorManager.showFieldsNotPresent(jsonRequest, new String[]{"login","password", "email"});
+        if (errorList == null){
+            login = jsonRequest.get("login").toString();
             password = jsonRequest.get("password").toString();
-        else
-            return WebErrorManager.accessForbidden();
-
-        if (accountService.getUser(login) != null && accountService.getUser(login).getPassword().equals(password)){
-            final UserProfile user = accountService.getUser(login);
-
-            //                                                                    TODO: Should be different every time!
-            final Cookie cookie = new Cookie(RestApplication.SESSION_COOKIE_NAME, Integer.toUnsignedString((user.getLogin()+user.getPassword()).hashCode(), 9), "/api", null, 1);
-            final NewCookie cookie1 = new NewCookie(cookie, null, NewCookie.DEFAULT_MAX_AGE, true);
-
-            accountService.loginUser(cookie, user.getId());
-            return Response.ok(new JSONObject().put("id", accountService.getUser(login).getId()).toString()).cookie(cookie1).build();
         }
         else
-            return WebErrorManager.authorizationRequired();
+            return WebErrorManager.accessForbidden(errorList);
+
+        UserProfile loggingUser = accountService.getUser(login);
+        if (loggingUser != null) {
+            if (loggingUser.getPassword().equals(password))
+            {
+                accountService.loginUser(request.getSession().getId(), loggingUser.getId());
+                return Response.ok(new JSONObject().put("id", loggingUser.getId()).toString()).build();
+            }
+            else
+                return WebErrorManager.authorizationRequired("Wrong login-password pair!");
+        }
+        else
+            return WebErrorManager.authorizationRequired("Wrong login!");
 
     }
 
     // Read
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response isAuthenticated(@Context HttpHeaders headers) {
-        final Cookie cookie = headers.getCookies().get(RestApplication.SESSION_COOKIE_NAME);
-        if (cookie == null)
+    public Response isAuthenticated(@Context HttpServletRequest request) {
+        if (request.isSecure()) {
+            UserProfile currentUser = accountService.getBySessionID(request.getSession().getId());
+            if (currentUser != null)
+                return Response.ok(new JSONObject().put("id",currentUser.getId()).toString()).build();
+            else return WebErrorManager.serverError("Session exists, but no user is assigned to.");
+        }
+        else
             return WebErrorManager.authorizationRequired();
-
-        return Response.ok(new JSONObject().put("id", accountService.getByCookie(cookie).getId()).toString()).build();
     }
 
     // Delete
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    public Response logoutUser(@Context HttpHeaders headers){
-        final Cookie cookie = headers.getCookies().get(RestApplication.SESSION_COOKIE_NAME);
-        if (cookie != null)
-        {
-            accountService.logoutUser(cookie);
+    public Response logoutUser(@Context HttpServletRequest request){
+        String sessionID = request.getSession().getId();
 
-            final NewCookie cookie1 = new NewCookie(RestApplication.SESSION_COOKIE_NAME, null, null, null, 0, "DELETED", 0, true);    // As full as possible!
-            return Response.ok(new JSONObject().toString()).cookie(cookie1).build();
-        }
-
-        return Response.ok(new JSONObject().toString()).build();
+        request.getSession().invalidate();
+        if (accountService.logoutUser(sessionID))
+            return WebErrorManager.ok("You have succesfully logged out.");
+        else
+            return WebErrorManager.ok("You was not logged in.");
     }
 
 

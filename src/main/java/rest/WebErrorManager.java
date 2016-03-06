@@ -1,5 +1,8 @@
 package rest;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.ws.rs.core.Response;
@@ -12,31 +15,71 @@ public class WebErrorManager {
         return badRequest("Request was not a valid JSON!");
     }
 
-    public static Response badRequest(String reason){
+    public static Response badRequest(@Nullable String reason){
         return Response.status(Response.Status.BAD_REQUEST).entity(new JSONObject().put("status", 400).put("message", reason).toString()).build();
     }
 
     public static Response accessForbidden()
     {
-        return Response.status(Response.Status.FORBIDDEN).entity(new JSONObject().toString()).build();
+        return Response.status(Response.Status.FORBIDDEN).entity(new JSONObject().put("status", 403).toString()).build();
     }
 
-    @SuppressWarnings("SameParameterValue") // Will change in future.
-    public static Response accessForbidden(String reason){
+    public static Response accessForbidden(@Nullable String reason){
         if (reason == null || reason.isEmpty())
             return accessForbidden();
-        return Response.status(Response.Status.FORBIDDEN).entity(new JSONObject().put("status", 403).put("message", "Not your user!").toString()).build();
+        return Response.status(Response.Status.FORBIDDEN).entity(new JSONObject().put("status", 403).put("message", reason).toString()).build();
+    }
+
+    public static Response accessForbidden(@Nullable JSONArray reason){
+        if (reason == null)
+            return accessForbidden();
+        return Response.status(Response.Status.FORBIDDEN).entity(new JSONObject().put("status", 403).put("message", reason).toString()).build();
     }
 
     public static Response authorizationRequired()
     {
-        return Response.status(Response.Status.UNAUTHORIZED).entity(new JSONObject().toString()).build();
+        return Response.status(Response.Status.UNAUTHORIZED).entity(new JSONObject().put("status", 401).toString()).build();
     }
 
-    @SuppressWarnings("SameParameterValue") // Probably will change in future.
-    public static Response authorizationRequired(String reason){
+    public static Response authorizationRequired(@Nullable String reason){
         if (reason == null || reason.isEmpty())
             return authorizationRequired();
-        return Response.status(Response.Status.UNAUTHORIZED).entity(new JSONObject().put("status", 401).put("message",reason).toString()).build();
+        return Response.status(Response.Status.UNAUTHORIZED).entity(new JSONObject().put("status", 401).put("message", reason).toString()).build();
+    }
+
+    public static Response serverError()
+    {
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new JSONObject().put("status", 500).put("message", "Something went wrong, but it was expected.\nI hope this soothe you.\n\n:(").toString()).build();
+    }
+
+    public static Response serverError(@Nullable String reason){
+        if (reason == null || reason.isEmpty())
+            return serverError();
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new JSONObject().put("status", 500).put("message", reason).toString()).build();
+    }
+
+    public static Response ok()
+    {
+        return Response.status(Response.Status.OK).entity(new JSONObject().put("status", 200).toString()).build();
+    }
+
+    public static Response ok(@Nullable String reason){
+        if (reason == null || reason.isEmpty())
+            return ok();
+        return Response.status(Response.Status.OK).entity(new JSONObject().put("status", 200).put("message", reason).toString()).build();
+    }
+
+    @Nullable
+    public static JSONArray showFieldsNotPresent(@NotNull JSONObject json,@NotNull String[] requiredFields){
+        JSONArray errorList = null;
+        for (String field : requiredFields)
+            if (!json.has(field)){
+                if (errorList == null)
+                    errorList = new JSONArray();
+                errorList.put(new JSONObject().put(field, "Field \"" + field + "\" not present!"));
+            }
+
+        return errorList;
     }
 }
+

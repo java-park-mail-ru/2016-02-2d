@@ -3,11 +3,10 @@ package rest;
 import main.AccountService;
 
 import javax.inject.Singleton;
-import javax.ws.rs.core.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-import main.RestApplication;
 import org.json.*;
 
 @Singleton
@@ -30,29 +29,24 @@ public class Users {
         } catch (JSONException ex) {
             return WebErrorManager.badJSON();
         }
-        // TODO: Rewrite copy-paste into separate function?
+
         final String login;
-        if (jsonRequest.has("login"))
-            login = jsonRequest.get("login").toString();
-        else
-            return WebErrorManager.accessForbidden();  // Here should be clear explanation what went wrong, but API restricts it. O_o
-
         final String password;
-        if (jsonRequest.has("password"))
-            password = jsonRequest.get("password").toString();
-        else
-            return WebErrorManager.accessForbidden();
-
         final String email;
-        if (jsonRequest.has("email"))
+        final JSONArray errorList = WebErrorManager.showFieldsNotPresent(jsonRequest, new String[]{"login","password", "email"});
+        if (errorList == null){
+            login = jsonRequest.get("login").toString();
+            password = jsonRequest.get("password").toString();
             email = jsonRequest.get("email").toString();
+        }
         else
-            return WebErrorManager.accessForbidden();
+            return WebErrorManager.accessForbidden(errorList);
 
-        if (accountService.createNewUser(login, password, email))
-            return Response.ok(new JSONObject().put("id", accountService.getUser(login).getId()).toString()).build();
+        final UserProfile newUser = accountService.createNewUser(login, password, email);
+        if (newUser != null)
+            return Response.ok(new JSONObject().put("id", newUser.getId()).toString()).build();
         else
-            return WebErrorManager.accessForbidden();
+            return WebErrorManager.accessForbidden("User already exists!");
 
     }
 
@@ -85,69 +79,54 @@ public class Users {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateUser(String jsonString, @Context HttpHeaders headers){
-        final JSONObject jsonRequest;
+    public Response updateUser(String jsonString, @Context HttpServletRequest request){
+        if (request.isSecure())
+        {
+            final JSONObject jsonRequest;
 
-        try {
-            jsonRequest = new JSONObject(jsonString);
-        } catch (JSONException ex) {
-            return WebErrorManager.badJSON();
-        }
+            try {
+                jsonRequest = new JSONObject(jsonString);
+            } catch (JSONException ex) {
+                return WebErrorManager.badJSON();
+            }
 
-        final String login;
-        if (jsonRequest.has("login"))
-            login = jsonRequest.get("login").toString();
-        else
-            return WebErrorManager.accessForbidden();  // Here should be clear explanation what went wrong, but API restricts it. O_o
+            final String login;
+            final String password;
+            final String email;
+            final JSONArray errorList = WebErrorManager.showFieldsNotPresent(jsonRequest, new String[]{"login","password", "email"});
+            if (errorList == null){
+                login = jsonRequest.get("login").toString();
+                password = jsonRequest.get("password").toString();
+                email = jsonRequest.get("email").toString();
+            }
+            else
+                return WebErrorManager.accessForbidden(errorList);
 
-        final String password;
-        if (jsonRequest.has("password"))
-            password = jsonRequest.get("password").toString();
-        else
-            return WebErrorManager.accessForbidden();
 
-        final String email;
-        if (jsonRequest.has("email"))
-            email = jsonRequest.get("email").toString();
-        else
-            return WebErrorManager.accessForbidden();
-
-        final Cookie cookie = headers.getCookies().get(RestApplication.SESSION_COOKIE_NAME);
-        if (cookie == null)
-            return WebErrorManager.accessForbidden("Not your user!");
-
-        if (accountService.getByCookie(cookie).getLogin().equals(login)) {      // Not sure if great idea to compare by login, yet they are unique.
             final UserProfile user = accountService.getUser(login);
-            if (password.equals(user.getPassword())){
-                user.setPassword(password);
-                user.setEmail(email);
-                return Response.ok(new JSONObject().put("id", accountService.getUser(login).getId()).toString()).build();
+            if (user != null && user.getPassword().equals(password)){
+                user.setEmail(email);                                                                                   // Updating email only.
+                return Response.ok(new JSONObject().put("id", user.getId()).toString()).build();
             }
             else
                 return WebErrorManager.authorizationRequired("Wrong login-password pair!");
-        } else {
-            return WebErrorManager.accessForbidden("Not your user!");
-        }
 
+        } else
+            return WebErrorManager.accessForbidden("Not your user!");
     }
 
     // Delete
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteUser(@PathParam("id") Long id, @Context HttpHeaders headers){
-        final Cookie cookie = headers.getCookies().get(RestApplication.SESSION_COOKIE_NAME);
-        if (cookie == null)
-            return WebErrorManager.accessForbidden("Not your user!");
-
-        if(accountService.deleteUser(id)){
+    public Response deleteUser(@PathParam("id") Long id, @Context HttpServletRequest request){
+        if (request.isSecure())
+        {
+            accountService.deleteUser(id);
             return Response.ok(new JSONObject().toString()).build();
-        } else {
-            return WebErrorManager.badRequest("No such user. But you have his cookies. Amazing!");
-        }
+        } else
+            return WebErrorManager.authorizationRequired();
     }
-
-
 
     private final AccountService accountService;
 }
