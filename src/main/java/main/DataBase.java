@@ -1,6 +1,6 @@
 package main;
 
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
 import java.util.Collection;
@@ -10,12 +10,14 @@ import java.util.Map;
 public class DataBase {
 
     // Create
-    public void addUser(String login, String password, String email){
+    @Nullable
+    public UserProfile addUser(String login, String password, String email){
         if (containsLogin(login))
-            return;
+            return null;
         final UserProfile newUser = new UserProfile(login, password, email);
         loginToUser.put(login, newUser);
         idToUser.put(newUser.getId(), newUser);
+        return newUser;
     }
 
     // Read, Update

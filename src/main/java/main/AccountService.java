@@ -1,9 +1,8 @@
 package main;
 
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
-import javax.ws.rs.core.Cookie;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,22 +20,25 @@ public class AccountService {
     //
 
     // Create
-    public void loginUser(Cookie cookie, long id){
-        activeUsers.put(cookie, id);
+    public void loginUser(String sessionID, long id){
+        activeUsers.put(sessionID, id);
     }
 
     // Read, Update
     @Nullable
-    public UserProfile getByCookie(Cookie cookie){
-        if (activeUsers.containsKey(cookie))
-            return registeredUsers.getById(activeUsers.get(cookie));
+    public UserProfile getBySessionID(String sessionID){
+        if (activeUsers.containsKey(sessionID))
+            return registeredUsers.getById(activeUsers.get(sessionID));
         return null;
     }
     
 
     // Delete
-    public void logoutUser(Cookie cookie){
-        activeUsers.remove(cookie);
+    public boolean logoutUser(String sessionID){
+        if (activeUsers.containsKey(sessionID))
+            return false;
+        activeUsers.remove(sessionID);
+        return true;
     }
 
     //
@@ -44,11 +46,11 @@ public class AccountService {
     //
 
     // Create
-    public boolean createNewUser(String login, String password, String email) {
+    @Nullable
+    public UserProfile createNewUser(String login, String password, String email) {
         if (registeredUsers.containsLogin(login))
-            return false;
-        registeredUsers.addUser(login, password, email);
-        return true;
+            return null;
+        return registeredUsers.addUser(login, password, email);
     }
 
     // Read, Update
@@ -68,7 +70,6 @@ public class AccountService {
 
     // Delete
     public boolean deleteUser(Long id) {
-
         if (registeredUsers.containsID(id))
             return false;
         registeredUsers.deleteUser(id);
@@ -77,6 +78,6 @@ public class AccountService {
 
 
 
-    private final Map<Cookie, Long> activeUsers = new HashMap<>();
+    private final Map<String, Long> activeUsers = new HashMap<>();
     private final DataBase registeredUsers = new DataBase();
 }
