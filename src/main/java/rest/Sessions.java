@@ -33,7 +33,7 @@ public class Sessions {
 
         final String login;
         final String password;
-        final JSONArray errorList = WebErrorManager.showFieldsNotPresent(jsonRequest, new String[]{"login","password", "email"});
+        final JSONArray errorList = WebErrorManager.showFieldsNotPresent(jsonRequest, new String[]{"login","password"});
         if (errorList == null){
             login = jsonRequest.get("login").toString();
             password = jsonRequest.get("password").toString();

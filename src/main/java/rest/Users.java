@@ -32,17 +32,15 @@ public class Users {
 
         final String login;
         final String password;
-        final String email;
-        final JSONArray errorList = WebErrorManager.showFieldsNotPresent(jsonRequest, new String[]{"login","password", "email"});
+        final JSONArray errorList = WebErrorManager.showFieldsNotPresent(jsonRequest, new String[]{"login","password"});
         if (errorList == null){
             login = jsonRequest.get("login").toString();
             password = jsonRequest.get("password").toString();
-            email = jsonRequest.get("email").toString();
         }
         else
             return WebErrorManager.accessForbidden(errorList);
 
-        final UserProfile newUser = accountService.createNewUser(login, password, email);
+        final UserProfile newUser = accountService.createNewUser(login, password);
         if (newUser != null)
             return Response.ok(new JSONObject().put("id", newUser.getId()).toString()).build();
         else
@@ -92,12 +90,10 @@ public class Users {
 
             final String login;
             final String password;
-            final String email;
-            final JSONArray errorList = WebErrorManager.showFieldsNotPresent(jsonRequest, new String[]{"login","password", "email"});
+            final JSONArray errorList = WebErrorManager.showFieldsNotPresent(jsonRequest, new String[]{"login","password"});
             if (errorList == null){
                 login = jsonRequest.get("login").toString();
                 password = jsonRequest.get("password").toString();
-                email = jsonRequest.get("email").toString();
             }
             else
                 return WebErrorManager.accessForbidden(errorList);
@@ -105,7 +101,7 @@ public class Users {
 
             final UserProfile user = accountService.getUser(login);
             if (user != null && user.getPassword().equals(password)){
-                user.setEmail(email);                                                                                   // Updating email only.
+                // TODO: Updating here.
                 return Response.ok(new JSONObject().put("id", user.getId()).toString()).build();
             }
             else

@@ -11,8 +11,8 @@ public class AccountService {
 
     // Store some dummies.
     public AccountService() {
-        registeredUsers.addUser("admin", "admin", "admin@admin");
-        registeredUsers.addUser("guest", "12345", "lol@memes");
+        registeredUsers.addUser("admin", "admin").setScore(100);    // It won't.
+        registeredUsers.addUser("guest", "12345");
     }
 
     //
@@ -47,10 +47,10 @@ public class AccountService {
 
     // Create
     @Nullable
-    public UserProfile createNewUser(String login, String password, String email) {
+    public UserProfile createNewUser(String login, String password) {
         if (registeredUsers.containsLogin(login))
             return null;
-        return registeredUsers.addUser(login, password, email);
+        return registeredUsers.addUser(login, password);
     }
 
     // Read, Update

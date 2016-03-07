@@ -11,10 +11,10 @@ public class DataBase {
 
     // Create
     @Nullable
-    public UserProfile addUser(String login, String password, String email){
+    public UserProfile addUser(String login, String password){
         if (containsLogin(login))
             return null;
-        final UserProfile newUser = new UserProfile(login, password, email);
+        final UserProfile newUser = new UserProfile(login, password);
         loginToUser.put(login, newUser);
         idToUser.put(newUser.getId(), newUser);
         return newUser;
