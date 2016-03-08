@@ -31,6 +31,10 @@ public class AccountService {
             return registeredUsers.getById(activeUsers.get(sessionID));
         return null;
     }
+
+    public boolean hasSessionID(String sessionID){
+        return activeUsers.containsKey(sessionID);
+    }
     
 
     // Delete
