@@ -60,14 +60,12 @@ public class Sessions {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response isAuthenticated(@Context HttpServletRequest request) {
-        if (request.isSecure()) {
+
             UserProfile currentUser = accountService.getBySessionID(request.getSession().getId());
             if (currentUser != null)
                 return Response.ok(new JSONObject().put("id",currentUser.getId()).toString()).build();
             else return WebErrorManager.serverError("Session exists, but no user is assigned to.");
-        }
-        else
-            return WebErrorManager.authorizationRequired();
+
     }
 
     // Delete

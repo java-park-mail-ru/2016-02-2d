@@ -35,7 +35,7 @@ public class AccountService {
 
     // Delete
     public boolean logoutUser(String sessionID){
-        if (activeUsers.containsKey(sessionID))
+        if (!activeUsers.containsKey(sessionID))
             return false;
         activeUsers.remove(sessionID);
         return true;
