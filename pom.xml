@@ -17,6 +17,7 @@
         <org.glassfish.jersey.version>2.22.2</org.glassfish.jersey.version>
         <com.intellij.version>12.0</com.intellij.version>
         <org.json.version>20160212</org.json.version>
+        <junit.version>4.12</junit.version>
     </properties>
 
     <build>
@@ -101,6 +102,11 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>${org.json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
         </dependency>
     </dependencies>
 

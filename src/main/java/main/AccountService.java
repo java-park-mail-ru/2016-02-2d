@@ -75,7 +75,6 @@ public class AccountService {
     }
 
     // Delete
-    @NotNull
     public boolean deleteUser(@NotNull Long id) {
         if (registeredUsers.containsID(id))
             return false;
