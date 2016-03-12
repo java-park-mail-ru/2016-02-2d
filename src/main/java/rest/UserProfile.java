@@ -1,5 +1,7 @@
 package rest;
 
+import com.sun.istack.internal.Nullable;
+import main.TokenManager;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -11,6 +13,7 @@ public class UserProfile {
         login = newLogin;
         password = newPassword;
         id = ID_GENETATOR.getAndIncrement();
+        sessionID = null;   // Newly registered users are not active.
     }
 
     @NotNull
@@ -44,9 +47,18 @@ public class UserProfile {
     }
 
     @NotNull
+    public String getSessionID() {
+        if (sessionID == null)
+            sessionID = TokenManager.getNewRandomSessionID(login, id, score);
+        return sessionID;
+    }
+
+    @NotNull
     private final String login;
     @NotNull
     private String password;
+    @Nullable
+    private String sessionID;
     @SuppressWarnings("InstanceVariableNamingConvention")   // "id" is quite standart name.
     private final long id;
     private int score = 0;

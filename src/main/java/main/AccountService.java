@@ -1,5 +1,6 @@
 package main;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
@@ -20,25 +21,25 @@ public class AccountService {
     //
 
     // Create
-    public void loginUser(String sessionID, long id){
-        activeUsers.put(sessionID, id);
+    public void loginUser(@NotNull UserProfile user){
+        activeUsers.put(user.getSessionID(), user.getId());
     }
 
     // Read, Update
     @Nullable
-    public UserProfile getBySessionID(String sessionID){
+    public UserProfile getBySessionID(@Nullable String sessionID){
         if (activeUsers.containsKey(sessionID))
             return registeredUsers.getById(activeUsers.get(sessionID));
         return null;
     }
 
-    public boolean hasSessionID(String sessionID){
+    public boolean hasSessionID(@Nullable String sessionID){
         return activeUsers.containsKey(sessionID);
     }
     
 
     // Delete
-    public boolean logoutUser(String sessionID){
+    public boolean logoutUser(@Nullable String sessionID){
         if (!activeUsers.containsKey(sessionID))
             return false;
         activeUsers.remove(sessionID);
@@ -51,29 +52,31 @@ public class AccountService {
 
     // Create
     @Nullable
-    public UserProfile createNewUser(String login, String password) {
+    public UserProfile createNewUser(@NotNull String login,@NotNull String password) {
         if (registeredUsers.containsLogin(login))
             return null;
         return registeredUsers.addUser(login, password);
     }
 
     // Read, Update
+    @NotNull
     public Collection<UserProfile> getAllUsers() {
         return registeredUsers.getUsers();
     }
 
     @Nullable
-    public UserProfile getUser(Long id) {
+    public UserProfile getUser(@NotNull Long id) {
         return registeredUsers.getById(id);
     }
 
     @Nullable
-    public UserProfile getUser(String login) {
+    public UserProfile getUser(@NotNull String login) {
         return registeredUsers.getByLogin(login);
     }
 
     // Delete
-    public boolean deleteUser(Long id) {
+    @NotNull
+    public boolean deleteUser(@NotNull Long id) {
         if (registeredUsers.containsID(id))
             return false;
         registeredUsers.deleteUser(id);

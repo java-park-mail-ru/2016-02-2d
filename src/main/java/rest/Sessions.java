@@ -1,6 +1,7 @@
 package rest;
 
 import main.AccountService;
+import main.TokenManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,9 +23,10 @@ public class Sessions {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response loginUser(String jsonString, @Context HttpServletRequest request){
-        final JSONObject jsonRequest;
+    public Response loginUser(String jsonString, @Context HttpHeaders headers){
+        accountService.logoutUser(TokenManager.getSIDStringFromHeaders(headers));
 
+        final JSONObject jsonRequest;
         try {
             jsonRequest = new JSONObject(jsonString);
         } catch (JSONException ex) {
@@ -41,12 +43,12 @@ public class Sessions {
         else
             return WebErrorManager.accessForbidden(errorList);
 
-        UserProfile loggingUser = accountService.getUser(login);
+        final UserProfile loggingUser = accountService.getUser(login);
         if (loggingUser != null) {
             if (loggingUser.getPassword().equals(password))
             {
-                accountService.loginUser(request.getSession().getId(), loggingUser.getId());
-                return Response.ok(new JSONObject().put("id", loggingUser.getId()).toString()).build();
+                accountService.loginUser(loggingUser);
+                return Response.ok(new JSONObject().put("id", loggingUser.getId()).toString()).cookie(TokenManager.getNewCookieWithSessionID(loggingUser.getSessionID())).build();
             }
             else
                 return WebErrorManager.authorizationRequired("Wrong login-password pair!");
@@ -59,9 +61,9 @@ public class Sessions {
     // Read
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response isAuthenticated(@Context HttpServletRequest request) {
-        if (accountService.hasSessionID(request.getSession().getId())) {
-            UserProfile currentUser = accountService.getBySessionID(request.getSession().getId());
+    public Response isAuthenticated(@Context HttpHeaders headers) {
+        if (accountService.hasSessionID(TokenManager.getSIDStringFromHeaders(headers))) {
+            final UserProfile currentUser = accountService.getBySessionID(TokenManager.getSIDStringFromHeaders(headers));
             if (currentUser != null)
                 return Response.ok(new JSONObject().put("id", currentUser.getId()).toString()).build();
             else return WebErrorManager.serverError("Session exists, but no user is assigned to.");
@@ -73,12 +75,10 @@ public class Sessions {
     // Delete
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    public Response logoutUser(@Context HttpServletRequest request){
-        String sessionID = request.getSession().getId();
-
-        request.getSession().invalidate();
+    public Response logoutUser(@Context HttpHeaders headers){
+        final String sessionID = TokenManager.getSIDStringFromHeaders(headers);
         if (accountService.logoutUser(sessionID))
-            return WebErrorManager.ok("You have succesfully logged out.");
+            return WebErrorManager.okRaw("You have succesfully logged out.").cookie(TokenManager.getNewNullCookie()).build();
         else
             return WebErrorManager.ok("You was not logged in.");
     }

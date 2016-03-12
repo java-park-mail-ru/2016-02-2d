@@ -69,6 +69,13 @@ public class WebErrorManager {
         return Response.status(Response.Status.OK).entity(new JSONObject().put("status", 200).put("message", reason).toString()).build();
     }
 
+    // Hack
+    public static Response.ResponseBuilder okRaw(@Nullable String reason){
+        if (reason == null || reason.isEmpty())
+            return Response.ok();
+        return Response.status(Response.Status.OK).entity(new JSONObject().put("status", 200).put("message", reason).toString());
+    }
+
     @Nullable
     public static JSONArray showFieldsNotPresent(@NotNull JSONObject json,@NotNull String[] requiredFields){
         JSONArray errorList = null;
