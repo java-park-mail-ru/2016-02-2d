@@ -34,11 +34,12 @@ public class UserProfile {
         return id;
     }
 
+    @SuppressWarnings("unused")
     public int getScore() {
         return score;
     }
 
-    public void setScore(int newScore) {
+    public void setScore(@SuppressWarnings("SameParameterValue") int newScore) {
         score = newScore;
     }
 

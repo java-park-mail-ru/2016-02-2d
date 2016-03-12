@@ -12,6 +12,7 @@ public class AccountService {
 
     // Store some dummies.
     public AccountService() {
+        //noinspection ConstantConditions
         registeredUsers.addUser("admin", "admin").setScore(100);    // It won't.
         registeredUsers.addUser("guest", "12345");
     }
@@ -75,11 +76,10 @@ public class AccountService {
     }
 
     // Delete
-    public boolean deleteUser(@NotNull Long id) {
+    public void deleteUser(@NotNull Long id) {
         if (registeredUsers.containsID(id))
-            return false;
+            return;
         registeredUsers.deleteUser(id);
-        return true;
     }
 
 

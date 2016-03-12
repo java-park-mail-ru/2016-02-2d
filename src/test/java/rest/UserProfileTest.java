@@ -1,7 +1,7 @@
 package rest;
 
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -10,7 +10,7 @@ import static junit.framework.Assert.assertNotSame;
 public class UserProfileTest {
 
     @Test
-    public void testToJson() throws Exception {
+    public void testToJson() throws JSONException {
         long baseID = new UserProfile("", "").getId();
         JSONObject userJson = new UserProfile("", "").toJson();
         JSONObject fieldsJson = new JSONObject().put("id", baseID + 1).put("login", "").put("score", 0);

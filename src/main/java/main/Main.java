@@ -5,6 +5,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.servlet.ServletContainer;
 
+@SuppressWarnings("DuplicateThrows")
 public class Main {
     public static void main(String[] args) throws Exception, InterruptedException {
         setCustomPort(args);

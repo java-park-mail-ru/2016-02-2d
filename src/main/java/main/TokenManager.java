@@ -37,9 +37,10 @@ public class TokenManager {
     }
 
     private static NewCookie getNewCookie(@Nullable String sessionID, int maxAge) {
-        if (sessionID == null)
-            sessionID = "";// TODO: Sure it always will be localhost?
-        return new NewCookie(COOKIE_NAME, sessionID, "/", "localhost", "This cookie is used to authenticate users in the Bomberman game.", maxAge, false);
+        String sessionID1 = sessionID;
+        if (sessionID1 == null)
+            sessionID1 = "";// TODO: Sure it always will be localhost?
+        return new NewCookie(COOKIE_NAME, sessionID1, "/", "localhost", "This cookie is used to authenticate users in the Bomberman game.", maxAge, false);
     }
 
     public static final String COOKIE_NAME = "BOMBERMAN-SESSION-TOKEN";
