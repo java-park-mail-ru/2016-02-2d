@@ -15,9 +15,7 @@ public class RestApplication extends Application {
         final HashSet<Object> objects = new HashSet<>();
         AccountService accountService = new AccountService();
         objects.add(new Users(accountService));
-        objects.add(new Sessions(accountService)); //TODO.
+        objects.add(new Sessions(accountService));
         return objects;
     }
-
-    public static final String SESSION_COOKIE_NAME = "Bomberman-auth-cookie";
 }

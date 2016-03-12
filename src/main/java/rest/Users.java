@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
+import main.TokenManager;
 import org.json.*;
 
 @Singleton
@@ -21,9 +22,10 @@ public class Users {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createUser(String jsonString){
-        final JSONObject jsonRequest;
+    public Response createUser(String jsonString, @Context HttpHeaders headers){
+        accountService.logoutUser(TokenManager.getSIDStringFromHeaders(headers));
 
+        final JSONObject jsonRequest;
         try {
             jsonRequest = new JSONObject(jsonString);
         } catch (JSONException ex) {
@@ -41,8 +43,10 @@ public class Users {
             return WebErrorManager.accessForbidden(errorList);
 
         final UserProfile newUser = accountService.createNewUser(login, password);
-        if (newUser != null)
-            return Response.ok(new JSONObject().put("id", newUser.getId()).toString()).build();
+        if (newUser != null) {
+            accountService.loginUser(newUser);
+            return WebErrorManager.okRaw(new JSONObject().put("id", newUser.getId()).toString()).cookie(TokenManager.getNewCookieWithSessionID(newUser.getSessionID())).build();
+        }
         else
             return WebErrorManager.accessForbidden("User already exists!");
 
@@ -77,8 +81,8 @@ public class Users {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateUser(String jsonString, @Context HttpServletRequest request){
-        if (request.isSecure())
+    public Response updateUser(String jsonString, @Context HttpHeaders headers){
+        if (accountService.hasSessionID(TokenManager.getSIDStringFromHeaders(headers)))
         {
             final JSONObject jsonRequest;
 
@@ -89,40 +93,50 @@ public class Users {
             }
 
             final String login;
-            final String password;
-            final JSONArray errorList = WebErrorManager.showFieldsNotPresent(jsonRequest, new String[]{"login","password"});
+            final JSONArray errorList = WebErrorManager.showFieldsNotPresent(jsonRequest, new String[]{"login"});
             if (errorList == null){
                 login = jsonRequest.get("login").toString();
-                password = jsonRequest.get("password").toString();
             }
             else
                 return WebErrorManager.accessForbidden(errorList);
 
 
             final UserProfile user = accountService.getUser(login);
-            if (user != null && user.getPassword().equals(password)){
-                // TODO: Updating here.
-                return Response.ok(new JSONObject().put("id", user.getId()).toString()).build();
+            if (user != null){
+                final String password = jsonRequest.get("password").toString();
+                if (password != null)
+                    user.setPassword(password);
+
+                return WebErrorManager.ok(new JSONObject().put("id", user.getId()).toString());
             }
             else
-                return WebErrorManager.authorizationRequired("Wrong login-password pair!");
+                return WebErrorManager.serverError("Session exists, but user does not!");
 
         } else
-            return WebErrorManager.accessForbidden("Not your user!");
+            return WebErrorManager.authorizationRequired("Not logged in!");
     }
 
     // Delete
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteUser(@PathParam("id") Long id, @Context HttpServletRequest request){
-        if (request.isSecure())
+    public Response deleteUser(@PathParam("id") Long id, @Context HttpHeaders headers){
+        if (accountService.hasSessionID(TokenManager.getSIDStringFromHeaders(headers)))
         {
-            accountService.deleteUser(id);
-            return Response.ok(new JSONObject().toString()).build();
+            UserProfile supplicant = accountService.getBySessionID(TokenManager.getSIDStringFromHeaders(headers));
+            if (supplicant == null)
+                return WebErrorManager.serverError("Session exists, but user does not!");
+            if (supplicant.getId() == id) {
+                accountService.logoutUser(supplicant.getSessionID());
+                accountService.deleteUser(id);
+                return WebErrorManager.ok();
+            }
+            else return WebErrorManager.accessForbidden("Not your user!");
+
         } else
-            return WebErrorManager.authorizationRequired();
+            return WebErrorManager.authorizationRequired("Not logged in!");
     }
+
 
     private final AccountService accountService;
 }
