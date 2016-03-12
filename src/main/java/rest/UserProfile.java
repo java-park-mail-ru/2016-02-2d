@@ -54,6 +54,24 @@ public class UserProfile {
         return sessionID;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash *= login.hashCode();   // Fields password, score and sessionID are not used because they can suddenly change. This will corrupt all the HasSets. :(
+        hash *= id;     // Even though id field is not used in equals() method, it is impossible to objects with different id's to have the same login. This will mean they're the same object and thus they have the same id. For the sake of hash randomization!
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass() == this.getClass()) {
+            UserProfile another = (UserProfile) obj;
+            return (login.equals(another.login));
+        }
+        else return false;
+    }
+
+
     @NotNull
     private final String login;
     @NotNull
