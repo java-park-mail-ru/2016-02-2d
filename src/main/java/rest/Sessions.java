@@ -2,6 +2,7 @@ package rest;
 
 import main.AccountService;
 import main.TokenManager;
+import org.jetbrains.annotations.TestOnly;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,6 +84,11 @@ public class Sessions {
     }
 
 
+    @TestOnly
+    public void setAccountService(AccountService newMockService) {
+        accountService = newMockService;
+    }
 
-    private final AccountService accountService;
+
+    private AccountService accountService;
 }
