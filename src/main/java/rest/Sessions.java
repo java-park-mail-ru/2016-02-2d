@@ -2,7 +2,6 @@ package rest;
 
 import main.AccountService;
 import main.TokenManager;
-import org.jetbrains.annotations.TestOnly;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

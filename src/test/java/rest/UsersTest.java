@@ -6,6 +6,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 import org.junit.Test;
 
@@ -13,7 +14,6 @@ import javax.ws.rs.core.*;
 import java.util.*;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -203,38 +203,46 @@ public class UsersTest extends JerseyTest {
             return WebErrorManager.authorizationRequired("Not logged in!");
         }
 
+        @SuppressWarnings({"AnonymousInnerClassWithTooManyMethods", "OverlyComplexAnonymousInnerClass", "InnerClassTooDeeplyNested"})
         private static HttpHeaders noCookieHeaders() {
             return new HttpHeaders() {
+                @Nullable
                 @Override
                 public List<String> getRequestHeader(String s) {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public String getHeaderString(String s) {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public MultivaluedMap<String, String> getRequestHeaders() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public List<MediaType> getAcceptableMediaTypes() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public List<Locale> getAcceptableLanguages() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public MediaType getMediaType() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public Locale getLanguage() {
                     return null;
@@ -245,6 +253,7 @@ public class UsersTest extends JerseyTest {
                     return new HashMap<>();
                 }
 
+                @Nullable
                 @Override
                 public Date getDate() {
                     return null;
@@ -256,38 +265,46 @@ public class UsersTest extends JerseyTest {
                 }
             };
         }
+        @SuppressWarnings({"AnonymousInnerClassWithTooManyMethods", "OverlyComplexAnonymousInnerClass", "InnerClassTooDeeplyNested"})
         private static HttpHeaders okCookieHeaders() {
             return new HttpHeaders() {
+                @Nullable
                 @Override
                 public List<String> getRequestHeader(String s) {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public String getHeaderString(String s) {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public MultivaluedMap<String, String> getRequestHeaders() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public List<MediaType> getAcceptableMediaTypes() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public List<Locale> getAcceptableLanguages() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public MediaType getMediaType() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public Locale getLanguage() {
                     return null;
@@ -300,6 +317,7 @@ public class UsersTest extends JerseyTest {
                     return map;
                 }
 
+                @Nullable
                 @Override
                 public Date getDate() {
                     return null;
@@ -311,38 +329,46 @@ public class UsersTest extends JerseyTest {
                 }
             };
         }
+        @SuppressWarnings({"AnonymousInnerClassWithTooManyMethods", "OverlyComplexAnonymousInnerClass", "InnerClassTooDeeplyNested"})
         private static HttpHeaders wrongCookieHeaders() {
             return new HttpHeaders() {
+                @Nullable
                 @Override
                 public List<String> getRequestHeader(String s) {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public String getHeaderString(String s) {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public MultivaluedMap<String, String> getRequestHeaders() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public List<MediaType> getAcceptableMediaTypes() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public List<Locale> getAcceptableLanguages() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public MediaType getMediaType() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public Locale getLanguage() {
                     return null;
@@ -355,6 +381,7 @@ public class UsersTest extends JerseyTest {
                     return map;
                 }
 
+                @Nullable
                 @Override
                 public Date getDate() {
                     return null;
@@ -367,9 +394,13 @@ public class UsersTest extends JerseyTest {
             };
         }
 
+        @SuppressWarnings("InnerClassTooDeeplyNested")
         public enum CreateUserType {CREATE_OK, CREATE_USER_EXISTS}
+        @SuppressWarnings("InnerClassTooDeeplyNested")
         public enum GetByIDType {GET_BY_ID_OK, GET_BY_WRONG_ID}
+        @SuppressWarnings("InnerClassTooDeeplyNested")
         public enum UpdateUserType {UPDATE_OK, UPDATE_ANOTHER_USER}
+        @SuppressWarnings("InnerClassTooDeeplyNested")
         public enum DeleteUserType {DELETE_OK, DELETE_ANOTHER_USER, DELETE_NOT_LOGGED}
     }
 
@@ -378,6 +409,7 @@ public class UsersTest extends JerseyTest {
     private static final String LOGIN = "TEST_LOGIN";
     private static final String PASSWORD = "TEST_PASSWORD";
     private static final String SID = "TEST_SESSION_ID";
+    @SuppressWarnings("ConstantNamingConvention")
     private static final long ID = 0xDEADBEEFL;
 
 

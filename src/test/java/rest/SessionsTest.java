@@ -4,8 +4,8 @@ import main.TokenManager;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -108,6 +108,7 @@ public class SessionsTest extends JerseyTest {
         return new ResourceConfig(SessionsTest.class);
     }
 
+    @SuppressWarnings("AnonymousInnerClassWithTooManyMethods")
     private static class RequestFactory {
         public static Triplet<String, HttpHeaders, Response> getLoginTestData(LoginRequestType type){
             switch (type)
@@ -178,38 +179,46 @@ public class SessionsTest extends JerseyTest {
             return WebErrorManager.ok("You was not logged in.");
         }
 
+        @SuppressWarnings({"AnonymousInnerClassWithTooManyMethods", "InnerClassTooDeeplyNested", "OverlyComplexAnonymousInnerClass"})
         private static HttpHeaders noCookieHeaders() {
             return new HttpHeaders() {
+                @Nullable
                 @Override
                 public List<String> getRequestHeader(String s) {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public String getHeaderString(String s) {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public MultivaluedMap<String, String> getRequestHeaders() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public List<MediaType> getAcceptableMediaTypes() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public List<Locale> getAcceptableLanguages() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public MediaType getMediaType() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public Locale getLanguage() {
                     return null;
@@ -220,6 +229,7 @@ public class SessionsTest extends JerseyTest {
                     return new HashMap<>();
                 }
 
+                @Nullable
                 @Override
                 public Date getDate() {
                     return null;
@@ -231,38 +241,46 @@ public class SessionsTest extends JerseyTest {
                 }
             };
         }
+        @SuppressWarnings({"AnonymousInnerClassWithTooManyMethods", "InnerClassTooDeeplyNested", "OverlyComplexAnonymousInnerClass"})
         private static HttpHeaders okCookieHeaders() {
             return new HttpHeaders() {
+                @Nullable
                 @Override
                 public List<String> getRequestHeader(String s) {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public String getHeaderString(String s) {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public MultivaluedMap<String, String> getRequestHeaders() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public List<MediaType> getAcceptableMediaTypes() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public List<Locale> getAcceptableLanguages() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public MediaType getMediaType() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public Locale getLanguage() {
                     return null;
@@ -275,6 +293,7 @@ public class SessionsTest extends JerseyTest {
                     return map;
                 }
 
+                @Nullable
                 @Override
                 public Date getDate() {
                     return null;
@@ -286,38 +305,46 @@ public class SessionsTest extends JerseyTest {
                 }
             };
         }
+        @SuppressWarnings({"AnonymousInnerClassWithTooManyMethods", "InnerClassTooDeeplyNested", "OverlyComplexAnonymousInnerClass"})
         private static HttpHeaders wrongCookieHeaders() {
             return new HttpHeaders() {
+                @Nullable
                 @Override
                 public List<String> getRequestHeader(String s) {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public String getHeaderString(String s) {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public MultivaluedMap<String, String> getRequestHeaders() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public List<MediaType> getAcceptableMediaTypes() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public List<Locale> getAcceptableLanguages() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public MediaType getMediaType() {
                     return null;
                 }
 
+                @Nullable
                 @Override
                 public Locale getLanguage() {
                     return null;
@@ -330,6 +357,7 @@ public class SessionsTest extends JerseyTest {
                     return map;
                 }
 
+                @Nullable
                 @Override
                 public Date getDate() {
                     return null;
@@ -342,8 +370,11 @@ public class SessionsTest extends JerseyTest {
             };
         }
 
+        @SuppressWarnings("InnerClassTooDeeplyNested")
         public enum LoginRequestType {LOGIN_OK, LOGIN_WRONG_LOGIN, LOGIN_WRONG_PASSWORD}
+        @SuppressWarnings("InnerClassTooDeeplyNested")
         public enum IsAuthRequestType {IS_AUTH_OK, IS_AUTH_WRONG_COOKIE, IS_AUTH_NO_COOKIE}
+        @SuppressWarnings("InnerClassTooDeeplyNested")
         public enum LogoutRequestType {LOGOUT_LOGGED, LOGOUT_NOT_LOGGED, LOGOUT_WRONG_COOKIE}
     }
 
@@ -352,6 +383,7 @@ public class SessionsTest extends JerseyTest {
     private static final String LOGIN = "TEST_LOGIN";
     private static final String PASSWORD = "TEST_PASSWORD";
     private static final String SID = "TEST_SESSION_ID";
+    @SuppressWarnings("ConstantNamingConvention")
     private static final long ID = 0xDEADBEEFL;
 
 
