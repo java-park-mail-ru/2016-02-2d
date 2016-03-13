@@ -44,7 +44,7 @@ public class Users {
         final UserProfile newUser = accountService.createNewUser(login, password);
         if (newUser != null) {
             accountService.loginUser(newUser);
-            return WebErrorManager.okRaw(new JSONObject().put("id", newUser.getId()).toString()).cookie(TokenManager.getNewCookieWithSessionID(newUser.getSessionID())).build();
+            return Response.ok(new JSONObject().put("id", newUser.getId()).toString()).cookie(TokenManager.getNewCookieWithSessionID(newUser.getSessionID())).build();
         }
         else
             return WebErrorManager.accessForbidden("User already exists!");
@@ -66,7 +66,7 @@ public class Users {
     @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserByName(@PathParam("id") Long id) {
+    public Response getUserByID(@PathParam("id") Long id) {
         final UserProfile user = accountService.getUser(id);
         if(user == null){
             return WebErrorManager.accessForbidden();
@@ -106,7 +106,7 @@ public class Users {
                 if (password != null)
                     user.setPassword(password);
 
-                return WebErrorManager.ok(new JSONObject().put("id", user.getId()).toString());
+                return Response.ok(new JSONObject().put("id", user.getId()).toString()).build();
             }
             else
                 return WebErrorManager.serverError("Session exists, but user does not!");

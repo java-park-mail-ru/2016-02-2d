@@ -84,11 +84,5 @@ public class Sessions {
     }
 
 
-    @TestOnly
-    public void setAccountService(AccountService newMockService) {
-        accountService = newMockService;
-    }
-
-
-    private AccountService accountService;
+    private final AccountService accountService;
 }
