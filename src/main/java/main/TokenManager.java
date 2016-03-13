@@ -32,7 +32,7 @@ public class TokenManager {
     @Nullable
     public static String getSIDStringFromHeaders(HttpHeaders headers) {
         if (headers.getCookies().containsKey(TokenManager.COOKIE_NAME))
-            return headers.getCookies().get(COOKIE_NAME).toString();
+            return headers.getCookies().get(COOKIE_NAME).getValue();
         else return null;
     }
 

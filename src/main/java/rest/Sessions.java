@@ -80,7 +80,7 @@ public class Sessions {
         if (accountService.logoutUser(sessionID))
             return WebErrorManager.okRaw("You have succesfully logged out.").cookie(TokenManager.getNewNullCookie()).build();
         else
-            return WebErrorManager.ok("You was not logged in.");
+            return WebErrorManager.okRaw("You was not logged in.").cookie(TokenManager.getNewNullCookie()).build();
     }
 
 
