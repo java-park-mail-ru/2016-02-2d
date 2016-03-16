@@ -77,7 +77,7 @@ public class AccountService {
 
     // Delete
     public void deleteUser(@NotNull Long id) {
-        if (registeredUsers.containsID(id))
+        if (!registeredUsers.containsID(id))
             return;
         registeredUsers.deleteUser(id);
     }

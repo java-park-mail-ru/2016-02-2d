@@ -64,7 +64,7 @@ public class UserProfile {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj.getClass() == this.getClass()) {
+        if (obj.getClass() == this.getClass()) {        // Suddenly, both return Object
             UserProfile another = (UserProfile) obj;
             return (login.equals(another.login));
         }
