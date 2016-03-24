@@ -5,16 +5,18 @@ import java.util.Map;
 
 public class Context {
 
-    public void put(Class<?> clazz, Object object) {
+    public void put(Class<?> clazz, Object object) throws InstantiationException {
         if (!context.containsKey(clazz))
             context.put(clazz, object);
-        else
-            return;
+        else {
+            System.out.format("Could not add \"%s\" class to context! \t — already contained!", clazz.toString());
+            throw new InstantiationException();
+        }
     }
 
     public Object get(Class<?> clazz) {
         return context.get(clazz);
     }
 
-    private Map<Class<?>, Object> context = new HashMap<>();
+    private final Map<Class<?>, Object> context = new HashMap<>();
 }

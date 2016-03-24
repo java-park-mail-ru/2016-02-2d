@@ -10,23 +10,16 @@ import java.util.Map;
 
 public class AccountService {
 
-    // Store some dummies.
     public AccountService() {
         //noinspection ConstantConditions
         registeredUsers.addUser("admin", "admin").setScore(100);    // It won't.
         registeredUsers.addUser("guest", "12345");
     }
 
-    //
-    // /api/sessions
-    //
-
-    // Create
     public void loginUser(@NotNull UserProfile user){
         activeUsers.put(user.getSessionID(), user.getId());
     }
 
-    // Read, Update
     @Nullable
     public UserProfile getBySessionID(@Nullable String sessionID){
         if (activeUsers.containsKey(sessionID))
@@ -37,9 +30,7 @@ public class AccountService {
     public boolean hasSessionID(@Nullable String sessionID){
         return activeUsers.containsKey(sessionID);
     }
-    
 
-    // Delete
     public boolean logoutUser(@Nullable String sessionID){
         if (!activeUsers.containsKey(sessionID))
             return false;
@@ -47,11 +38,6 @@ public class AccountService {
         return true;
     }
 
-    //
-    // /api/user
-    //
-
-    // Create
     @Nullable
     public UserProfile createNewUser(@NotNull String login,@NotNull String password) {
         if (registeredUsers.containsLogin(login))
@@ -59,7 +45,6 @@ public class AccountService {
         return registeredUsers.addUser(login, password);
     }
 
-    // Read, Update
     @NotNull
     public Collection<UserProfile> getAllUsers() {
         return registeredUsers.getUsers();
@@ -75,13 +60,11 @@ public class AccountService {
         return registeredUsers.getByLogin(login);
     }
 
-    // Delete
     public void deleteUser(@NotNull Long id) {
         if (!registeredUsers.containsID(id))
             return;
         registeredUsers.deleteUser(id);
     }
-
 
 
     private final Map<String, Long> activeUsers = new HashMap<>();

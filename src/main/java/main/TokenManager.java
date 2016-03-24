@@ -21,7 +21,7 @@ public class TokenManager {
 
     @NotNull
     public static NewCookie getNewCookieWithSessionID(String sessionID) {
-        return getNewCookie(sessionID, COOKIE_MAX_AGE);
+        return getNewCookie(sessionID, COOKIE_MAX_AGE_SECONDS);
     }
 
     @NotNull
@@ -45,6 +45,6 @@ public class TokenManager {
 
     public static final String COOKIE_NAME = "BOMBERMAN-SESSION-TOKEN";
 
-    private static final int COOKIE_MAX_AGE = 3600;     // 1 hour by default; self-updating on some requests.
+    private static final int COOKIE_MAX_AGE_SECONDS = 3600;
     private static final String SALT = "Just some words.";
 }

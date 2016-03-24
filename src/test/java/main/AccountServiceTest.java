@@ -8,9 +8,6 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by Frog on 16.03.2016.
- */
 public class AccountServiceTest {
 
     @Test

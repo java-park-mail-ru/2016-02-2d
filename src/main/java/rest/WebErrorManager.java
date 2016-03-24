@@ -13,6 +13,7 @@ public class WebErrorManager {
         return badRequest("Request was not a valid JSON!");
     }
 
+    @SuppressWarnings("unused")
     public static Response badRequest() {
         return badRequest(null);
     }
@@ -38,6 +39,7 @@ public class WebErrorManager {
         return anyResponse(Response.Status.UNAUTHORIZED, reason).build();
     }
 
+    @SuppressWarnings("unused")
     public static Response serverError()    {
         return serverError("Something went wrong, but it was expected.\nI hope this soothe you.\n\n:(");
     }
@@ -46,11 +48,13 @@ public class WebErrorManager {
         return anyResponse(Response.Status.INTERNAL_SERVER_ERROR, reason).build();
     }
 
+    @SuppressWarnings("StaticMethodNamingConvention")
     public static Response ok()
     {
         return ok(null);
     }
 
+    @SuppressWarnings("StaticMethodNamingConvention")
     public static Response ok(@Nullable String reason){
         return anyResponse(Response.Status.OK, reason).build();
     }

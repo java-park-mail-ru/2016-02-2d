@@ -17,7 +17,6 @@ public class Users {
         this.accountService = accountService;
     }
 
-    // Create
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -51,7 +50,6 @@ public class Users {
 
     }
 
-    // Read
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers() {
@@ -75,8 +73,6 @@ public class Users {
         }
     }
 
-
-    // Update
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -115,7 +111,6 @@ public class Users {
             return WebErrorManager.authorizationRequired("Not logged in!");
     }
 
-    // Delete
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)

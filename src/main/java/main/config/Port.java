@@ -1,8 +1,5 @@
 package main.config;
 
-/**
- * Created by User on 24.03.2016.
- */
 public class Port {
     public Port(int iPort) {
         port = iPort;
@@ -12,5 +9,5 @@ public class Port {
         return port;
     }
 
-    private int port;
+    private final int port;
 }

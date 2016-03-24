@@ -9,7 +9,6 @@ import java.util.Map;
 
 public class DataBase {
 
-    // Create
     @Nullable
     public UserProfile addUser(String login, String password){
         if (containsLogin(login))
@@ -20,7 +19,6 @@ public class DataBase {
         return newUser;
     }
 
-    // Read, Update
     @Nullable
     public UserProfile getById(Long id){
         return idToUser.get(id);
@@ -44,13 +42,11 @@ public class DataBase {
         return loginToUser.containsKey(name);
     }
 
-    // Delete
     public void deleteUser(Long id){
         final UserProfile deletingUser = idToUser.get(id);
         idToUser.remove(id);
         loginToUser.remove(deletingUser.getLogin());
     }
-
 
 
     private final Map<String, UserProfile> loginToUser = new HashMap<>();

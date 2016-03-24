@@ -18,7 +18,6 @@ public class Sessions {
         this.accountService = accountService;
     }
 
-    // Create
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -57,7 +56,6 @@ public class Sessions {
 
     }
 
-    // Read
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response isAuthenticated(@Context HttpHeaders headers) {
@@ -71,7 +69,6 @@ public class Sessions {
             return WebErrorManager.authorizationRequired();
     }
 
-    // Delete
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     public Response logoutUser(@Context HttpHeaders headers){

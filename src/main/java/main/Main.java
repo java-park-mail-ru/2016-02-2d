@@ -7,13 +7,13 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.servlet.ServletContainer;
 
-@SuppressWarnings("DuplicateThrows")
+@SuppressWarnings("OverlyBroadThrowsClause")
 public class Main {
-    public static void main(String[] args) throws Exception, InterruptedException {
+    public static void main(String[] args) throws Exception {
         fillContext();
         setCustomPort(args);
 
-        final int port = ((Port)context.get(Port.class)).getPort();
+        int port = ((Port) CONTEXT.get(Port.class)).getPort();
         System.out.format("Starting at port: %d\n", port);
         final Server server = new Server(port);
         final ServletContextHandler contextHandler = new ServletContextHandler(server, "/api/", ServletContextHandler.SESSIONS);
@@ -27,26 +27,36 @@ public class Main {
     }
 
     public static Context getContext() {
-        return context;
+        return CONTEXT;
     }
 
-     private static void setCustomPort(String[] args) {
-        final Port port;
+     private static void setCustomPort(String[] args) throws Exception {
+        Port port;
          if (args.length == 1)
             port = new Port(Integer.valueOf(args[0]));
          else {
             System.err.format("Port is not specified, setting it to %d\n", DEFAULT_PORT);
             port = new Port(DEFAULT_PORT);
          }
-         context.put(Port.class, port);
+
+         try { CONTEXT.put(Port.class, port); }
+         catch (InstantiationException ex) {
+             System.out.println("Cannot add port value to context. Aborting...");
+             throw new Exception(ex);
+         }
     }
 
-    private static void fillContext() {
+    private static void fillContext() throws Exception {
         System.out.format("Initializing context...\n");
-        context.put(AccountService.class, new AccountService());
+        try {
+            CONTEXT.put(AccountService.class, new AccountService());
+        } catch (InstantiationException ex) {
+            System.out.println("Cannot add AccountServiceInterface to context. Aborting...");
+            throw new Exception(ex);
+        }
     }
 
 
-    private static Context context = new Context();
+    private static final Context CONTEXT = new Context();
     private static final int DEFAULT_PORT = 8080;
 }
