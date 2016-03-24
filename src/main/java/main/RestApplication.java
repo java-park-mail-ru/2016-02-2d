@@ -13,7 +13,7 @@ public class RestApplication extends Application {
     @Override
     public Set<Object> getSingletons() {
         final HashSet<Object> objects = new HashSet<>();
-        AccountService accountService = new AccountService();
+        final AccountService accountService = (AccountService) Main.getContext().get(AccountService.class);
         objects.add(new Users(accountService));
         objects.add(new Sessions(accountService));
         return objects;
