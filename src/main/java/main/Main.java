@@ -1,7 +1,6 @@
 package main;
 
 import main.config.Context;
-import main.config.Port;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -13,7 +12,6 @@ public class Main {
         fillContext();
         setCustomPort(args);
 
-        int port = ((Port) CONTEXT.get(Port.class)).getPort();
         System.out.format("Starting at port: %d\n", port);
         final Server server = new Server(port);
         final ServletContextHandler contextHandler = new ServletContextHandler(server, "/api/", ServletContextHandler.SESSIONS);
@@ -31,18 +29,10 @@ public class Main {
     }
 
      private static void setCustomPort(String[] args) throws Exception {
-        Port port;
          if (args.length == 1)
-            port = new Port(Integer.valueOf(args[0]));
+             port = Integer.valueOf(args[0]);
          else {
-            System.err.format("Port is not specified, setting it to %d\n", DEFAULT_PORT);
-            port = new Port(DEFAULT_PORT);
-         }
-
-         try { CONTEXT.put(Port.class, port); }
-         catch (InstantiationException ex) {
-             System.out.println("Cannot add port value to context. Aborting...");
-             throw new Exception(ex);
+             port = DEFAULT_PORT;
          }
     }
 
@@ -58,5 +48,6 @@ public class Main {
 
 
     private static final Context CONTEXT = new Context();
+    private static int port;
     private static final int DEFAULT_PORT = 8080;
 }
