@@ -66,7 +66,6 @@ public class AccountService {
         registeredUsers.deleteUser(id);
     }
 
-
     private final Map<String, Long> activeUsers = new HashMap<>();
     private final DataBase registeredUsers = new DataBase();
 }

@@ -59,8 +59,8 @@ public class WebErrorManager {
         return anyResponse(Response.Status.OK, reason).build();
     }
 
-    public static Response.ResponseBuilder anyResponse(Response.Status code, @Nullable Object reason) {
-        JSONObject response = new JSONObject().put("status", code.getStatusCode());
+    public static Response.ResponseBuilder anyResponse(@NotNull Response.Status code, @Nullable Object reason) {
+        final JSONObject response = new JSONObject().put("status", code.getStatusCode());
         if (reason != null)
             response.put("message", reason);
         return Response.status(code).entity(response.toString());

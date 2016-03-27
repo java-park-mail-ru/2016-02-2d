@@ -28,7 +28,7 @@ public class Main {
         return CONTEXT;
     }
 
-     private static void setCustomPort(String[] args) throws Exception {
+     private static void setCustomPort(String[] args) {
          if (args.length == 1)
              port = Integer.valueOf(args[0]);
          else {

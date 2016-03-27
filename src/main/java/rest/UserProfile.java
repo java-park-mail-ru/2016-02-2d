@@ -38,7 +38,7 @@ public class UserProfile {
         return score;
     }
 
-    public void setScore(@SuppressWarnings("SameParameterValue") int newScore) {
+    public void setScore(int newScore) {
         score = newScore;
     }
 
@@ -63,8 +63,8 @@ public class UserProfile {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj.getClass() == this.getClass()) {
-            UserProfile another = (UserProfile) obj;
+        if (obj instanceof UserProfile ) {
+            final UserProfile another = (UserProfile) obj;
             return (login.equals(another.login));
         }
         else return false;
@@ -77,7 +77,6 @@ public class UserProfile {
     private String password;
     @Nullable
     private String sessionID;
-    @SuppressWarnings("InstanceVariableNamingConvention")
     private final long id;
     private int score = 0;
 

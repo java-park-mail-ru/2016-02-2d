@@ -117,7 +117,7 @@ public class Users {
     public Response deleteUser(@PathParam("id") Long id, @Context HttpHeaders headers){
         if (accountService.hasSessionID(TokenManager.getSIDStringFromHeaders(headers)))
         {
-            UserProfile supplicant = accountService.getBySessionID(TokenManager.getSIDStringFromHeaders(headers));
+            final UserProfile supplicant = accountService.getBySessionID(TokenManager.getSIDStringFromHeaders(headers));
             if (supplicant == null)
                 return WebErrorManager.serverError("Session exists, but user does not!");
             if (supplicant.getId() == id) {
