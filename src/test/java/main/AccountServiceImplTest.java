@@ -8,11 +8,11 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-public class AccountServiceTest {
+public class AccountServiceImplTest {
 
     @Test
     public void testLoginUser() throws Exception {
-        AccountService as = new AccountService();
+        AccountServiceImpl as = new AccountServiceImpl();
         UserProfile user = as.getUser("admin");
 
         assertNotNull(user);
@@ -26,7 +26,7 @@ public class AccountServiceTest {
 
     @Test
     public void testGetBySessionID() throws Exception {
-        AccountService as = new AccountService();
+        AccountServiceImpl as = new AccountServiceImpl();
         UserProfile user = as.getUser("admin");
 
         assertNotNull(user);
@@ -41,7 +41,7 @@ public class AccountServiceTest {
 
     @Test
     public void testHasSessionID() throws Exception {
-        AccountService as = new AccountService();
+        AccountServiceImpl as = new AccountServiceImpl();
         UserProfile user = as.getUser("admin");
 
         assertNotNull(user);
@@ -57,7 +57,7 @@ public class AccountServiceTest {
 
     @Test
     public void testLogoutUser() throws Exception {
-        AccountService as = new AccountService();
+        AccountServiceImpl as = new AccountServiceImpl();
         UserProfile user = as.getUser("admin");
 
         assertNotNull(user);
@@ -73,7 +73,7 @@ public class AccountServiceTest {
 
     @Test
     public void testCreateNewUser() throws Exception {
-        AccountService as = new AccountService();
+        AccountServiceImpl as = new AccountServiceImpl();
         final String login = "login";
         final String password = "password";
 
@@ -90,7 +90,7 @@ public class AccountServiceTest {
 
     @Test
     public void testGetAllUsers() throws Exception {
-        AccountService as = new AccountService();
+        AccountServiceImpl as = new AccountServiceImpl();
         // Eventually it will break.
         UserProfile user1 = as.getUser("admin");
         UserProfile user2 = as.getUser("guest");
@@ -107,7 +107,7 @@ public class AccountServiceTest {
 
     @Test
     public void testGetUserByID() throws Exception {
-        AccountService as = new AccountService();
+        AccountServiceImpl as = new AccountServiceImpl();
         UserProfile user = as.getUser("admin");
 
         assertNotNull(user);
@@ -123,7 +123,7 @@ public class AccountServiceTest {
 
     @Test
     public void testGetUserByLogin() throws Exception {
-        AccountService as = new AccountService();
+        AccountServiceImpl as = new AccountServiceImpl();
         final String login = "login";
         final String password = "password";
 
@@ -142,7 +142,7 @@ public class AccountServiceTest {
 
     @Test
     public void testDeleteUser() throws Exception {
-        AccountService as = new AccountService();
+        AccountServiceImpl as = new AccountServiceImpl();
         UserProfile user = as.getUser("admin");
 
         assertNotNull(user);

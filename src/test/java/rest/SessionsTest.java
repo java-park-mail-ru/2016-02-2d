@@ -11,7 +11,7 @@ import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotSame;
 import static org.mockito.Mockito.*;
-import main.AccountService;
+import main.AccountServiceImpl;
 import org.glassfish.jersey.test.JerseyTest;
 
 import javax.ws.rs.core.*;
@@ -90,7 +90,7 @@ public class SessionsTest extends JerseyTest {
     // A bit of magic, without which nothing works.
     @Override
     protected Application configure() {
-        AccountService mockedAccountService = mock(AccountService.class);
+        AccountServiceImpl mockedAccountService = mock(AccountServiceImpl.class);
         UserProfile user = mock(UserProfile.class);
         sessions = new Sessions(mockedAccountService);
 

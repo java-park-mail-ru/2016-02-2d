@@ -1,6 +1,6 @@
 package rest;
 
-import main.AccountService;
+import main.AccountServiceImpl;
 import main.TokenManager;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -97,7 +97,7 @@ public class UsersTest extends JerseyTest {
     // A bit of magic, without which nothing works.
     @Override
     protected Application configure() {
-        AccountService mockedAccountService = mock(AccountService.class);
+        AccountServiceImpl mockedAccountService = mock(AccountServiceImpl.class);
         UserProfile user = mock(UserProfile.class);
         users = new Users(mockedAccountService);
 

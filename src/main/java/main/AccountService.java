@@ -5,67 +5,28 @@ import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-public class AccountService {
-
-    public AccountService() {
-        //noinspection ConstantConditions
-        registeredUsers.addUser("admin", "admin").setScore(100);    // It won't.
-        registeredUsers.addUser("guest", "12345");
-    }
-
-    public void loginUser(@NotNull UserProfile user){
-        activeUsers.put(user.getSessionID(), user.getId());
-    }
+public interface AccountService {
+    void loginUser(@NotNull UserProfile user);
 
     @Nullable
-    public UserProfile getBySessionID(@Nullable String sessionID){
-        if (activeUsers.containsKey(sessionID))
-            return registeredUsers.getById(activeUsers.get(sessionID));
-        return null;
-    }
+    UserProfile getBySessionID(@Nullable String sessionID);
 
-    public boolean hasSessionID(@Nullable String sessionID){
-        return activeUsers.containsKey(sessionID);
-    }
+    boolean hasSessionID(@Nullable String sessionID);
 
-    public boolean logoutUser(@Nullable String sessionID){
-        if (!activeUsers.containsKey(sessionID))
-            return false;
-        activeUsers.remove(sessionID);
-        return true;
-    }
+    boolean logoutUser(@Nullable String sessionID);
 
     @Nullable
-    public UserProfile createNewUser(@NotNull String login,@NotNull String password) {
-        if (registeredUsers.containsLogin(login))
-            return null;
-        return registeredUsers.addUser(login, password);
-    }
+    UserProfile createNewUser(@NotNull String login, @NotNull String password);
 
     @NotNull
-    public Collection<UserProfile> getAllUsers() {
-        return registeredUsers.getUsers();
-    }
+    Collection<UserProfile> getAllUsers();
 
     @Nullable
-    public UserProfile getUser(@NotNull Long id) {
-        return registeredUsers.getById(id);
-    }
+    UserProfile getUser(@NotNull Long id);
 
     @Nullable
-    public UserProfile getUser(@NotNull String login) {
-        return registeredUsers.getByLogin(login);
-    }
+    UserProfile getUser(@NotNull String login);
 
-    public void deleteUser(@NotNull Long id) {
-        if (!registeredUsers.containsID(id))
-            return;
-        registeredUsers.deleteUser(id);
-    }
-
-    private final Map<String, Long> activeUsers = new HashMap<>();
-    private final DataBase registeredUsers = new DataBase();
+    void deleteUser(@NotNull Long id);
 }

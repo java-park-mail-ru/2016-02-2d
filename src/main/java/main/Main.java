@@ -39,9 +39,9 @@ public class Main {
     private static void fillContext() throws Exception {
         System.out.format("Initializing context...\n");
         try {
-            CONTEXT.put(AccountService.class, new AccountService());
+            CONTEXT.put(AccountService.class, new AccountServiceImpl());
         } catch (InstantiationException ex) {
-            System.out.println("Cannot add AccountServiceInterface to context. Aborting...");
+            System.out.println("Cannot add AccountService to context. Aborting...");
             throw new Exception(ex);
         }
     }
