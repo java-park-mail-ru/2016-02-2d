@@ -5,7 +5,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
-import java.util.Collection;
 import java.util.List;
 
 public class UserProfileDataDAO {
@@ -23,25 +22,25 @@ public class UserProfileDataDAO {
     }
 
     public UserProfileData readByName(String name) {
-        Criteria criteria = session.createCriteria(UserProfileData.class);
+        final Criteria criteria = session.createCriteria(UserProfileData.class);
         return (UserProfileData) criteria.add(Restrictions.eq("login", name)).uniqueResult();
     }
 
     @SuppressWarnings("unchecked")
     public List<UserProfileData> readAll() {
-        Criteria criteria = session.createCriteria(UserProfileData.class);
+        final Criteria criteria = session.createCriteria(UserProfileData.class);
         return (List<UserProfileData>) criteria.list();
     }
 
     public void delete(long id) {
-        UserProfileData dataSet = new UserProfileData();
+        final UserProfileData dataSet = new UserProfileData();
         dataSet.setId(id);
-        Transaction transaction = session.beginTransaction();
+        final Transaction transaction = session.beginTransaction();
         session.delete(dataSet);
         transaction.commit();
     }
 
 
-    private Session session;
+    private final Session session;
 
 }

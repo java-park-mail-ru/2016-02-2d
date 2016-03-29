@@ -1,7 +1,6 @@
 package rest;
 
 import main.AccountService;
-import main.AccountServiceImpl;
 import main.TokenManager;
 import org.json.JSONArray;
 import org.json.JSONException;

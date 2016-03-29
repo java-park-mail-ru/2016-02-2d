@@ -3,7 +3,6 @@ package main.database;
 import javax.persistence.*;
 import java.io.Serializable;
 import org.jetbrains.annotations.NotNull;
-import rest.UserProfile;
 
 @Entity
 @Table(name = "users")

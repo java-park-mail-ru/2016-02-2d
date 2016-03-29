@@ -6,11 +6,9 @@ import main.database.UserProfileData;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 public class UserProfile {
 
-    public UserProfile(UserProfileData userProfileData) {
+    public UserProfile(@NotNull UserProfileData userProfileData) {
         data = userProfileData;
         sessionID = null;
     }
@@ -68,6 +66,7 @@ public class UserProfile {
         else return false;
     }
 
+    @NotNull
     public UserProfileData getData() {
         return data;
     }
@@ -76,5 +75,5 @@ public class UserProfile {
     @Nullable
     private String sessionID;
     @NotNull
-    private UserProfileData data;
+    private final UserProfileData data;
 }

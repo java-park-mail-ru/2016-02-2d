@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import rest.UserProfile;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,11 +22,11 @@ public class AccountServiceImplTest {
 
     @Test
     public void testLoginUser() throws Exception {
-        UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
+        final UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
 
-        String sid = user.getSessionID();
+        final String sid = user.getSessionID();
         accountService.loginUser(user);
 
         assertEquals(user, accountService.getBySessionID(sid));
@@ -35,11 +36,11 @@ public class AccountServiceImplTest {
     @Test
     public void testGetBySessionID() throws Exception {
 
-        UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
+        final UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
 
-        String sid = user.getSessionID();
+        final String sid = user.getSessionID();
         accountService.loginUser(user);
 
         assertEquals(user, accountService.getBySessionID(sid));
@@ -49,11 +50,11 @@ public class AccountServiceImplTest {
 
     @Test
     public void testHasSessionID() throws Exception {
-        UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
+        final UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
 
-        String sid = user.getSessionID();
+        final String sid = user.getSessionID();
 
         assertEquals(false, accountService.hasSessionID(sid));
 
@@ -64,11 +65,11 @@ public class AccountServiceImplTest {
 
     @Test
     public void testLogoutUser() throws Exception {
-        UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
+        final UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
 
-        String sid = user.getSessionID();
+        final String sid = user.getSessionID();
 
         assertEquals(false, accountService.logoutUser(sid));
 
@@ -92,19 +93,22 @@ public class AccountServiceImplTest {
 
     @Test
     public void testGetAllUsers() throws Exception {
-        UserProfile user1 = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
+        final UserProfile user1 = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user1);
 
-        Map<Long, UserProfile> map = new HashMap<>();
+        final Map<Long, UserProfile> map = new HashMap<>();
         map.put(user1.getId(), user1);
 
-        assertEquals(map.values().toString(), accountService.getAllUsers().toString());
+        final Collection<UserProfile> userData = accountService.getAllUsers();
+        assertNotNull(userData);
+
+        assertEquals(map.values().toString(), userData.toString());
     }
 
     @Test
     public void testGetUserByID() throws Exception {
-        UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
+        final UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
 
@@ -119,7 +123,7 @@ public class AccountServiceImplTest {
 
     @Test
     public void testGetUserByLogin() throws Exception {
-        UserProfile newUser = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
+        final UserProfile newUser = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(newUser);
 
@@ -134,7 +138,7 @@ public class AccountServiceImplTest {
 
     @Test
     public void testDeleteUser() throws Exception {
-        UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
+        final UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
 

@@ -18,7 +18,7 @@ public class DataBaseRealImpl implements DataBase {
         createDBAndSetup();
     }
 
-    public DataBaseRealImpl(DBTYPE dbtype) throws Exception {
+    public DataBaseRealImpl(@SuppressWarnings("SameParameterValue") DBTYPE dbtype) throws Exception {
         type = dbtype;
         createDBAndSetup();
     }
@@ -38,9 +38,9 @@ public class DataBaseRealImpl implements DataBase {
     }
 
     public String getLocalStatus() {
-        String status;
+        final String status;
         try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
+            final Transaction transaction = session.beginTransaction();
             status = transaction.getStatus().toString();
             transaction.commit();
         }
@@ -144,17 +144,18 @@ public class DataBaseRealImpl implements DataBase {
         sessionFactory.close();
     }
 
+    
     private static SessionFactory createSessionFactory(Configuration configuration) {
-        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder();
+        final StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder();
         builder.applySettings(configuration.getProperties());
-        ServiceRegistry serviceRegistry = builder.build();
+        final ServiceRegistry serviceRegistry = builder.build();
         return configuration.buildSessionFactory(serviceRegistry);
     }
-
+    
     private void setup() throws HibernateException {
         System.out.println("-----Initializing Hibernate-----");
         config = new Config(type);
-        Configuration configuration = new Configuration();
+        final Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(UserProfileData.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
@@ -169,11 +170,14 @@ public class DataBaseRealImpl implements DataBase {
         System.out.println("-----Hibernate  Initialized-----");
     }
 
+    @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed"})
     private void createDB() {
+        //noinspection OverlyBroadCatchBlock
         try {
-            Driver driver = (Driver) Class.forName("com.mysql.jdbc.Driver").newInstance();
+            final Driver driver = (Driver) Class.forName("com.mysql.jdbc.Driver").newInstance();
+            DriverManager.registerDriver(driver);
             final Connection rootConnection = DriverManager.getConnection(Config.ADDRESS, Config.ROOT_LOGIN, Config.ROOT_PASSWORD);
-            Statement statement = rootConnection.createStatement();
+            final Statement statement = rootConnection.createStatement();
 
             statement.execute("DROP USER IF EXISTS " + config.getLoginDomain());
             statement.execute("CREATE USER " + config.getLoginDomain() + " IDENTIFIED BY \"" + config.getPassword() + "\";");
@@ -191,14 +195,14 @@ public class DataBaseRealImpl implements DataBase {
 
     private SessionFactory sessionFactory;
     private static final int ERROR_NO_DB = 1049;
-    private DBTYPE type;
+    private final DBTYPE type;
     private Config config;
 
     public enum DBTYPE {
         PRODUCTION, DEBUG
     }
 
-    private final class Config {
+    private static final class Config {
 
         private Config(DBTYPE dbtype) {
             switch (dbtype) {
