@@ -153,16 +153,17 @@ public class DataBaseRealImpl implements DataBase {
 
     private void setup() throws HibernateException {
         System.out.println("-----Initializing Hibernate-----");
+        config = new Config(type);
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(UserProfileData.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
-        configuration.setProperty("hibernate.connection.url", ADDRESS + DBNAME);
-        configuration.setProperty("hibernate.connection.username", LOGIN);
-        configuration.setProperty("hibernate.connection.password", PASSWORD);
+        configuration.setProperty("hibernate.connection.url", Config.ADDRESS + config.getDbName());
+        configuration.setProperty("hibernate.connection.username", config.getLogin());
+        configuration.setProperty("hibernate.connection.password", config.getPassword());
         configuration.setProperty("hibernate.show_sql", "true");
-        configuration.setProperty("hibernate.hbm2ddl.auto", "update");
+        configuration.setProperty("hibernate.hbm2ddl.auto", config.getCreationMethod());
 
         sessionFactory = createSessionFactory(configuration);
         System.out.println("-----Hibernate  Initialized-----");
@@ -171,16 +172,16 @@ public class DataBaseRealImpl implements DataBase {
     private void createDB() {
         try {
             Driver driver = (Driver) Class.forName("com.mysql.jdbc.Driver").newInstance();
-            final Connection rootConnection = DriverManager.getConnection(ADDRESS, ROOT_LOGIN, ROOT_PASSWORD);
+            final Connection rootConnection = DriverManager.getConnection(Config.ADDRESS, Config.ROOT_LOGIN, Config.ROOT_PASSWORD);
             Statement statement = rootConnection.createStatement();
 
-            statement.execute("DROP USER IF EXISTS " + LOGIN_DOMAIN);
-            statement.execute("CREATE USER " + LOGIN_DOMAIN + " IDENTIFIED BY \"" + PASSWORD + "\";");
+            statement.execute("DROP USER IF EXISTS " + config.getLoginDomain());
+            statement.execute("CREATE USER " + config.getLoginDomain() + " IDENTIFIED BY \"" + config.getPassword() + "\";");
 
-            statement.execute("DROP DATABASE IF EXISTS " + DBNAME + ';');
-            statement.execute("CREATE DATABASE IF NOT EXISTS " + DBNAME + ';');
+            statement.execute("DROP DATABASE IF EXISTS " + config.getDbName() + ';');
+            statement.execute("CREATE DATABASE IF NOT EXISTS " + config.getDbName() + ';');
 
-            statement.execute("GRANT ALL ON " + DBNAME + ".* TO " + LOGIN_DOMAIN + ';');
+            statement.execute("GRANT ALL ON " + config.getDbName() + ".* TO " + config.getLoginDomain() + ';');
 
             System.out.println("Database succesfully created!");
         } catch (Exception ex) {
@@ -191,21 +192,80 @@ public class DataBaseRealImpl implements DataBase {
     private SessionFactory sessionFactory;
     private static final int ERROR_NO_DB = 1049;
     private DBTYPE type;
+    private Config config;
 
     public enum DBTYPE {
         PRODUCTION, DEBUG
     }
 
-    public static final String ROOT_LOGIN = "root";
-    public static final String ROOT_PASSWORD = "root";
-    public static final String DBNAME = "bomberman_db";
-    public static final String LOGIN = "bomberman_db_user";
-    public static final String PASSWORD = "bomberman_db_password";
-    public static final String DOMAIN = "localhost";
-    public static final String LOGIN_DOMAIN = LOGIN + '@' + DOMAIN;
-    public static final String PORT = "3306";
-    public static final String ADDRESS = "jdbc:mysql://" + DOMAIN + ':' + PORT + '/';
-    public static final String DEBUG_POSTFIX = "_debug";
+    private final class Config {
 
+        private Config(DBTYPE dbtype) {
+            switch (dbtype) {
+
+                case PRODUCTION:
+                    makeProduction();
+                    break;
+                case DEBUG:
+                    makeDebug();
+                    break;
+            }
+        }
+
+        private void makeProduction() {
+            dbName = DBNAME;
+            login = LOGIN;
+            password = PASSWORD;
+            loginDomain = LOGIN_DOMAIN;
+            creationMethod = DB_UPDATE;
+        }
+
+        private void makeDebug() {
+            dbName = DBNAME + DEBUG_POSTFIX;
+            login = LOGIN + DEBUG_POSTFIX;
+            password = PASSWORD + DEBUG_POSTFIX;
+            loginDomain = LOGIN + DEBUG_POSTFIX + '@' + DOMAIN;
+            creationMethod = DB_CREATEDROP;
+        }
+
+        public String getLoginDomain() {
+            return loginDomain;
+        }
+
+        public String getDbName() {
+            return dbName;
+        }
+
+        public String getLogin() {
+            return login;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public String getCreationMethod() {
+            return creationMethod;
+        }
+
+        private String dbName;
+        private String login;
+        private String password;
+        private String loginDomain;
+        private String creationMethod;
+
+        public static final String ROOT_LOGIN = "root";
+        public static final String ROOT_PASSWORD = "root";
+        public static final String DBNAME = "bomberman_db";
+        public static final String LOGIN = "bomberman_db_user";
+        public static final String PASSWORD = "bomberman_db_password";
+        public static final String DOMAIN = "localhost";
+        public static final String LOGIN_DOMAIN = LOGIN + '@' + DOMAIN;
+        public static final String PORT = "3306";
+        public static final String ADDRESS = "jdbc:mysql://" + DOMAIN + ':' + PORT + '/';
+        public static final String DEBUG_POSTFIX = "_debug";
+        public static final String DB_UPDATE = "update";
+        public static final String DB_CREATEDROP = "create-drop";
+    }
 
 }

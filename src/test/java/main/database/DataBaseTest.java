@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import rest.UserProfile;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,12 +15,11 @@ public class DataBaseTest {
 
     @Before
     public void init() throws Exception {
-        dataBase = new DataBaseRealImpl();
+        dataBase = new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.DEBUG);
     }
 
     @Test
     public void testAddUser() throws Exception {
-
         UserProfile user = dataBase.addUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
@@ -32,7 +32,6 @@ public class DataBaseTest {
 
     @Test
     public void testDeleteUser() throws Exception {
-        
         final UserProfile user =   dataBase.addUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
@@ -48,7 +47,6 @@ public class DataBaseTest {
 
     @Test
     public void testGetUsers() throws Exception {
-        
         final UserProfile user1 =  dataBase.addUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
         final UserProfile user2 =  dataBase.addUser("user1", "user1");
 
@@ -59,12 +57,15 @@ public class DataBaseTest {
         map.put(user1.getId(), user1);
         map.put(user2.getId(), user2);
 
-        assertEquals(map.values().toString(),  dataBase.getUsers().toString());
+        final Collection<UserProfile> userData = dataBase.getUsers();
+
+        assertNotNull(userData);
+
+        assertEquals(map.values().toString(), userData.toString());
     }
 
     @Test
     public void testContainsID() throws Exception {
-        
         final UserProfile user =  dataBase.addUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
@@ -80,22 +81,53 @@ public class DataBaseTest {
 
     @Test
     public void testSave() throws Exception {
+        UserProfile user = dataBase.addUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
+        assertNotNull(user);
+
+        final int desireScore = 100;
+        user.setScore(desireScore);
+
+        user = dataBase.getByLogin(Constants.USER_LOGIN);
+        assertNotNull(user);
+        assertNotEquals(desireScore, user.getScore());
+
+        user.setScore(desireScore);
+        dataBase.save(user.getData());
+
+        user = dataBase.getByLogin(Constants.USER_LOGIN);
+        assertNotNull(user);
+        assertEquals(desireScore, user.getScore());
     }
 
     @Test
     public void testGetById() throws Exception {
+        final UserProfile user = dataBase.addUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
+        assertNotNull(user);
+        final long id = user.getId();
+
+        assertEquals(user, dataBase.getById(id));
     }
 
     @Test
     public void testGetByLogin() throws Exception {
+        final UserProfile user = dataBase.addUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
+        assertNotNull(user);
+
+        assertEquals(user, dataBase.getByLogin(Constants.USER_LOGIN));
     }
 
     @Test
     public void testContainsLogin() throws Exception {
+        final UserProfile user = dataBase.addUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
+        assertNotNull(user);
+
+        assertEquals(true, dataBase.containsLogin(Constants.USER_LOGIN));
+
+        assertEquals(false, dataBase.containsLogin(""));
     }
 
     private DataBaseRealImpl dataBase;
