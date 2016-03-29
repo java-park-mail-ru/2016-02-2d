@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 public class AccountServiceImplTest {
 
     @Before
-    public void init() {
+    public void init() throws Exception {
         accountService = new AccountServiceImpl();
         accountService.changeDB(new DataBaseHashMapImpl());
     }

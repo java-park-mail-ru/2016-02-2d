@@ -12,6 +12,10 @@ import java.util.Map;
 
 public class AccountServiceImpl implements AccountService {
 
+    public AccountServiceImpl() throws Exception {
+        registeredUsers = new DataBaseRealImpl();
+    }
+
     @Override
     public void loginUser(@NotNull UserProfile user){
         activeUsers.put(user.getSessionID(), user.getId());
@@ -82,5 +86,5 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private final Map<String, Long> activeUsers = new HashMap<>();
-    private DataBase registeredUsers = new DataBaseRealImpl();
+    private DataBase registeredUsers;
 }

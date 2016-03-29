@@ -37,7 +37,7 @@ public class Main {
     }
 
     private static void fillContext() throws Exception {
-        System.out.format("Initializing context...\n");
+        System.out.format("-----Initializing context-----\n");
         try {
             CONTEXT.put(AccountService.class, new AccountServiceImpl());
         } catch (InstantiationException ex) {

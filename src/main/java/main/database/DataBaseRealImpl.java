@@ -13,22 +13,27 @@ import org.hibernate.service.ServiceRegistry;
 
 public class DataBaseRealImpl implements DataBase {
 
-    public DataBaseRealImpl() {
+    public DataBaseRealImpl() throws Exception {
         type = DBTYPE.PRODUCTION;
         createDBAndSetup();
     }
 
-    public DataBaseRealImpl(DBTYPE dbtype) {
+    public DataBaseRealImpl(DBTYPE dbtype) throws Exception {
         type = dbtype;
         createDBAndSetup();
     }
 
-    public void createDBAndSetup() {
+    public void createDBAndSetup() throws Exception {
         try {
             setup();
         } catch (HibernateException ex) {
-            createDB();
-            setup();
+            try {
+                createDB();
+                setup();
+            } catch (HibernateException ex2) {
+                System.err.println("---\nSomething went completely wrong.\nCheck if MySQL is running and is compatible with 5.1.38 mysql/j...\n*****CRITICAL ERROR*****\nShutting down\n---");
+                throw new Exception(ex2);
+            }
         }
     }
 
