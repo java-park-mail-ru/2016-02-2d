@@ -1,5 +1,6 @@
 package main;
 
+import main.database.DataBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
@@ -51,7 +52,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @NotNull
+    @Nullable
     public Collection<UserProfile> getAllUsers() {
         return registeredUsers.getUsers();
     }
@@ -73,6 +74,11 @@ public class AccountServiceImpl implements AccountService {
         if (!registeredUsers.containsID(id))
             return;
         registeredUsers.deleteUser(id);
+    }
+
+    @Override
+    public void updateUser(UserProfile user) {
+        registeredUsers.save(user.getData());
     }
 
     private final Map<String, Long> activeUsers = new HashMap<>();

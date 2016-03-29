@@ -19,7 +19,7 @@ public interface AccountService {
     @Nullable
     UserProfile createNewUser(@NotNull String login, @NotNull String password);
 
-    @NotNull
+    @Nullable
     Collection<UserProfile> getAllUsers();
 
     @Nullable
@@ -29,4 +29,6 @@ public interface AccountService {
     UserProfile getUser(@NotNull String login);
 
     void deleteUser(@NotNull Long id);
+
+    void updateUser(UserProfile user);
 }

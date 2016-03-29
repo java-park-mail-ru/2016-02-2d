@@ -1,5 +1,6 @@
 package main;
 
+import main.database.DataBase;
 import org.junit.Test;
 import rest.UserProfile;
 

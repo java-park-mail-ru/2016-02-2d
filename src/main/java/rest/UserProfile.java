@@ -2,6 +2,7 @@ package rest;
 
 import com.sun.istack.internal.Nullable;
 import main.TokenManager;
+import main.database.UserProfileData;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -9,55 +10,52 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class UserProfile {
 
-    public UserProfile(@NotNull String newLogin, @NotNull String newPassword) {
-        login = newLogin;
-        password = newPassword;
-        id = ID_GENETATOR.getAndIncrement();
-        sessionID = null;   // Newly registered users are not active.
+    public UserProfile(UserProfileData userProfileData) {
+        data = userProfileData;
+        sessionID = null;
     }
 
     @NotNull
     public String getLogin() {
-        return login;
+        return data.getLogin();
     }
 
     @NotNull
     public String getPassword() {
-        return password;
+        return data.getPassword();
     }
 
     public void setPassword(@NotNull String password) {
-        this.password = password;
+        data.setPassword(password);
     }
 
     public long getId() {
-        return id;
+        return data.getId();
     }
 
     public int getScore() {
-        return score;
+        return data.getScore();
     }
 
     public void setScore(int newScore) {
-        score = newScore;
+        data.setScore(newScore);
     }
 
     public JSONObject toJson(){
-        return new JSONObject().put("id", id).put("login", login).put("score", score);
+        return new JSONObject().put("id", data.getId()).put("login", data.getLogin()).put("score", data.getScore());
     }
 
     @NotNull
     public String getSessionID() {
         if (sessionID == null)
-            sessionID = TokenManager.getNewRandomSessionID(login, id, score);
+            sessionID = TokenManager.getNewRandomSessionID(data.getLogin(), data.getId(), data.getScore(), data.getPassword());
         return sessionID;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash *= login.hashCode();
-        hash *= id;
+        hash *= data.hashCode();
         return hash;
     }
 
@@ -65,20 +63,18 @@ public class UserProfile {
     public boolean equals(Object obj) {
         if (obj instanceof UserProfile ) {
             final UserProfile another = (UserProfile) obj;
-            return (login.equals(another.login));
+            return (data.equals(another.data));
         }
         else return false;
     }
 
+    public UserProfileData getData() {
+        return data;
+    }
 
-    @NotNull
-    private final String login;
-    @NotNull
-    private String password;
+
     @Nullable
     private String sessionID;
-    private final long id;
-    private int score = 0;
-
-    private static final AtomicLong ID_GENETATOR = new AtomicLong(0);
+    @NotNull
+    private UserProfileData data;
 }
