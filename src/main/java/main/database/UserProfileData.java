@@ -14,6 +14,8 @@ public class UserProfileData implements Serializable {
         password = newPasssword;
     }
 
+    public UserProfileData() {}
+
     @NotNull
     public String getLogin() {
         return login;

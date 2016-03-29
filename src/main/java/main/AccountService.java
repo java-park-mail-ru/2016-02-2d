@@ -1,5 +1,6 @@
 package main;
 
+import main.database.DataBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
@@ -31,4 +32,6 @@ public interface AccountService {
     void deleteUser(@NotNull Long id);
 
     void updateUser(UserProfile user);
+
+    void changeDB(DataBase dataBase);
 }
