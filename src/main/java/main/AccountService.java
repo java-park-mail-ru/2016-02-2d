@@ -1,5 +1,6 @@
 package main;
 
+import main.database.DataBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
@@ -19,7 +20,7 @@ public interface AccountService {
     @Nullable
     UserProfile createNewUser(@NotNull String login, @NotNull String password);
 
-    @NotNull
+    @Nullable
     Collection<UserProfile> getAllUsers();
 
     @Nullable
@@ -29,4 +30,8 @@ public interface AccountService {
     UserProfile getUser(@NotNull String login);
 
     void deleteUser(@NotNull Long id);
+
+    void updateUser(UserProfile user);
+
+    void changeDB(DataBase dataBase);
 }

@@ -1,5 +1,7 @@
 package main;
 
+import main.database.DataBase;
+import main.database.DataBaseRealImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
@@ -10,10 +12,8 @@ import java.util.Map;
 
 public class AccountServiceImpl implements AccountService {
 
-    public AccountServiceImpl() {
-        //noinspection ConstantConditions
-        registeredUsers.addUser("admin", "admin").setScore(100);
-        registeredUsers.addUser("guest", "12345");
+    public AccountServiceImpl() throws Exception {
+        registeredUsers = new DataBaseRealImpl();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @NotNull
+    @Nullable
     public Collection<UserProfile> getAllUsers() {
         return registeredUsers.getUsers();
     }
@@ -75,6 +75,16 @@ public class AccountServiceImpl implements AccountService {
         registeredUsers.deleteUser(id);
     }
 
+    @Override
+    public void updateUser(UserProfile user) {
+        registeredUsers.save(user.getData());
+    }
+
+    @Override
+    public void changeDB(DataBase dataBase) {
+        registeredUsers = dataBase;
+    }
+
     private final Map<String, Long> activeUsers = new HashMap<>();
-    private final DataBase registeredUsers = new DataBase();
+    private DataBase registeredUsers;
 }
