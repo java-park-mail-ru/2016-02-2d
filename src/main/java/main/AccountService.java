@@ -1,58 +1,32 @@
 package main;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
-import javax.servlet.http.Cookie;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-/**
- * @author esin88
- */
-public class AccountService {
-    private Map<Cookie, String> cookies = new HashMap<>();
-    DataBase users = new DataBase();
+public interface AccountService {
+    void loginUser(@NotNull UserProfile user);
 
-    public AccountService() {
-        users.addUser("admin", "admin");
-        users.addUser("guest", "12345");
-    }
+    @Nullable
+    UserProfile getBySessionID(@Nullable String sessionID);
 
-    public Collection<UserProfile> getAllUsers() {
-        return users.getUsers();
-    }
+    boolean hasSessionID(@Nullable String sessionID);
 
-    public boolean addUser(String userName, UserProfile userProfile) {
+    boolean logoutUser(@Nullable String sessionID);
 
-        if (users.containsLogin(userName))
-            return false;
-        users.addUser(userName, userProfile.getPassword());
-        return true;
-    }
+    @Nullable
+    UserProfile createNewUser(@NotNull String login, @NotNull String password);
 
-    public UserProfile getUser(Long id) {
-        return users.getById(id);
-    }
+    @NotNull
+    Collection<UserProfile> getAllUsers();
 
-    public UserProfile getUser(String login) {
-        return users.getByLogin(login);
-    }
+    @Nullable
+    UserProfile getUser(@NotNull Long id);
 
-    public boolean delUser (Long id) {
+    @Nullable
+    UserProfile getUser(@NotNull String login);
 
-        if (users.containsID(id))
-            return false;
-        users.deleteUser(id);
-        return true;
-    }
-
-    public void addNewCookie(Cookie cookie, String name){
-        cookies.put(cookie, name);
-    }
-
-    public String getByCookie(String cookie){
-        if(cookies.containsKey(cookie)) return cookies.get(cookie);
-        else return null;
-    }
+    void deleteUser(@NotNull Long id);
 }

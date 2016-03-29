@@ -91,6 +91,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     private int previousNextID = 0;
     private final ITile[][] tileArray;
     private boolean isWorldReady = false;
+    private boolean shouldSelfUpdate = false;
     private ArrayList<Bomberman> bombermen;
 
 

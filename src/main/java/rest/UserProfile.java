@@ -1,39 +1,24 @@
 package rest;
 
+import com.sun.istack.internal.Nullable;
+import main.TokenManager;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * @author esin88
- */
 public class UserProfile {
-    private static final AtomicLong ID_GENETATOR = new AtomicLong(0);
-    @NotNull
-    private String login;
-    @NotNull
-    private String password;
-    private long id;
 
-    public UserProfile() {
-        login = "";
-        password = "";
+    public UserProfile(@NotNull String newLogin, @NotNull String newPassword) {
+        login = newLogin;
+        password = newPassword;
         id = ID_GENETATOR.getAndIncrement();
-    }
-
-    public UserProfile(@NotNull String login, @NotNull String password) {
-        this.login = login;
-        this.password = password;
-        id = ID_GENETATOR.getAndIncrement();
+        sessionID = null;   // Newly registered users are not active.
     }
 
     @NotNull
     public String getLogin() {
         return login;
-    }
-
-    public void setLogin(@NotNull String login) {
-        this.login = login;
     }
 
     @NotNull
@@ -45,8 +30,55 @@ public class UserProfile {
         this.password = password;
     }
 
-    @NotNull
     public long getId() {
         return id;
     }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int newScore) {
+        score = newScore;
+    }
+
+    public JSONObject toJson(){
+        return new JSONObject().put("id", id).put("login", login).put("score", score);
+    }
+
+    @NotNull
+    public String getSessionID() {
+        if (sessionID == null)
+            sessionID = TokenManager.getNewRandomSessionID(login, id, score);
+        return sessionID;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash *= login.hashCode();
+        hash *= id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof UserProfile ) {
+            final UserProfile another = (UserProfile) obj;
+            return (login.equals(another.login));
+        }
+        else return false;
+    }
+
+
+    @NotNull
+    private final String login;
+    @NotNull
+    private String password;
+    @Nullable
+    private String sessionID;
+    private final long id;
+    private int score = 0;
+
+    private static final AtomicLong ID_GENETATOR = new AtomicLong(0);
 }
