@@ -87,9 +87,10 @@ public class SessionsTest extends JerseyTest {
         assertNotSame(SID, response.getCookies().get(TokenManager.COOKIE_NAME).getValue());
     }
 
-    // A bit of magic, without which nothing works.
+    // TODO: move mocks into separate modules.
     @Override
     protected Application configure() {
+
         AccountServiceImpl mockedAccountService = mock(AccountServiceImpl.class);
         UserProfile user = mock(UserProfile.class);
         sessions = new Sessions(mockedAccountService);
@@ -105,6 +106,16 @@ public class SessionsTest extends JerseyTest {
         when(user.getPassword()).thenReturn(PASSWORD);
         when(user.getSessionID()).thenReturn(SID);
 
+        Map<String, Cookie> noCookieMap = new HashMap<>();
+        Map<String, Cookie> okCookieMap = new HashMap<>();
+        okCookieMap.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID(SID));
+        Map<String, Cookie> badCookieMap = new HashMap<>();
+        badCookieMap.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID("ERRONEOUS DATA"));
+
+        when(noCookieHeaders.getCookies()).thenReturn(noCookieMap);
+        when(okCookieHeaders.getCookies()).thenReturn(okCookieMap);
+        when(wrongCookieHeaders.getCookies()).thenReturn(badCookieMap);
+
         return new ResourceConfig(SessionsTest.class);
     }
 
@@ -114,11 +125,11 @@ public class SessionsTest extends JerseyTest {
             switch (type)
             {
                 case LOGIN_OK:
-                    return Triplet.with(okLoginJSON(), noCookieHeaders(), okLoginResponse());
+                    return Triplet.with(okLoginJSON(), noCookieHeaders, okLoginResponse());
                 case LOGIN_WRONG_LOGIN:
-                    return Triplet.with(wrongLoginLoginJSON(), noCookieHeaders(), wrongLoginLoginResponse());
+                    return Triplet.with(wrongLoginLoginJSON(), noCookieHeaders, wrongLoginLoginResponse());
                 case LOGIN_WRONG_PASSWORD:
-                    return Triplet.with(wrongPasswordLoginJSON(), noCookieHeaders(), wrongPasswordLoginResponse());
+                    return Triplet.with(wrongPasswordLoginJSON(), noCookieHeaders, wrongPasswordLoginResponse());
             }
             throw new IllegalArgumentException();
         }
@@ -126,11 +137,11 @@ public class SessionsTest extends JerseyTest {
         public static Pair<HttpHeaders, Response> getIsAuthenticatedTestData(IsAuthRequestType type) {
             switch (type) {
                 case IS_AUTH_OK:
-                    return Pair.with(okCookieHeaders(), okIsAuthResponse());
+                    return Pair.with(okCookieHeaders, okIsAuthResponse());
                 case IS_AUTH_NO_COOKIE:
-                    return Pair.with(noCookieHeaders(), wrongIsAuthResponse());
+                    return Pair.with(noCookieHeaders, wrongIsAuthResponse());
                 case IS_AUTH_WRONG_COOKIE:
-                    return Pair.with(wrongCookieHeaders(), wrongIsAuthResponse());
+                    return Pair.with(wrongCookieHeaders, wrongIsAuthResponse());
             }
             throw new IllegalArgumentException();
         }
@@ -138,11 +149,11 @@ public class SessionsTest extends JerseyTest {
         public static Pair<HttpHeaders, Response> getLogoutTestData(LogoutRequestType type) {
             switch (type) {
                 case LOGOUT_LOGGED:
-                    return Pair.with(okCookieHeaders(), okLogoutResponse());
+                    return Pair.with(okCookieHeaders, okLogoutResponse());
                 case LOGOUT_NOT_LOGGED:
-                    return Pair.with(noCookieHeaders(), wrongLogoutResponse());
+                    return Pair.with(noCookieHeaders, wrongLogoutResponse());
                 case LOGOUT_WRONG_COOKIE:
-                    return Pair.with(wrongCookieHeaders(), wrongLogoutResponse());
+                    return Pair.with(wrongCookieHeaders, wrongLogoutResponse());
             }
             throw new IllegalArgumentException();
         }
@@ -179,197 +190,6 @@ public class SessionsTest extends JerseyTest {
             return WebErrorManager.ok("You was not logged in.");
         }
 
-        @SuppressWarnings({"AnonymousInnerClassWithTooManyMethods", "InnerClassTooDeeplyNested", "OverlyComplexAnonymousInnerClass"})
-        private static HttpHeaders noCookieHeaders() {
-            return new HttpHeaders() {
-                @Nullable
-                @Override
-                public List<String> getRequestHeader(String s) {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public String getHeaderString(String s) {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public MultivaluedMap<String, String> getRequestHeaders() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public List<MediaType> getAcceptableMediaTypes() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public List<Locale> getAcceptableLanguages() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public MediaType getMediaType() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public Locale getLanguage() {
-                    return null;
-                }
-
-                @Override
-                public Map<String, Cookie> getCookies() {
-                    return new HashMap<>();
-                }
-
-                @Nullable
-                @Override
-                public Date getDate() {
-                    return null;
-                }
-
-                @Override
-                public int getLength() {
-                    return 0;
-                }
-            };
-        }
-        @SuppressWarnings({"AnonymousInnerClassWithTooManyMethods", "InnerClassTooDeeplyNested", "OverlyComplexAnonymousInnerClass"})
-        private static HttpHeaders okCookieHeaders() {
-            return new HttpHeaders() {
-                @Nullable
-                @Override
-                public List<String> getRequestHeader(String s) {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public String getHeaderString(String s) {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public MultivaluedMap<String, String> getRequestHeaders() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public List<MediaType> getAcceptableMediaTypes() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public List<Locale> getAcceptableLanguages() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public MediaType getMediaType() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public Locale getLanguage() {
-                    return null;
-                }
-
-                @Override
-                public Map<String, Cookie> getCookies() {
-                    Map<String, Cookie> map = new HashMap<>();
-                    map.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID(SID));
-                    return map;
-                }
-
-                @Nullable
-                @Override
-                public Date getDate() {
-                    return null;
-                }
-
-                @Override
-                public int getLength() {
-                    return 0;
-                }
-            };
-        }
-        @SuppressWarnings({"AnonymousInnerClassWithTooManyMethods", "InnerClassTooDeeplyNested", "OverlyComplexAnonymousInnerClass"})
-        private static HttpHeaders wrongCookieHeaders() {
-            return new HttpHeaders() {
-                @Nullable
-                @Override
-                public List<String> getRequestHeader(String s) {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public String getHeaderString(String s) {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public MultivaluedMap<String, String> getRequestHeaders() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public List<MediaType> getAcceptableMediaTypes() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public List<Locale> getAcceptableLanguages() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public MediaType getMediaType() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public Locale getLanguage() {
-                    return null;
-                }
-
-                @Override
-                public Map<String, Cookie> getCookies() {
-                    Map<String, Cookie> map = new HashMap<>();
-                    map.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID("ERRONEOUS DATA"));
-                    return map;
-                }
-
-                @Nullable
-                @Override
-                public Date getDate() {
-                    return null;
-                }
-
-                @Override
-                public int getLength() {
-                    return 0;
-                }
-            };
-        }
-
         @SuppressWarnings("InnerClassTooDeeplyNested")
         public enum LoginRequestType {LOGIN_OK, LOGIN_WRONG_LOGIN, LOGIN_WRONG_PASSWORD}
         @SuppressWarnings("InnerClassTooDeeplyNested")
@@ -378,7 +198,9 @@ public class SessionsTest extends JerseyTest {
         public enum LogoutRequestType {LOGOUT_LOGGED, LOGOUT_NOT_LOGGED, LOGOUT_WRONG_COOKIE}
     }
 
-
+    private static HttpHeaders noCookieHeaders = mock(HttpHeaders.class);
+    private static HttpHeaders okCookieHeaders = mock(HttpHeaders.class);
+    private static HttpHeaders wrongCookieHeaders = mock(HttpHeaders.class);
     private Sessions sessions;
     private static final String LOGIN = "TEST_LOGIN";
     private static final String PASSWORD = "TEST_PASSWORD";
