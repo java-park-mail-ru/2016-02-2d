@@ -52,6 +52,8 @@ public class Main {
                 default:
                     accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.PRODUCTION));
             }
+        else
+            accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.PRODUCTION));
     }
 
     private static void fillContext() throws Exception {
