@@ -11,7 +11,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
-public class DataBaseRealImpl implements DataBase {
+public class DataBaseRealImpl implements DataBase, AutoCloseable {
 
     public DataBaseRealImpl() throws Exception {
         type = DBTYPE.PRODUCTION;
@@ -25,15 +25,11 @@ public class DataBaseRealImpl implements DataBase {
 
     public void createDBAndSetup() throws Exception {
         try {
+            connectToDBOrDie();
             setup();
         } catch (HibernateException ex) {
-            try {
-                createDB();
-                setup();
-            } catch (HibernateException ex2) {
-                System.err.println("---\nSomething went completely wrong.\nCheck if MySQL is running and is compatible with 5.1.38 mysql/j...\n*****CRITICAL ERROR*****\nShutting down\n---");
-                throw new Exception(ex2);
-            }
+            System.out.println("---\nSomething went completely wrong.\nCheck if MySQL is running and is compatible with 5.1.38 mysql/j...\n*****CRITICAL ERROR*****\nShutting down\n---");  // `err` is red and undistinguishable. `out` is white.
+            throw new Exception(ex);
         }
     }
 
@@ -139,8 +135,8 @@ public class DataBaseRealImpl implements DataBase {
         }
     }
 
-    // TODO: figure out how to use this at the very end. Autoclosables?
-    public void shutdown() {
+    @Override
+    public void close() {
         sessionFactory.close();
     }
 
@@ -171,12 +167,14 @@ public class DataBaseRealImpl implements DataBase {
     }
 
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed"})
-    private void createDB() {
+    private void connectToDBOrDie() {
+        Connection rootConnection = null;
         //noinspection OverlyBroadCatchBlock
         try {
             final Driver driver = (Driver) Class.forName("com.mysql.jdbc.Driver").newInstance();
             DriverManager.registerDriver(driver);
-            final Connection rootConnection = DriverManager.getConnection(Config.ADDRESS, Config.ROOT_LOGIN, Config.ROOT_PASSWORD);
+            DriverManager.setLoginTimeout(1);
+            rootConnection = DriverManager.getConnection(Config.ADDRESS, Config.ROOT_LOGIN, Config.ROOT_PASSWORD);
             final Statement statement = rootConnection.createStatement();
 
             statement.execute("DROP USER IF EXISTS " + config.getLoginDomain());
@@ -189,7 +187,9 @@ public class DataBaseRealImpl implements DataBase {
 
             System.out.println("Database succesfully created!");
         } catch (Exception ex) {
-            ex.printStackTrace();
+            /*ex.printStackTrace();*/
+        } finally {
+            if (rootConnection != null) try {rootConnection.close();} catch (SQLException ignore) {/*ignore.printStackTrace();*/}
         }
     }
 

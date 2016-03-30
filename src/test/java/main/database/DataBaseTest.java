@@ -85,19 +85,19 @@ public class DataBaseTest {
 
         assertNotNull(user);
 
-        final int desireScore = 100;
-        user.setScore(desireScore);
+        final int desiredScore = 100;
+        user.setScore(desiredScore);
 
         user = dataBase.getByLogin(Constants.USER_LOGIN);
         assertNotNull(user);
-        assertNotEquals(desireScore, user.getScore());
+        assertNotEquals(desiredScore, user.getScore());
 
-        user.setScore(desireScore);
+        user.setScore(desiredScore);
         dataBase.save(user.getData());
 
         user = dataBase.getByLogin(Constants.USER_LOGIN);
         assertNotNull(user);
-        assertEquals(desireScore, user.getScore());
+        assertEquals(desiredScore, user.getScore());
     }
 
     @Test

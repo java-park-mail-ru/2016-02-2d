@@ -2,7 +2,9 @@ package main;
 
 import constants.Constants;
 import main.database.DataBaseHashMapImpl;
+import main.database.DataBaseRealImpl;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import rest.UserProfile;
 
@@ -14,10 +16,23 @@ import static org.junit.Assert.*;
 
 public class AccountServiceImplTest {
 
+    @BeforeClass
+    public static void setup() {
+        asstorage = ASSTORAGE.REAL; // Change it if you wish...
+    }
+
     @Before
     public void init() throws Exception {
         accountService = new AccountServiceImpl();
-        accountService.changeDB(new DataBaseHashMapImpl());
+
+        switch (asstorage) {
+            case HASHMAP:
+                accountService.changeDB(new DataBaseHashMapImpl());
+                break;
+            case REAL:
+                accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.DEBUG));
+                break;
+        }
     }
 
     @Test
@@ -154,4 +169,31 @@ public class AccountServiceImplTest {
     }
 
     AccountService accountService;
+
+    @Test
+    public void testUpdateUser() throws Exception {
+        UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
+
+        assertNotNull(user);
+
+        final int desiredScore = 100;
+
+        // Different behavior on different internal classes. not good. Better to orient on REAL case.
+        if (asstorage == ASSTORAGE.HASHMAP) {
+            user.setScore(desiredScore);
+            user = accountService.getUser(Constants.USER_LOGIN);
+            assertNotNull(user);
+            assertNotEquals(desiredScore, user.getScore());
+        }
+
+        user.setScore(desiredScore);
+        accountService.updateUser(user);
+
+        user = accountService.getUser(Constants.USER_LOGIN);
+        assertNotNull(user);
+        assertEquals(desiredScore, user.getScore());
+    }
+
+    private static ASSTORAGE asstorage;
+    private enum ASSTORAGE { HASHMAP, REAL}
 }
