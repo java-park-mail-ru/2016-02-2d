@@ -1,7 +1,6 @@
 package main;
 
 import main.database.DataBase;
-import main.database.DataBaseRealImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
@@ -12,8 +11,8 @@ import java.util.Map;
 
 public class AccountServiceImpl implements AccountService {
 
-    public AccountServiceImpl() throws Exception {
-        registeredUsers = new DataBaseRealImpl();
+    public AccountServiceImpl() {
+        //registeredUsers = new DataBaseRealImpl();
     }
 
     @Override

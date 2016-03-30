@@ -18,18 +18,22 @@ public class DataBaseRealImpl implements DataBase, AutoCloseable {
         createDBAndSetup();
     }
 
-    public DataBaseRealImpl(@SuppressWarnings("SameParameterValue") DBTYPE dbtype) throws Exception {
+    public DataBaseRealImpl(DBTYPE dbtype) throws Exception {
         type = dbtype;
         createDBAndSetup();
     }
 
     public void createDBAndSetup() throws Exception {
         try {
-            connectToDBOrDie();
             setup();
         } catch (HibernateException ex) {
-            System.out.println("---\nSomething went completely wrong.\nCheck if MySQL is running and is compatible with 5.1.38 mysql/j...\n*****CRITICAL ERROR*****\nShutting down\n---");  // `err` is red and undistinguishable. `out` is white.
-            throw new Exception(ex);
+            try {
+                connectToDBOrDie();
+                setup();
+            } catch (HibernateException ex2) {
+                System.out.println("---\nSomething went completely wrong.\nCheck if MySQL is running and is compatible with 5.1.38 mysql/j...\n*****CRITICAL ERROR*****\nShutting down\n---");  // `err` is red and undistinguishable. `out` is white.
+                throw new Exception(ex2);
+            }
         }
     }
 
