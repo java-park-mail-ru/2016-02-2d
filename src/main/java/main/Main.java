@@ -35,6 +35,7 @@ public class Main {
          if (args.length >= 1)
              port = Integer.valueOf(args[0]);
          else {
+             System.out.format("No port specified. Launching at default %d port.", DEFAULT_PORT);
              port = DEFAULT_PORT;
          }
     }
@@ -44,20 +45,25 @@ public class Main {
         if (args.length >= 1)
             switch (args[1]) {
                 case "hash":
+                    System.out.format("Launching with HashDB");
                     accountService.changeDB(new DataBaseHashMapImpl());
                     break;
                 case "debug":
+                    System.out.format("Launching with debug DB");
                     accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.DEBUG));
                     break;
                 default:
+                    System.out.format("Launching with production DB");
                     accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.PRODUCTION));
             }
-        else
-            accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.PRODUCTION));
+        else {
+            System.out.format("No DB type specified. Launching with production DB.");
+            accountService.changeDB(new DataBaseRealImpl());
+        }
     }
 
     private static void fillContext() throws Exception {
-        System.out.format("-----Initializing context-----\n");
+        System.out.format("Initializing context...\n");
         try {
             CONTEXT.put(AccountService.class, new AccountServiceImpl());
         } catch (InstantiationException ex) {
