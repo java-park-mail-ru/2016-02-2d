@@ -1,8 +1,14 @@
 package main;
 
+import constants.Constants;
+import main.database.DataBaseHashMapImpl;
+import main.database.DataBaseRealImpl;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import rest.UserProfile;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,151 +16,184 @@ import static org.junit.Assert.*;
 
 public class AccountServiceImplTest {
 
+    @BeforeClass
+    public static void setup() {
+        asstorage = ASSTORAGE.REAL; // Change it if you wish...
+    }
+
+    @Before
+    public void init() throws Exception {
+        accountService = new AccountServiceImpl();
+
+        switch (asstorage) {
+            case HASHMAP:
+                accountService.changeDB(new DataBaseHashMapImpl());
+                break;
+            case REAL:
+                accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.DEBUG));
+                break;
+        }
+    }
+
     @Test
     public void testLoginUser() throws Exception {
-        AccountServiceImpl as = new AccountServiceImpl();
-        UserProfile user = as.getUser("admin");
+        final UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
 
-        String sid = user.getSessionID();
-        as.loginUser(user);
+        final String sid = user.getSessionID();
+        accountService.loginUser(user);
 
-        assertEquals(user, as.getBySessionID(sid));
+        assertEquals(user, accountService.getBySessionID(sid));
 
     }
 
     @Test
     public void testGetBySessionID() throws Exception {
-        AccountServiceImpl as = new AccountServiceImpl();
-        UserProfile user = as.getUser("admin");
+
+        final UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
 
-        String sid = user.getSessionID();
-        as.loginUser(user);
+        final String sid = user.getSessionID();
+        accountService.loginUser(user);
 
-        assertEquals(user, as.getBySessionID(sid));
+        assertEquals(user, accountService.getBySessionID(sid));
 
-        assertNull(as.getBySessionID(""));
+        assertNull(accountService.getBySessionID(""));
     }
 
     @Test
     public void testHasSessionID() throws Exception {
-        AccountServiceImpl as = new AccountServiceImpl();
-        UserProfile user = as.getUser("admin");
+        final UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
 
-        String sid = user.getSessionID();
+        final String sid = user.getSessionID();
 
-        assertEquals(false, as.hasSessionID(sid));
+        assertEquals(false, accountService.hasSessionID(sid));
 
-        as.loginUser(user);
+        accountService.loginUser(user);
 
-        assertEquals(true, as.hasSessionID(sid));
+        assertEquals(true, accountService.hasSessionID(sid));
     }
 
     @Test
     public void testLogoutUser() throws Exception {
-        AccountServiceImpl as = new AccountServiceImpl();
-        UserProfile user = as.getUser("admin");
+        final UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
 
-        String sid = user.getSessionID();
+        final String sid = user.getSessionID();
 
-        assertEquals(false, as.logoutUser(sid));
+        assertEquals(false, accountService.logoutUser(sid));
 
-        as.loginUser(user);
+        accountService.loginUser(user);
 
-        assertEquals(true, as.logoutUser(sid));
+        assertEquals(true, accountService.logoutUser(sid));
     }
 
     @Test
     public void testCreateNewUser() throws Exception {
-        AccountServiceImpl as = new AccountServiceImpl();
-        final String login = "login";
-        final String password = "password";
-
-        UserProfile newUser = as.createNewUser(login, password);
+        UserProfile newUser = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(newUser);
-        assertEquals(login, newUser.getLogin());
-        assertEquals(password, newUser.getPassword());
+        assertEquals(Constants.USER_LOGIN, newUser.getLogin());
+        assertEquals(Constants.USER_PASSWORD, newUser.getPassword());
 
-        newUser = as.createNewUser(login, password);
+        newUser = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNull(newUser);
     }
 
     @Test
     public void testGetAllUsers() throws Exception {
-        AccountServiceImpl as = new AccountServiceImpl();
-        // Eventually it will break.
-        UserProfile user1 = as.getUser("admin");
-        UserProfile user2 = as.getUser("guest");
+        final UserProfile user1 = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user1);
-        assertNotNull(user2);
 
-        Map<Long, UserProfile> map = new HashMap<>();
+        final Map<Long, UserProfile> map = new HashMap<>();
         map.put(user1.getId(), user1);
-        map.put(user2.getId(), user2);
 
-        assertEquals(map.values().toString(), as.getAllUsers().toString());
+        final Collection<UserProfile> userData = accountService.getAllUsers();
+        assertNotNull(userData);
+
+        assertEquals(map.values().toString(), userData.toString());
     }
 
     @Test
     public void testGetUserByID() throws Exception {
-        AccountServiceImpl as = new AccountServiceImpl();
-        UserProfile user = as.getUser("admin");
+        final UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
 
         Long id = user.getId();
 
-        assertEquals(user, as.getUser(id));
+        assertEquals(user, accountService.getUser(id));
 
-        id = -1L;   // Should not happen to have.
+        id = Constants.USER_ID;   // Should not happen to have.
 
-        assertNull(as.getUser(id));
+        assertNull(accountService.getUser(id));
     }
 
     @Test
     public void testGetUserByLogin() throws Exception {
-        AccountServiceImpl as = new AccountServiceImpl();
-        final String login = "login";
-        final String password = "password";
-
-        UserProfile newUser = as.createNewUser(login, password);
+        final UserProfile newUser = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(newUser);
 
-        UserProfile user = as.getUser(login);
+        UserProfile user = accountService.getUser(Constants.USER_LOGIN);
 
         assertEquals(newUser, user);
 
-        user = as.getUser("");
+        user = accountService.getUser("");
 
         assertNull(user);
     }
 
     @Test
     public void testDeleteUser() throws Exception {
-        AccountServiceImpl as = new AccountServiceImpl();
-        UserProfile user = as.getUser("admin");
+        final UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 
         assertNotNull(user);
 
         Long id = user.getId();
-        as.deleteUser(id);
+        accountService.deleteUser(id);
 
-        assertNull(as.getUser(id));
+        assertNull(accountService.getUser(id));
 
         id = -1L;
-        as.deleteUser(id);
+        accountService.deleteUser(id);
 
-        assertNull(as.getUser(id));
+        assertNull(accountService.getUser(id));
     }
+
+    AccountService accountService;
+
+    @Test
+    public void testUpdateUser() throws Exception {
+        UserProfile user = accountService.createNewUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
+
+        assertNotNull(user);
+
+        final int desiredScore = 100;
+
+        // Different behavior on different internal classes. not good. Better to orient on REAL case.
+        if (asstorage == ASSTORAGE.HASHMAP) {
+            user.setScore(desiredScore);
+            user = accountService.getUser(Constants.USER_LOGIN);
+            assertNotNull(user);
+            assertNotEquals(desiredScore, user.getScore());
+        }
+
+        user.setScore(desiredScore);
+        accountService.updateUser(user);
+
+        user = accountService.getUser(Constants.USER_LOGIN);
+        assertNotNull(user);
+        assertEquals(desiredScore, user.getScore());
+    }
+
+    private static ASSTORAGE asstorage;
+    private enum ASSTORAGE { HASHMAP, REAL}
 }

@@ -11,10 +11,10 @@ public class WebErrorManagerTest {
 
     @Test
     public void testShowFieldsNotPresent() throws JSONException {
-        JSONObject json = new JSONObject().put("field_a", "");
+        final JSONObject json = new JSONObject().put("field_a", "");
         
-        JSONArray actualErrors = WebErrorManager.showFieldsNotPresent(json, new String[]{"field_a", "field_b"});
-        JSONArray predictedErrors = new JSONArray().put( new JSONObject().put("field_b", "Field \"field_b\" not present!"));
+        final JSONArray actualErrors = WebErrorManager.showFieldsNotPresent(json, new String[]{"field_a", "field_b"});
+        final JSONArray predictedErrors = new JSONArray().put( new JSONObject().put("field_b", "Field \"field_b\" not present!"));
 
         assertNotNull(actualErrors);
         assertEquals(predictedErrors.toString(), actualErrors.toString());
