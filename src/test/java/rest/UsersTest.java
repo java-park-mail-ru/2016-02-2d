@@ -6,7 +6,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 import org.junit.Test;
 
@@ -62,8 +61,9 @@ public class UsersTest extends JerseyTest {
 
 
 
+    
     public void testCreateUser(Triplet<String, HttpHeaders, Response> data, boolean shouldHaveCookie){
-        Response response = users.createUser(data.getValue0(), data.getValue1());
+        final Response response = users.createUser(data.getValue0(), data.getValue1());
 
         assertEquals(data.getValue2().toString(), response.toString());
         assertEquals(data.getValue2().getEntity().toString(), response.getEntity().toString());
@@ -74,21 +74,21 @@ public class UsersTest extends JerseyTest {
     }
 
     public void testGetUserByID(Pair<Long, Response> data) {
-        Response response = users.getUserByID(data.getValue0());
+        final Response response = users.getUserByID(data.getValue0());
 
         assertEquals(data.getValue1().toString(), response.toString());
         assertEquals(data.getValue1().getEntity().toString(), response.getEntity().toString());
     }
 
     public void testUpdateUser(Triplet<String, HttpHeaders, Response> data) {
-        Response response = users.updateUser(data.getValue0(), data.getValue1());
+        final Response response = users.updateUser(data.getValue0(), data.getValue1());
 
         assertEquals(data.getValue2().toString(), response.toString());
         assertEquals(data.getValue2().getEntity().toString(), response.getEntity().toString());
     }
 
     public void testDeleteUser(Triplet<Long, HttpHeaders, Response> data) {
-        Response response = users.deleteUser(data.getValue0(), data.getValue1());
+        final Response response = users.deleteUser(data.getValue0(), data.getValue1());
 
         assertEquals(data.getValue2().toString(), response.toString());
         assertEquals(data.getValue2().getEntity().toString(), response.getEntity().toString());
@@ -97,8 +97,8 @@ public class UsersTest extends JerseyTest {
     // A bit of magic, without which nothing works.
     @Override
     protected Application configure() {
-        AccountServiceImpl mockedAccountService = mock(AccountServiceImpl.class);
-        UserProfile user = mock(UserProfile.class);
+        final AccountServiceImpl mockedAccountService = mock(AccountServiceImpl.class);
+        final UserProfile user = mock(UserProfile.class);
         users = new Users(mockedAccountService);
 
         when(mockedAccountService.createNewUser(LOGIN, PASSWORD)).thenReturn(user);
@@ -115,6 +115,16 @@ public class UsersTest extends JerseyTest {
         when(user.getPassword()).thenReturn(PASSWORD);
         when(user.getSessionID()).thenReturn(SID);
 
+        final Map<String, Cookie> noCookieMap = new HashMap<>();
+        final Map<String, Cookie> okCookieMap = new HashMap<>();
+        okCookieMap.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID(SID));
+        final Map<String, Cookie> badCookieMap = new HashMap<>();
+        badCookieMap.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID("ERRONEOUS DATA"));
+
+        when(NO_COOKIE_HEADERS.getCookies()).thenReturn(noCookieMap);
+        when(OK_COOKIE_HEADERS.getCookies()).thenReturn(okCookieMap);
+        when(WRONG_COOKIE_HEADERS.getCookies()).thenReturn(badCookieMap);
+
         return new ResourceConfig(UsersTest.class);
     }
 
@@ -123,9 +133,9 @@ public class UsersTest extends JerseyTest {
             switch (type)
             {
                 case CREATE_OK:
-                    return Triplet.with(okCreateJSON(), noCookieHeaders(), okCreateResponse());
+                    return Triplet.with(okCreateJSON(), NO_COOKIE_HEADERS, okCreateResponse());
                 case CREATE_USER_EXISTS:
-                    return Triplet.with(wrongCreateJSON(), noCookieHeaders(), userExistsCreateResponse());
+                    return Triplet.with(wrongCreateJSON(), NO_COOKIE_HEADERS, userExistsCreateResponse());
             }
             throw new IllegalArgumentException();
         }
@@ -143,9 +153,9 @@ public class UsersTest extends JerseyTest {
         public static Triplet<String, HttpHeaders, Response> getUpdateUserTestData(UpdateUserType type) {
             switch (type) {
                 case UPDATE_OK:
-                    return Triplet.with(okUpdateJSON(), okCookieHeaders(), okUpdateResponse());
+                    return Triplet.with(okUpdateJSON(), OK_COOKIE_HEADERS, okUpdateResponse());
                 case UPDATE_ANOTHER_USER:
-                    return Triplet.with(okUpdateJSON(), wrongCookieHeaders(), wrongUpdateResponse());
+                    return Triplet.with(okUpdateJSON(), WRONG_COOKIE_HEADERS, wrongUpdateResponse());
             }
             throw new IllegalArgumentException();
         }
@@ -153,11 +163,11 @@ public class UsersTest extends JerseyTest {
         public static Triplet<Long, HttpHeaders, Response> getDeleteUserTestData(DeleteUserType type) {
             switch (type) {
                 case DELETE_OK:
-                    return Triplet.with(ID, okCookieHeaders(), okDeleteResponse());
+                    return Triplet.with(ID, OK_COOKIE_HEADERS, okDeleteResponse());
                 case DELETE_ANOTHER_USER:
-                    return Triplet.with(0L, okCookieHeaders(), wrongUserDeleteResponse());
+                    return Triplet.with(0L, OK_COOKIE_HEADERS, wrongUserDeleteResponse());
                 case DELETE_NOT_LOGGED:
-                    return Triplet.with(ID, noCookieHeaders(), noCookieDeleteResponse());
+                    return Triplet.with(ID, NO_COOKIE_HEADERS, noCookieDeleteResponse());
             }
             throw new IllegalArgumentException();
         }
@@ -203,197 +213,6 @@ public class UsersTest extends JerseyTest {
             return WebErrorManager.authorizationRequired("Not logged in!");
         }
 
-        @SuppressWarnings({"AnonymousInnerClassWithTooManyMethods", "OverlyComplexAnonymousInnerClass", "InnerClassTooDeeplyNested"})
-        private static HttpHeaders noCookieHeaders() {
-            return new HttpHeaders() {
-                @Nullable
-                @Override
-                public List<String> getRequestHeader(String s) {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public String getHeaderString(String s) {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public MultivaluedMap<String, String> getRequestHeaders() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public List<MediaType> getAcceptableMediaTypes() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public List<Locale> getAcceptableLanguages() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public MediaType getMediaType() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public Locale getLanguage() {
-                    return null;
-                }
-
-                @Override
-                public Map<String, Cookie> getCookies() {
-                    return new HashMap<>();
-                }
-
-                @Nullable
-                @Override
-                public Date getDate() {
-                    return null;
-                }
-
-                @Override
-                public int getLength() {
-                    return 0;
-                }
-            };
-        }
-        @SuppressWarnings({"AnonymousInnerClassWithTooManyMethods", "OverlyComplexAnonymousInnerClass", "InnerClassTooDeeplyNested"})
-        private static HttpHeaders okCookieHeaders() {
-            return new HttpHeaders() {
-                @Nullable
-                @Override
-                public List<String> getRequestHeader(String s) {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public String getHeaderString(String s) {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public MultivaluedMap<String, String> getRequestHeaders() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public List<MediaType> getAcceptableMediaTypes() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public List<Locale> getAcceptableLanguages() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public MediaType getMediaType() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public Locale getLanguage() {
-                    return null;
-                }
-
-                @Override
-                public Map<String, Cookie> getCookies() {
-                    Map<String, Cookie> map = new HashMap<>();
-                    map.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID(SID));
-                    return map;
-                }
-
-                @Nullable
-                @Override
-                public Date getDate() {
-                    return null;
-                }
-
-                @Override
-                public int getLength() {
-                    return 0;
-                }
-            };
-        }
-        @SuppressWarnings({"AnonymousInnerClassWithTooManyMethods", "OverlyComplexAnonymousInnerClass", "InnerClassTooDeeplyNested"})
-        private static HttpHeaders wrongCookieHeaders() {
-            return new HttpHeaders() {
-                @Nullable
-                @Override
-                public List<String> getRequestHeader(String s) {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public String getHeaderString(String s) {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public MultivaluedMap<String, String> getRequestHeaders() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public List<MediaType> getAcceptableMediaTypes() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public List<Locale> getAcceptableLanguages() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public MediaType getMediaType() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public Locale getLanguage() {
-                    return null;
-                }
-
-                @Override
-                public Map<String, Cookie> getCookies() {
-                    Map<String, Cookie> map = new HashMap<>();
-                    map.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID("ERRONEOUS DATA"));
-                    return map;
-                }
-
-                @Nullable
-                @Override
-                public Date getDate() {
-                    return null;
-                }
-
-                @Override
-                public int getLength() {
-                    return 0;
-                }
-            };
-        }
-
         @SuppressWarnings("InnerClassTooDeeplyNested")
         public enum CreateUserType {CREATE_OK, CREATE_USER_EXISTS}
         @SuppressWarnings("InnerClassTooDeeplyNested")
@@ -405,6 +224,9 @@ public class UsersTest extends JerseyTest {
     }
 
 
+    private static final HttpHeaders NO_COOKIE_HEADERS = mock(HttpHeaders.class);
+    private static final HttpHeaders OK_COOKIE_HEADERS = mock(HttpHeaders.class);
+    private static final HttpHeaders WRONG_COOKIE_HEADERS = mock(HttpHeaders.class);
     private Users users;
     private static final String LOGIN = "TEST_LOGIN";
     private static final String PASSWORD = "TEST_PASSWORD";

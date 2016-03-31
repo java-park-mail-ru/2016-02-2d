@@ -9,6 +9,8 @@ import javax.ws.rs.core.*;
 import main.TokenManager;
 import org.json.*;
 
+import java.util.Collection;
+
 @Singleton
 @Path("/user")
 public class Users {
@@ -55,7 +57,11 @@ public class Users {
     public Response getAllUsers() {
         final JSONArray responseJSON = new JSONArray();
 
-        for (UserProfile user : accountService.getAllUsers())
+        final Collection<UserProfile> userData = accountService.getAllUsers();
+        if (userData == null)
+            return WebErrorManager.serverError();
+
+        for (UserProfile user : userData)
             responseJSON.put(user.toJson());
 
         return Response.ok(responseJSON.toString()).build();
