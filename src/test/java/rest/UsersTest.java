@@ -1,5 +1,7 @@
 package rest;
 
+import constants.Constants;
+import main.AccountService;
 import main.AccountServiceImpl;
 import main.TokenManager;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -98,34 +100,9 @@ public class UsersTest extends JerseyTest {
     @Override
     protected Application configure() {
         final AccountServiceImpl mockedAccountService = mock(AccountServiceImpl.class);
-        final UserProfile user = mock(UserProfile.class);
         users = new Users(mockedAccountService);
 
-        when(mockedAccountService.createNewUser(LOGIN, PASSWORD)).thenReturn(user);
-        when(mockedAccountService.createNewUser(PASSWORD, LOGIN)).thenReturn(null);
-        when(mockedAccountService.getUser(LOGIN)).thenReturn(user);
-        when(mockedAccountService.getUser(ID)).thenReturn(user);
-        when(mockedAccountService.getBySessionID(SID)).thenReturn(user);
-        when(mockedAccountService.hasSessionID(SID)).thenReturn(true);
-        when(mockedAccountService.logoutUser(SID)).thenReturn(true);
-
-        when(user.toJson()).thenReturn(new JSONObject().put("id", ID).put("login", LOGIN).put("score", 0L));
-        when(user.getId()).thenReturn(ID);
-        when(user.getLogin()).thenReturn(LOGIN);
-        when(user.getPassword()).thenReturn(PASSWORD);
-        when(user.getSessionID()).thenReturn(SID);
-
-        final Map<String, Cookie> noCookieMap = new HashMap<>();
-        final Map<String, Cookie> okCookieMap = new HashMap<>();
-        okCookieMap.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID(SID));
-        final Map<String, Cookie> badCookieMap = new HashMap<>();
-        badCookieMap.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID("ERRONEOUS DATA"));
-
-        when(NO_COOKIE_HEADERS.getCookies()).thenReturn(noCookieMap);
-        when(OK_COOKIE_HEADERS.getCookies()).thenReturn(okCookieMap);
-        when(WRONG_COOKIE_HEADERS.getCookies()).thenReturn(badCookieMap);
-
-        return new ResourceConfig(UsersTest.class);
+        return new ResourceConfig(SessionsTest.class);
     }
 
     private static class RequestFactory {
@@ -224,15 +201,15 @@ public class UsersTest extends JerseyTest {
     }
 
 
-    private static final HttpHeaders NO_COOKIE_HEADERS = mock(HttpHeaders.class);
-    private static final HttpHeaders OK_COOKIE_HEADERS = mock(HttpHeaders.class);
-    private static final HttpHeaders WRONG_COOKIE_HEADERS = mock(HttpHeaders.class);
     private Users users;
-    private static final String LOGIN = "TEST_LOGIN";
-    private static final String PASSWORD = "TEST_PASSWORD";
-    private static final String SID = "TEST_SESSION_ID";
+    private static final HttpHeaders NO_COOKIE_HEADERS = Constants.FunctionalTestMocks.getNoCookieHeaders();
+    private static final HttpHeaders OK_COOKIE_HEADERS = Constants.FunctionalTestMocks.getOkCookieHeaders();
+    private static final HttpHeaders WRONG_COOKIE_HEADERS = Constants.FunctionalTestMocks.getWrongCookieHeaders();
     @SuppressWarnings("ConstantNamingConvention")
-    private static final long ID = 0xDEADBEEFL;
+    private static final long ID = Constants.USER_ID;
+    private static final String LOGIN = Constants.USER_LOGIN;
+    private static final String PASSWORD = Constants.USER_PASSWORD;
+    private static final String SID = Constants.USER_SESSION_ID;
 
 
 }

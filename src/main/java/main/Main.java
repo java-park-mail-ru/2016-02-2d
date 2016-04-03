@@ -15,7 +15,7 @@ public class Main {
         setCustomPort(args);
         try { setDataBaseType(args);} catch (Exception ex) { System.out.println("Could not instantiate database.\nQuitting..."); System.exit(1);}
 
-        System.out.format("Starting at port: %d\n", port);
+        System.out.format("Starting at %d port\n", port);
         final Server server = new Server(port);
         final ServletContextHandler contextHandler = new ServletContextHandler(server, "/api/", ServletContextHandler.SESSIONS);
 
@@ -35,29 +35,29 @@ public class Main {
          if (args.length >= 1)
              port = Integer.valueOf(args[0]);
          else {
-             System.out.format("No port specified. Launching at default %d port.", DEFAULT_PORT);
+             System.out.format("No port specified. Launching at default %d port.\n", DEFAULT_PORT);
              port = DEFAULT_PORT;
          }
     }
 
     private static void setDataBaseType(String[] args) throws Exception {
         final AccountService accountService = (AccountService) CONTEXT.get(AccountService.class);
-        if (args.length >= 1)
+        if (args.length >= 2)
             switch (args[1]) {
                 case "hash":
-                    System.out.format("Launching with HashDB");
+                    System.out.println("Launching with HashDB");
                     accountService.changeDB(new DataBaseHashMapImpl());
                     break;
                 case "debug":
-                    System.out.format("Launching with debug DB");
+                    System.out.println("Launching with debug DB");
                     accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.DEBUG));
                     break;
                 default:
-                    System.out.format("Launching with production DB");
+                    System.out.println("Launching with production DB");
                     accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.PRODUCTION));
             }
         else {
-            System.out.format("No DB type specified. Launching with production DB.");
+            System.out.println("No DB type specified. Launching with production DB.");
             accountService.changeDB(new DataBaseRealImpl());
         }
     }
