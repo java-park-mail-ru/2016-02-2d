@@ -6,6 +6,8 @@ import rest.UserProfile;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class DataBaseHashMapImpl implements DataBase {
     @Override
@@ -18,7 +20,9 @@ public class DataBaseHashMapImpl implements DataBase {
     public UserProfile addUser(String login, String password) {
         if (containsLogin(login))
             return null;
-        final UserProfile newUser = new UserProfile(new UserProfileData(login, password));
+        final UserProfileData newUserData = new UserProfileData(login, password);
+        newUserData.setId(idCounter.incrementAndGet());
+        final UserProfile newUser = new UserProfile(newUserData);
         loginToUser.put(login, newUser);
         idToUser.put(newUser.getId(), newUser);
         return newUser;
@@ -60,6 +64,7 @@ public class DataBaseHashMapImpl implements DataBase {
     }
 
 
+    private final AtomicLong idCounter = new AtomicLong();
     private final Map<String, UserProfile> loginToUser = new HashMap<>();
     private final Map<Long, UserProfile> idToUser = new HashMap<>();
 

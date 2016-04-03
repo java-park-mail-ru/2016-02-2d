@@ -23,14 +23,13 @@ public class AccountServiceImplTest {
 
     @Before
     public void init() throws Exception {
-        accountService = new AccountServiceImpl();
 
         switch (asstorage) {
             case HASHMAP:
-                accountService.changeDB(new DataBaseHashMapImpl());
+                accountService = new AccountServiceImpl(new DataBaseHashMapImpl());
                 break;
             case REAL:
-                accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.DEBUG));
+                accountService = new AccountServiceImpl(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.DEBUG));
                 break;
         }
     }
