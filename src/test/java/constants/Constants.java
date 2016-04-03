@@ -50,6 +50,8 @@ public class Constants {
                 when(MOCKED_ACCOUNT_SERVICE.getBySessionID(USER_SESSION_ID)).thenReturn(MOCKED_USER_PROFILE);
                 when(MOCKED_ACCOUNT_SERVICE.hasSessionID(USER_SESSION_ID)).thenReturn(true);
                 when(MOCKED_ACCOUNT_SERVICE.logoutUser(USER_SESSION_ID)).thenReturn(true);
+                when(MOCKED_ACCOUNT_SERVICE.createNewUser(USER_LOGIN, USER_PASSWORD)).thenReturn(MOCKED_USER_PROFILE);
+                when(MOCKED_ACCOUNT_SERVICE.createNewUser(USER_PASSWORD, USER_LOGIN)).thenReturn(null);
 
                 when(MOCKED_USER_PROFILE.toJson()).thenReturn(new JSONObject().put("id", USER_ID).put("login", USER_LOGIN).put("score", 0L));
                 when(MOCKED_USER_PROFILE.getId()).thenReturn(USER_ID);

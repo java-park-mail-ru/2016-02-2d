@@ -99,10 +99,9 @@ public class UsersTest extends JerseyTest {
     // A bit of magic, without which nothing works.
     @Override
     protected Application configure() {
-        final AccountServiceImpl mockedAccountService = mock(AccountServiceImpl.class);
+        final AccountService mockedAccountService = Constants.FunctionalTestMocks.getMockedAccountService();
         users = new Users(mockedAccountService);
-
-        return new ResourceConfig(SessionsTest.class);
+        return new ResourceConfig(UsersTest.class);
     }
 
     private static class RequestFactory {
