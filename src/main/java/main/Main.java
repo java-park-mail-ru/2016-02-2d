@@ -64,14 +64,18 @@ public class Main {
                 System.out.println("No DB type specified. Launching with production DB.");
                 dataBase = new DataBaseRealImpl();
             }
-        } catch (InstantiationException ex) {
-            System.out.println("Cannot add DataBase to context. Aborting...");
-            throw new Exception(ex);
         } catch (Exception ex) {
             System.out.println("Cannot instantiate DataBase. Aborting...");
             throw new Exception(ex);
         }
-        CONTEXT.put(DataBase.class, dataBase);
+
+        try {
+            CONTEXT.put(DataBase.class, dataBase);
+        } catch (InstantiationException ex) {
+            System.out.println("Cannot add DataBase to context. Aborting...");
+            throw new Exception(ex);
+        }
+        System.out.println("OK.");
     }
 
     private static void createAccountService() throws Exception {

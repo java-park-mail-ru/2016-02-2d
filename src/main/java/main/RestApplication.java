@@ -10,16 +10,16 @@ import java.util.Set;
 
 @ApplicationPath("api")
 public class RestApplication extends Application {
-    @Override
-    public Set<Object> getSingletons() {
-        callsCounter++;
-        System.out.println("getSingletons was called " + callsCounter + "times total!");
-        final HashSet<Object> objects = new HashSet<>();
+    public RestApplication() {
         final AccountService accountService = (AccountService) Main.getContext().get(AccountService.class);
         objects.add(new Users(accountService));
         objects.add(new Sessions(accountService));
+    }
+
+    @Override
+    public Set<Object> getSingletons() {
         return objects;
     }
 
-    private int callsCounter = 0;
+    private final HashSet<Object> objects = new HashSet<>();
 }
