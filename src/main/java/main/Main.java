@@ -1,6 +1,7 @@
 package main;
 
 import main.config.Context;
+import main.database.DataBase;
 import main.database.DataBaseHashMapImpl;
 import main.database.DataBaseRealImpl;
 import org.eclipse.jetty.server.Server;
@@ -11,9 +12,10 @@ import org.glassfish.jersey.servlet.ServletContainer;
 @SuppressWarnings("OverlyBroadThrowsClause")
 public class Main {
     public static void main(String[] args) throws Exception {
-        fillContext();
+        setDataBaseType(args);
+        createAccountService();
         setCustomPort(args);
-        try { setDataBaseType(args);} catch (Exception ex) { System.out.println("Could not instantiate database.\nQuitting..."); System.exit(1);}
+
 
         System.out.format("Starting at %d port\n", port);
         final Server server = new Server(port);
@@ -41,35 +43,47 @@ public class Main {
     }
 
     private static void setDataBaseType(String[] args) throws Exception {
-        final AccountService accountService = (AccountService) CONTEXT.get(AccountService.class);
-        if (args.length >= 2)
-            switch (args[1]) {
-                case "hash":
-                    System.out.println("Launching with HashDB");
-                    accountService.changeDB(new DataBaseHashMapImpl());
-                    break;
-                case "debug":
-                    System.out.println("Launching with debug DB");
-                    accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.DEBUG));
-                    break;
-                default:
-                    System.out.println("Launching with production DB");
-                    accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.PRODUCTION));
+        System.out.println("Instantiating DataBase...");
+        DataBase dataBase = null;
+        try {
+            if (args.length >= 2)
+                switch (args[1]) {
+                    case "hash":
+                        System.out.println("Launching with HashDB");
+                        dataBase = new DataBaseHashMapImpl();
+                        break;
+                    case "debug":
+                        System.out.println("Launching with debug DB");
+                        dataBase = new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.DEBUG);
+                        break;
+                    default:
+                        System.out.println("Launching with production DB");
+                        dataBase = new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.PRODUCTION);
+                }
+            else {
+                System.out.println("No DB type specified. Launching with production DB.");
+                dataBase = new DataBaseRealImpl();
             }
-        else {
-            System.out.println("No DB type specified. Launching with production DB.");
-            accountService.changeDB(new DataBaseRealImpl());
+        } catch (InstantiationException ex) {
+            System.out.println("Cannot add DataBase to context. Aborting...");
+            throw new Exception(ex);
+        } catch (Exception ex) {
+            System.out.println("Cannot instantiate DataBase. Aborting...");
+            throw new Exception(ex);
         }
+        CONTEXT.put(DataBase.class, dataBase);
     }
 
-    private static void fillContext() throws Exception {
-        System.out.format("Initializing context...\n");
+    private static void createAccountService() throws Exception {
+        System.out.println("Instantiating AccountService...");
         try {
-            CONTEXT.put(AccountService.class, new AccountServiceImpl());
+            final DataBase dataBase = (DataBase) CONTEXT.get(DataBase.class);
+            CONTEXT.put(AccountService.class, new AccountServiceImpl(dataBase));
         } catch (InstantiationException ex) {
             System.out.println("Cannot add AccountService to context. Aborting...");
             throw new Exception(ex);
         }
+        System.out.println("OK.");
     }
 
 

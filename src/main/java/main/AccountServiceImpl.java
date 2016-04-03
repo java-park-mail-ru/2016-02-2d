@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class AccountServiceImpl implements AccountService {
 
-    public AccountServiceImpl() {
-        //registeredUsers = new DataBaseRealImpl();
+    public AccountServiceImpl(DataBase dataBase) {
+        registeredUsers = dataBase;
     }
 
     @Override

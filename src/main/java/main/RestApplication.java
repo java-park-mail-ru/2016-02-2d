@@ -12,10 +12,14 @@ import java.util.Set;
 public class RestApplication extends Application {
     @Override
     public Set<Object> getSingletons() {
+        callsCounter++;
+        System.out.println("getSingletons was called " + callsCounter + "times total!");
         final HashSet<Object> objects = new HashSet<>();
         final AccountService accountService = (AccountService) Main.getContext().get(AccountService.class);
         objects.add(new Users(accountService));
         objects.add(new Sessions(accountService));
         return objects;
     }
+
+    private int callsCounter = 0;
 }
