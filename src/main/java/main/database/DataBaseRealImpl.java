@@ -1,5 +1,7 @@
 package main.database;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.*;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
@@ -28,10 +30,11 @@ public class DataBaseRealImpl implements DataBase, AutoCloseable {
             setup();
         } catch (HibernateException ex) {
             try {
+                logger.warn("Could not connect to DB. Attempting to create it.");
                 connectToDBOrDie();
                 setup();
             } catch (HibernateException ex2) {
-                System.out.println("---\nSomething went completely wrong.\nCheck if MySQL is running and is compatible with 5.1.38 mysql/j...\n*****CRITICAL ERROR*****\nShutting down\n---");  // `err` is red and undistinguishable. `out` is white.
+                logger.fatal("Check if MySQL is running and is compatible with 5.1.38 mysql/j.", ex2);
                 throw new Exception(ex2);
             }
         }
@@ -68,8 +71,8 @@ public class DataBaseRealImpl implements DataBase, AutoCloseable {
             else
                 return new UserProfile(dao.read(id));
         } catch (HibernateException ex) {
-            System.out.format("Could not get user #%d by ID!\nMessage: %s\nCause: %s", id, ex.getMessage(), ex.getCause());
-            ex.printStackTrace();
+            final String reason = "Could not get user #" + id + " by ID!";
+            logger.info(reason, ex);
             return null;
         }
     }
@@ -85,8 +88,8 @@ public class DataBaseRealImpl implements DataBase, AutoCloseable {
             else
                 return new UserProfile(dao.readByName(name));
         } catch (HibernateException ex) {
-            System.out.format("Could not get user \"%s\" by login!\nMessage: %s\nCause: %s", name, ex.getMessage(), ex.getCause());
-            ex.printStackTrace();
+            final String reason = "Could not get user \"" + name + "\" by login!";
+            logger.info(reason, ex);
             return null;
         }
     }
@@ -101,8 +104,8 @@ public class DataBaseRealImpl implements DataBase, AutoCloseable {
             dao.readAll().stream().forEach((data) -> result.add(new UserProfile(data)));    // TODO: investigate how to reduce instantiations!
             return result;
         } catch (HibernateException ex) {
-            System.out.format("Could not get all users somewhy! O_o\nMessage: %s\nCause: %s", ex.getMessage(), ex.getCause());
-            ex.printStackTrace();
+            final String reason = "Could not get all users somewhy! O_o";
+            logger.error(reason, ex);
             return null;
         }
 
@@ -134,8 +137,8 @@ public class DataBaseRealImpl implements DataBase, AutoCloseable {
             final UserProfileDataDAO dao = new UserProfileDataDAO(session);
             dao.delete(id);
         } catch (HibernateException ex) {
-            System.out.format("Could not delete user #%d!\nMessage: %s\nCause: %s", id, ex.getMessage(), ex.getCause());
-            ex.printStackTrace();
+            final String reason = "Could not delete user #" + id + '!';
+            logger.error(reason, ex);
         }
     }
 
@@ -153,7 +156,7 @@ public class DataBaseRealImpl implements DataBase, AutoCloseable {
     }
     
     private void setup() throws HibernateException {
-        System.out.println("-----Initializing Hibernate-----");
+        logger.info("-----Initializing Hibernate-----");
         config = new Config(type);
         final Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(UserProfileData.class);
@@ -167,11 +170,11 @@ public class DataBaseRealImpl implements DataBase, AutoCloseable {
         configuration.setProperty("hibernate.hbm2ddl.auto", config.getCreationMethod());
 
         sessionFactory = createSessionFactory(configuration);
-        System.out.println("-----Hibernate  Initialized-----");
+        logger.info("-----Hibernate  Initialized-----");
     }
 
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed"})
-    private void connectToDBOrDie() {
+    private void connectToDBOrDie() throws Exception {
         Connection rootConnection = null;
         //noinspection OverlyBroadCatchBlock
         try {
@@ -189,9 +192,9 @@ public class DataBaseRealImpl implements DataBase, AutoCloseable {
 
             statement.execute("GRANT ALL ON " + config.getDbName() + ".* TO " + config.getLoginDomain() + ';');
 
-            System.out.println("Database succesfully created!");
+            logger.info("Database succesfully created!");
         } catch (Exception ex) {
-            /*ex.printStackTrace();*/
+            throw ex;
         } finally {
             if (rootConnection != null) try {rootConnection.close();} catch (SQLException ignore) {/*ignore.printStackTrace();*/}
         }
@@ -201,6 +204,8 @@ public class DataBaseRealImpl implements DataBase, AutoCloseable {
     private static final int ERROR_NO_DB = 1049;
     private final DBTYPE type;
     private Config config;
+
+    private static Logger logger = LogManager.getLogger(DataBaseRealImpl.class);
 
     public enum DBTYPE {
         PRODUCTION, DEBUG
