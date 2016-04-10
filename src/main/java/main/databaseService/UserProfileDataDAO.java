@@ -1,4 +1,4 @@
-package main.database;
+package main.databaseservice;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;

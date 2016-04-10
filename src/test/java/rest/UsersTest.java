@@ -1,7 +1,7 @@
 package rest;
 
 import constants.Constants;
-import main.accountService.AccountService;
+import main.accountservice.AccountService;
 import main.UserTokenManager;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -12,8 +12,7 @@ import org.junit.Test;
 
 import javax.ws.rs.core.*;
 
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertEquals;
 
 public class UsersTest extends JerseyTest {
 

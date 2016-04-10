@@ -1,4 +1,4 @@
-package main.database;
+package main.databaseservice;
 
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;

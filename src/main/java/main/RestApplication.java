@@ -1,6 +1,6 @@
 package main;
 
-import main.accountService.AccountService;
+import main.accountservice.AccountService;
 import rest.Sessions;
 import rest.Users;
 

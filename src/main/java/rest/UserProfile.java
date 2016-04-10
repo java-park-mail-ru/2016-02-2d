@@ -2,7 +2,7 @@ package rest;
 
 import com.sun.istack.internal.Nullable;
 import main.UserTokenManager;
-import main.databaseService.UserProfileData;
+import main.databaseservice.UserProfileData;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 

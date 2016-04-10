@@ -1,4 +1,4 @@
-package main.databaseService;
+package main.databaseservice;
 
 import constants.Constants;
 import org.junit.Before;

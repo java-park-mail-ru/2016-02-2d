@@ -1,11 +1,14 @@
 package main;
 
-import main.accountService.AccountService;
-import main.accountService.AccountServiceImpl;
+import bomberman.service.RoomManager;
+import bomberman.service.RoomManagerImpl;
+import main.accountservice.AccountService;
+import main.accountservice.AccountServiceImpl;
 import main.config.Context;
-import main.databaseService.DataBaseServiceMySQLImpl;
-import main.databaseService.DataBaseService;
-import main.databaseService.DataBaseServiceHashMapImpl;
+import main.databaseservice.DataBaseServiceMySQLImpl;
+import main.databaseservice.DataBaseService;
+import main.databaseservice.DataBaseServiceHashMapImpl;
+import main.websocketconnection.WebSocketConnectionServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -20,14 +23,18 @@ public class Main {
         createAccountService();
         setCustomPort(args);
 
+        final RoomManager manager = new RoomManagerImpl();
+
         logger.info("Starting at " + port + " port");
         final Server server = new Server(port);
         final ServletContextHandler contextHandler = new ServletContextHandler(server, "/api/", ServletContextHandler.SESSIONS);
 
         final ServletHolder servletHolder = new ServletHolder(ServletContainer.class);
         servletHolder.setInitParameter("javax.ws.rs.Application","main.RestApplication");
-
         contextHandler.addServlet(servletHolder, "/*");
+
+        contextHandler.addServlet(new ServletHolder(new WebSocketConnectionServlet(manager, ((AccountService)CONTEXT.get(AccountService.class)))), "/game");
+
         server.start();
         server.join();
     }

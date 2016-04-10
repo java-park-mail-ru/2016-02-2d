@@ -1,10 +1,8 @@
-package main.accountService;
+package main.accountservice;
 
 import constants.Constants;
-import main.accountService.AccountService;
-import main.accountService.AccountServiceImpl;
-import main.databaseService.DataBaseServiceHashMapImpl;
-import main.databaseService.DataBaseServiceMySQLImpl;
+import main.databaseservice.DataBaseServiceHashMapImpl;
+import main.databaseservice.DataBaseServiceMySQLImpl;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;

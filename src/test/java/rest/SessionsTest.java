@@ -1,7 +1,7 @@
 package rest;
 
 import constants.Constants;
-import main.accountService.AccountService;
+import main.accountservice.AccountService;
 import main.UserTokenManager;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.javatuples.Pair;
@@ -9,8 +9,8 @@ import org.javatuples.Triplet;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotSame;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 import org.glassfish.jersey.test.JerseyTest;
 

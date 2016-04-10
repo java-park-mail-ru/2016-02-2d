@@ -1,6 +1,6 @@
 package rest;
 
-import main.databaseService.UserProfileData;
+import main.databaseservice.UserProfileData;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -8,8 +8,8 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotSame;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 public class UserProfileTest {
 

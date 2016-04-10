@@ -1,6 +1,6 @@
-package main.accountService;
+package main.accountservice;
 
-import main.databaseService.DataBaseService;
+import main.databaseservice.DataBaseService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;

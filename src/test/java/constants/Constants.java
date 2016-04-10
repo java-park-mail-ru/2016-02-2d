@@ -1,7 +1,7 @@
 package constants;
 
-import main.accountService.AccountService;
-import main.accountService.AccountServiceImpl;
+import main.accountservice.AccountService;
+import main.accountservice.AccountServiceImpl;
 import main.UserTokenManager;
 import org.json.JSONObject;
 import rest.UserProfile;

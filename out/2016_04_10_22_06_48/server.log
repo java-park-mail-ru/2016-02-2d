@@ -1,0 +1,166 @@
+[04-10 22:06:48,858, 1015] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:48,944, 1101] org.hibernate.Version HHH000412: Hibernate Core {5.1.0.Final}
+[04-10 22:06:48,945, 1102] org.hibernate.cfg.Environment HHH000206: hibernate.properties not found
+[04-10 22:06:48,945, 1102] org.hibernate.cfg.Environment HHH000021: Bytecode provider name : javassist
+[04-10 22:06:48,976, 1133] org.hibernate.annotations.common.Version HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+[04-10 22:06:49,034, 1191] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:49,038, 1195] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:49,038, 1195] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:49,038, 1195] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:49,040, 1197] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:49,412, 1569] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:50,568, 2725] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:50,594, 2751] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:50,754, 2911] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:50,763, 2920] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:50,764, 2921] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:50,764, 2921] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:50,764, 2921] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:50,764, 2921] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:50,768, 2925] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:51,042, 3199] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:51,044, 3201] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:51,088, 3245] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:51,092, 3249] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:51,092, 3249] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:51,092, 3249] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:51,092, 3249] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:51,092, 3249] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:51,095, 3252] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:51,358, 3515] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:51,360, 3517] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:51,381, 3538] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:51,384, 3541] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:51,384, 3541] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:51,384, 3541] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:51,384, 3541] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:51,384, 3541] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:51,387, 3544] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:51,667, 3824] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:51,669, 3826] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:51,764, 3921] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:51,767, 3924] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:51,767, 3924] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:51,767, 3924] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:51,767, 3924] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:51,767, 3924] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:51,771, 3928] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:51,991, 4148] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:51,993, 4150] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:52,013, 4170] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:52,017, 4174] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:52,017, 4174] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:52,017, 4174] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:52,017, 4174] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:52,017, 4174] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:52,021, 4178] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:52,239, 4396] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:52,241, 4398] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:52,332, 4489] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:52,335, 4492] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:52,335, 4492] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:52,335, 4492] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:52,335, 4492] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:52,336, 4493] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:52,339, 4496] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:52,559, 4716] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:52,562, 4719] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:52,590, 4747] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:52,592, 4749] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:52,592, 4749] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:52,592, 4749] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:52,592, 4749] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:52,592, 4749] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:52,595, 4752] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:52,799, 4956] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:52,801, 4958] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:52,854, 5011] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:52,858, 5015] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:52,859, 5016] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:52,859, 5016] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:52,859, 5016] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:52,859, 5016] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:52,864, 5021] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:53,115, 5272] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:53,116, 5273] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:53,138, 5295] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:53,142, 5299] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:53,142, 5299] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:53,142, 5299] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:53,142, 5299] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:53,142, 5299] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:53,145, 5302] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:53,422, 5579] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:53,424, 5581] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:53,446, 5603] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:53,449, 5606] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:53,449, 5606] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:53,449, 5606] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:53,449, 5606] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:53,449, 5606] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:53,453, 5610] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:53,742, 5899] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:53,743, 5900] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:53,784, 5941] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:53,787, 5944] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:53,787, 5944] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:53,787, 5944] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:53,787, 5944] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:53,787, 5944] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:53,790, 5947] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:54,060, 6217] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:54,061, 6218] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:54,085, 6242] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:54,087, 6244] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:54,087, 6244] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:54,087, 6244] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:54,087, 6244] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:54,088, 6245] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:54,090, 6247] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:54,342, 6499] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:54,344, 6501] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:54,385, 6542] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:54,387, 6544] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:54,387, 6544] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:54,387, 6544] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:54,387, 6544] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:54,387, 6544] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:54,390, 6547] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:54,645, 6802] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:54,647, 6804] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:54,667, 6824] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:54,669, 6826] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:54,670, 6827] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:54,670, 6827] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:54,670, 6827] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:54,670, 6827] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:54,675, 6832] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:54,910, 7067] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:54,911, 7068] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:54,933, 7090] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:54,935, 7092] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:54,935, 7092] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:54,935, 7092] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:54,935, 7092] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:54,935, 7092] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:54,938, 7095] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:55,171, 7328] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:55,173, 7330] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:55,195, 7352] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:55,198, 7355] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:55,198, 7355] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:55,199, 7356] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:55,199, 7356] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:55,199, 7356] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:55,202, 7359] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:55,412, 7569] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:55,413, 7570] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
+[04-10 22:06:55,434, 7591] main.databaseservice.DataBaseServiceMySQLImpl -----Initializing Hibernate-----
+[04-10 22:06:55,436, 7593] org.hibernate.orm.connections HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+[04-10 22:06:55,436, 7593] org.hibernate.orm.connections HHH10001005: using driver [com.mysql.jdbc.Driver] at URL [jdbc:mysql://localhost:3306/bomberman_db_debug]
+[04-10 22:06:55,436, 7593] org.hibernate.orm.connections HHH10001001: Connection properties: {user=bomberman_db_user_debug, password=****}
+[04-10 22:06:55,436, 7593] org.hibernate.orm.connections HHH10001003: Autocommit mode: false
+[04-10 22:06:55,436, 7593] org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl HHH000115: Hibernate connection pool size: 20 (min=1)
+[04-10 22:06:55,438, 7595] org.hibernate.dialect.Dialect HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+[04-10 22:06:55,685, 7842] org.hibernate.tool.schema.internal.SchemaCreatorImpl HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@78d50a3c'
+[04-10 22:06:55,687, 7844] main.databaseservice.DataBaseServiceMySQLImpl -----Hibernate  Initialized-----
