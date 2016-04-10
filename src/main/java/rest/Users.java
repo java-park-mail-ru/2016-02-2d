@@ -1,12 +1,12 @@
 package rest;
 
-import main.AccountService;
+import main.accountService.AccountService;
 
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-import main.TokenManager;
+import main.UserTokenManager;
 import org.json.*;
 
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class Users {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createUser(String jsonString, @Context HttpHeaders headers){
-        accountService.logoutUser(TokenManager.getSIDStringFromHeaders(headers));
+        accountService.logoutUser(UserTokenManager.getSIDStringFromHeaders(headers));
 
         final JSONObject jsonRequest;
         try {
@@ -45,7 +45,7 @@ public class Users {
         final UserProfile newUser = accountService.createNewUser(login, password);
         if (newUser != null) {
             accountService.loginUser(newUser);
-            return Response.ok(new JSONObject().put("id", newUser.getId()).toString()).cookie(TokenManager.getNewCookieWithSessionID(newUser.getSessionID())).build();
+            return Response.ok(new JSONObject().put("id", newUser.getId()).toString()).cookie(UserTokenManager.getNewCookieWithSessionID(newUser.getSessionID())).build();
         }
         else
             return WebErrorManager.accessForbidden("User already exists!");
@@ -83,7 +83,7 @@ public class Users {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateUser(String jsonString, @Context HttpHeaders headers){
-        if (accountService.hasSessionID(TokenManager.getSIDStringFromHeaders(headers)))
+        if (accountService.hasSessionID(UserTokenManager.getSIDStringFromHeaders(headers)))
         {
             final JSONObject jsonRequest;
 
@@ -121,9 +121,9 @@ public class Users {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteUser(@PathParam("id") Long id, @Context HttpHeaders headers){
-        if (accountService.hasSessionID(TokenManager.getSIDStringFromHeaders(headers)))
+        if (accountService.hasSessionID(UserTokenManager.getSIDStringFromHeaders(headers)))
         {
-            final UserProfile supplicant = accountService.getBySessionID(TokenManager.getSIDStringFromHeaders(headers));
+            final UserProfile supplicant = accountService.getBySessionID(UserTokenManager.getSIDStringFromHeaders(headers));
             if (supplicant == null)
                 return WebErrorManager.serverError("Session exists, but user does not!");
             if (supplicant.getId() == id) {

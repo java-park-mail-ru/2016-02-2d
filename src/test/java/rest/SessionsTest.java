@@ -1,8 +1,8 @@
 package rest;
 
 import constants.Constants;
-import main.AccountService;
-import main.TokenManager;
+import main.accountService.AccountService;
+import main.UserTokenManager;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
@@ -11,12 +11,10 @@ import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotSame;
-import static org.mockito.Mockito.*;
-import main.AccountServiceImpl;
+
 import org.glassfish.jersey.test.JerseyTest;
 
 import javax.ws.rs.core.*;
-import java.util.*;
 
 public class SessionsTest extends JerseyTest {
 
@@ -68,9 +66,9 @@ public class SessionsTest extends JerseyTest {
         assertEquals(data.getValue2().toString(), response.toString());
         assertEquals(data.getValue2().getEntity().toString(), response.getEntity().toString());
         if (shouldHaveCookie)
-            assertEquals(SID, response.getCookies().get(TokenManager.COOKIE_NAME).getValue());
+            assertEquals(SID, response.getCookies().get(UserTokenManager.COOKIE_NAME).getValue());
         else
-            assertEquals(false, response.getCookies().containsKey(TokenManager.COOKIE_NAME));
+            assertEquals(false, response.getCookies().containsKey(UserTokenManager.COOKIE_NAME));
     }
 
     public void testIsAuthenticated(Pair<HttpHeaders, Response> data) {
@@ -85,10 +83,9 @@ public class SessionsTest extends JerseyTest {
 
         assertEquals(data.getValue1().toString(), response.toString());
         assertEquals(data.getValue1().getEntity().toString(), response.getEntity().toString());
-        assertNotSame(SID, response.getCookies().get(TokenManager.COOKIE_NAME).getValue());
+        assertNotSame(SID, response.getCookies().get(UserTokenManager.COOKIE_NAME).getValue());
     }
 
-    // TODO: move mocks into separate modules.
     @Override
     protected Application configure() {
 
@@ -161,7 +158,7 @@ public class SessionsTest extends JerseyTest {
             return WebErrorManager.authorizationRequired();
         }
         private static Response okLogoutResponse() {
-            return WebErrorManager.okRaw("You have succesfully logged out.").cookie(TokenManager.getNewNullCookie()).build();
+            return WebErrorManager.okRaw("You have succesfully logged out.").cookie(UserTokenManager.getNewNullCookie()).build();
         }
         private static Response wrongLogoutResponse() {
             return WebErrorManager.ok("You was not logged in.");

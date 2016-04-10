@@ -1,6 +1,6 @@
 package rest;
 
-import main.database.UserProfileData;
+import main.databaseService.UserProfileData;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;

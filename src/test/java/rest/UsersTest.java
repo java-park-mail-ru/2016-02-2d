@@ -1,9 +1,8 @@
 package rest;
 
 import constants.Constants;
-import main.AccountService;
-import main.AccountServiceImpl;
-import main.TokenManager;
+import main.accountService.AccountService;
+import main.UserTokenManager;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.javatuples.Pair;
@@ -12,11 +11,9 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import javax.ws.rs.core.*;
-import java.util.*;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class UsersTest extends JerseyTest {
 
@@ -70,9 +67,9 @@ public class UsersTest extends JerseyTest {
         assertEquals(data.getValue2().toString(), response.toString());
         assertEquals(data.getValue2().getEntity().toString(), response.getEntity().toString());
         if (shouldHaveCookie)
-            assertEquals(SID, response.getCookies().get(TokenManager.COOKIE_NAME).getValue());
+            assertEquals(SID, response.getCookies().get(UserTokenManager.COOKIE_NAME).getValue());
         else
-            assertEquals(false, response.getCookies().containsKey(TokenManager.COOKIE_NAME));
+            assertEquals(false, response.getCookies().containsKey(UserTokenManager.COOKIE_NAME));
     }
 
     public void testGetUserByID(Pair<Long, Response> data) {

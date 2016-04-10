@@ -1,8 +1,8 @@
 package rest;
 
 import com.sun.istack.internal.Nullable;
-import main.TokenManager;
-import main.database.UserProfileData;
+import main.UserTokenManager;
+import main.databaseService.UserProfileData;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -46,7 +46,7 @@ public class UserProfile {
     @NotNull
     public String getSessionID() {
         if (sessionID == null)
-            sessionID = TokenManager.getNewRandomSessionID(data.getLogin(), data.getId(), data.getScore(), data.getPassword());
+            sessionID = UserTokenManager.getNewRandomSessionID(data.getLogin(), data.getId(), data.getScore(), data.getPassword());
         return sessionID;
     }
 

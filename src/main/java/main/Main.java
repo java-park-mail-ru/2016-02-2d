@@ -1,9 +1,11 @@
 package main;
 
+import main.accountService.AccountService;
+import main.accountService.AccountServiceImpl;
 import main.config.Context;
-import main.database.DataBase;
-import main.database.DataBaseHashMapImpl;
-import main.database.DataBaseRealImpl;
+import main.databaseService.DataBaseServiceMySQLImpl;
+import main.databaseService.DataBaseService;
+import main.databaseService.DataBaseServiceHashMapImpl;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -34,7 +36,9 @@ public class Main {
         return CONTEXT;
     }
 
-     private static void setCustomPort(String[] args) {
+    //TODO: Move all configs to a separate class. And even to a separate file.
+
+    private static void setCustomPort(String[] args) {
          if (args.length >= 1)
              port = Integer.valueOf(args[0]);
          else {
@@ -44,36 +48,40 @@ public class Main {
     }
 
     private static void setDataBaseType(String[] args) throws Exception {
-        logger.info("Instantiating DataBase...");
-        DataBase dataBase = null;
+        logger.info("Instantiating DataBaseService...");
+        DataBaseService dataBaseService = null;
         try {
             if (args.length >= 2)
                 switch (args[1]) {
                     case "hash":
                         logger.info("Launching with HashDB");
-                        dataBase = new DataBaseHashMapImpl();
+                        dataBaseService = new DataBaseServiceHashMapImpl();
                         break;
                     case "debug":
                         logger.info("Launching with debug DB");
-                        dataBase = new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.DEBUG);
+                        dataBaseService = new DataBaseServiceMySQLImpl(DataBaseServiceMySQLImpl.DBTYPE.DEBUG);
+                        break;
+                    case "production":
+                        logger.info("Launching with production DB");
+                        dataBaseService = new DataBaseServiceMySQLImpl(DataBaseServiceMySQLImpl.DBTYPE.PRODUCTION);
                         break;
                     default:
-                        logger.info("Launching with production DB");
-                        dataBase = new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.PRODUCTION);
+                        logger.fatal("Unknown dbtype argument!");
+                        throw new Exception();
                 }
             else {
                 logger.info("No DB type specified. Launching with production DB.");
-                dataBase = new DataBaseRealImpl();
+                dataBaseService = new DataBaseServiceMySQLImpl();
             }
         } catch (Exception ex) {
-            logger.fatal("Cannot instantiate DataBase. Aborting...");
+            logger.fatal("Cannot instantiate DataBaseService. Aborting...");
             throw new Exception(ex);
         }
 
         try {
-            CONTEXT.put(DataBase.class, dataBase);
+            CONTEXT.put(DataBaseService.class, dataBaseService);
         } catch (InstantiationException ex) {
-            logger.fatal("Cannot add DataBase to context. Aborting...");
+            logger.fatal("Cannot add DataBaseService to context. Aborting...");
             throw new Exception(ex);
         }
         logger.info("OK.");
@@ -82,8 +90,8 @@ public class Main {
     private static void createAccountService() throws Exception {
         logger.info("Instantiating AccountService...");
         try {
-            final DataBase dataBase = (DataBase) CONTEXT.get(DataBase.class);
-            CONTEXT.put(AccountService.class, new AccountServiceImpl(dataBase));
+            final DataBaseService dataBaseService = (DataBaseService) CONTEXT.get(DataBaseService.class);
+            CONTEXT.put(AccountService.class, new AccountServiceImpl(dataBaseService));
         } catch (InstantiationException ex) {
             logger.fatal("Cannot add AccountService to context. Aborting...");
             throw new Exception(ex);

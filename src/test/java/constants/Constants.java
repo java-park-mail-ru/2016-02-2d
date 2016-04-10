@@ -1,8 +1,8 @@
 package constants;
 
-import main.AccountService;
-import main.AccountServiceImpl;
-import main.TokenManager;
+import main.accountService.AccountService;
+import main.accountService.AccountServiceImpl;
+import main.UserTokenManager;
 import org.json.JSONObject;
 import rest.UserProfile;
 
@@ -61,9 +61,9 @@ public class Constants {
 
                 final Map<String, Cookie> noCookieMap = new HashMap<>();
                 final Map<String, Cookie> okCookieMap = new HashMap<>();
-                okCookieMap.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID(USER_SESSION_ID));
+                okCookieMap.put(UserTokenManager.COOKIE_NAME, UserTokenManager.getNewCookieWithSessionID(USER_SESSION_ID));
                 final Map<String, Cookie> badCookieMap = new HashMap<>();
-                badCookieMap.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID("ERRONEOUS DATA"));
+                badCookieMap.put(UserTokenManager.COOKIE_NAME, UserTokenManager.getNewCookieWithSessionID("ERRONEOUS DATA"));
 
                 when(NO_COOKIE_HEADERS.getCookies()).thenReturn(noCookieMap);
                 when(OK_COOKIE_HEADERS.getCookies()).thenReturn(okCookieMap);

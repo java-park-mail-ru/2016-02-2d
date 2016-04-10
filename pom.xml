@@ -6,7 +6,7 @@
 
     <groupId>Bomberman-server</groupId>
     <artifactId>Bomberman-server</artifactId>
-    <version>1.0</version>
+    <version>0.0.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,6 +25,7 @@
         <mysql.version>5.1.38</mysql.version>
         <org.hibernate.version>5.1.0.Final</org.hibernate.version>
         <org.apache.logging.log4j>2.5</org.apache.logging.log4j>
+        <org.eclipse.jetty.websocket>9.3.9.M0</org.eclipse.jetty.websocket>
     </properties>
 
     <build>
@@ -149,6 +150,16 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${org.apache.logging.log4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-servlet</artifactId>
+            <version>${org.eclipse.jetty.websocket}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-server</artifactId>
+            <version>${org.eclipse.jetty.websocket}</version>
         </dependency>
 
     </dependencies>
