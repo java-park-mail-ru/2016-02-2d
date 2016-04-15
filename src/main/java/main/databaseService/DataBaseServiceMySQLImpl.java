@@ -15,13 +15,13 @@ import org.hibernate.service.ServiceRegistry;
 
 public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable {
 
-    public DataBaseServiceMySQLImpl() throws Exception {
-        type = DBTYPE.PRODUCTION;
+    public DataBaseServiceMySQLImpl(Map<String, String> parameters) throws Exception {
+        config = new Config(parameters, DBTYPE.PRODUCTION);
         createDBAndSetup();
     }
 
-    public DataBaseServiceMySQLImpl(DBTYPE dbtype) throws Exception {
-        type = dbtype;
+    public DataBaseServiceMySQLImpl(Map<String, String> parameters, DBTYPE dbtype) throws Exception {
+        config = new Config(parameters, dbtype);
         createDBAndSetup();
     }
 
@@ -29,13 +29,14 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
         try {
             setup();
         } catch (HibernateException ex) {
+            //noinspection OverlyBroadCatchBlock
             try {
-                logger.warn("Could not connect to DB. Attempting to create it.");
+                LOGGER.warn("Could not connect to DB. Attempting to create it.");
                 connectToDBOrDie();
                 setup();
-            } catch (HibernateException ex2) {
-                logger.fatal("Check if MySQL is running and is compatible with 5.1.38 mysql/j.", ex2);
-                throw new Exception(ex2);
+            } catch (Exception ex2) {
+                LOGGER.fatal("Check if MySQL is running and is compatible with 5.1.38 mysql/j.", ex2);
+                throw ex2;
             }
         }
     }
@@ -72,7 +73,7 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
                 return new UserProfile(dao.read(id));
         } catch (HibernateException ex) {
             final String reason = "Could not get user #" + id + " by ID!";
-            logger.info(reason, ex);
+            LOGGER.info(reason, ex);
             return null;
         }
     }
@@ -89,7 +90,7 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
                 return new UserProfile(dao.readByName(name));
         } catch (HibernateException ex) {
             final String reason = "Could not get user \"" + name + "\" by login!";
-            logger.info(reason, ex);
+            LOGGER.info(reason, ex);
             return null;
         }
     }
@@ -105,7 +106,7 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
             return result;
         } catch (HibernateException ex) {
             final String reason = "Could not get all users somewhy! O_o";
-            logger.error(reason, ex);
+            LOGGER.error(reason, ex);
             return null;
         }
 
@@ -138,7 +139,7 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
             dao.delete(id);
         } catch (HibernateException ex) {
             final String reason = "Could not delete user #" + id + '!';
-            logger.error(reason, ex);
+            LOGGER.error(reason, ex);
         }
     }
 
@@ -156,21 +157,20 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
     }
     
     private void setup() throws HibernateException {
-        logger.info("-----Initializing Hibernate-----");
-        config = new Config(type);
+        LOGGER.info("-----Initializing Hibernate-----");
         final Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(UserProfileData.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         configuration.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
-        configuration.setProperty("hibernate.connection.url", Config.ADDRESS + config.getDbName());
+        configuration.setProperty("hibernate.connection.url", config.getAddress() + config.getDbName());
         configuration.setProperty("hibernate.connection.username", config.getLogin());
         configuration.setProperty("hibernate.connection.password", config.getPassword());
         configuration.setProperty("hibernate.show_sql", "true");
         configuration.setProperty("hibernate.hbm2ddl.auto", config.getCreationMethod());
 
         sessionFactory = createSessionFactory(configuration);
-        logger.info("-----Hibernate  Initialized-----");
+        LOGGER.info("-----Hibernate  Initialized-----");
     }
 
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed"})
@@ -181,7 +181,7 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
             final Driver driver = (Driver) Class.forName("com.mysql.jdbc.Driver").newInstance();
             DriverManager.registerDriver(driver);
             DriverManager.setLoginTimeout(1);
-            rootConnection = DriverManager.getConnection(Config.ADDRESS, Config.ROOT_LOGIN, Config.ROOT_PASSWORD);
+            rootConnection = DriverManager.getConnection(config.getAddress(), "root", config.getRootPassword());
             final Statement statement = rootConnection.createStatement();
 
             statement.execute("DROP USER IF EXISTS " + config.getLoginDomain());
@@ -192,8 +192,9 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
 
             statement.execute("GRANT ALL ON " + config.getDbName() + ".* TO " + config.getLoginDomain() + ';');
 
-            logger.info("Database succesfully created!");
+            LOGGER.info("Database succesfully created!");
         } catch (Exception ex) {
+            LOGGER.fatal("Could not create database!", ex);
             throw ex;
         } finally {
             if (rootConnection != null) try {rootConnection.close();} catch (SQLException ignore) {/*ignore.printStackTrace();*/}
@@ -201,11 +202,9 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
     }
 
     private SessionFactory sessionFactory;
-    private static final int ERROR_NO_DB = 1049;
-    private final DBTYPE type;
-    private Config config;
+    private final Config config;
 
-    private static Logger logger = LogManager.getLogger(DataBaseServiceMySQLImpl.class);
+    private static final Logger LOGGER = LogManager.getLogger(DataBaseServiceMySQLImpl.class);
 
     public enum DBTYPE {
         PRODUCTION, DEBUG
@@ -213,9 +212,10 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
 
     private static final class Config {
 
-        private Config(DBTYPE dbtype) {
-            switch (dbtype) {
+        private Config(Map<String, String> externalParameters, DBTYPE dbtype) {
+            parameters = externalParameters;
 
+            switch (dbtype) {
                 case PRODUCTION:
                     makeProduction();
                     break;
@@ -226,19 +226,23 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
         }
 
         private void makeProduction() {
-            dbName = DBNAME;
-            login = LOGIN;
-            password = PASSWORD;
-            loginDomain = LOGIN_DOMAIN;
-            creationMethod = DB_UPDATE;
+            dbName = parameters.get("db_name");
+            login = parameters.get("db_user");
+            password = parameters.get("db_password");
+            loginDomain = parameters.get("db_user") + '@' + parameters.get("db_domain");
+            creationMethod = parameters.get("db_creation_method");
+            address = "jdbc:mysql://" + parameters.get("db_domain") + ':' + parameters.get("db_port") + '/';
+            rootPassword = parameters.get("db_root_password");
         }
 
         private void makeDebug() {
-            dbName = DBNAME + DEBUG_POSTFIX;
-            login = LOGIN + DEBUG_POSTFIX;
-            password = PASSWORD + DEBUG_POSTFIX;
-            loginDomain = LOGIN + DEBUG_POSTFIX + '@' + DOMAIN;
-            creationMethod = DB_CREATEDROP;
+            dbName = parameters.get("db_name_debug");
+            login = parameters.get("db_user_debug");
+            password = parameters.get("db_password_debug");
+            loginDomain = parameters.get("db_user_debug") + '@' + parameters.get("db_domain");
+            creationMethod = parameters.get("db_creation_method_debug");
+            address = "jdbc:mysql://" + parameters.get("db_domain") + ':' + parameters.get("db_port") + '/';
+            rootPassword = parameters.get("db_root_password");
         }
 
         public String getLoginDomain() {
@@ -249,8 +253,13 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
             return dbName;
         }
 
+        public String getRootPassword() {
+            return rootPassword;
+        }
+
         public String getLogin() {
             return login;
+
         }
 
         public String getPassword() {
@@ -261,24 +270,19 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
             return creationMethod;
         }
 
+        public String getAddress() {
+            return address;
+        }
+
         private String dbName;
         private String login;
         private String password;
+        private String rootPassword;
+        private String address;
         private String loginDomain;
         private String creationMethod;
 
-        public static final String ROOT_LOGIN = "root";
-        public static final String ROOT_PASSWORD = "root";
-        public static final String DBNAME = "bomberman_db";
-        public static final String LOGIN = "bomberman_db_user";
-        public static final String PASSWORD = "bomberman_db_password";
-        public static final String DOMAIN = "localhost";
-        public static final String LOGIN_DOMAIN = LOGIN + '@' + DOMAIN;
-        public static final String PORT = "3306";
-        public static final String ADDRESS = "jdbc:mysql://" + DOMAIN + ':' + PORT + '/';
-        public static final String DEBUG_POSTFIX = "_debug";
-        public static final String DB_UPDATE = "update";
-        public static final String DB_CREATEDROP = "create-drop";
+        private final Map<String, String> parameters;
     }
 
 }

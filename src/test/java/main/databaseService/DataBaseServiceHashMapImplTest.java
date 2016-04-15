@@ -80,11 +80,6 @@ public class DataBaseServiceHashMapImplTest {
     }
 
     @Test
-    public void testSave() throws Exception {
-        // Not Required
-    }
-
-    @Test
     public void testGetById() throws Exception {
         final UserProfile user = dataBaseService.addUser(Constants.USER_LOGIN, Constants.USER_PASSWORD);
 

@@ -1,9 +1,11 @@
 package main;
 
 import main.accountservice.AccountService;
+import main.config.Context;
 import rest.Sessions;
 import rest.Users;
 
+import javax.inject.Inject;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
@@ -11,8 +13,11 @@ import java.util.Set;
 
 @ApplicationPath("api")
 public class RestApplication extends Application {
+    @Inject
+    private Context context;
+
     public RestApplication() {
-        final AccountService accountService = (AccountService) Main.getContext().get(AccountService.class);
+        final AccountService accountService = (AccountService) context.get(AccountService.class);
         objects.add(new Users(accountService));
         objects.add(new Sessions(accountService));
     }
@@ -23,4 +28,5 @@ public class RestApplication extends Application {
     }
 
     private final HashSet<Object> objects = new HashSet<>();
+
 }

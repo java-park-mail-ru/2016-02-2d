@@ -1,6 +1,7 @@
 package main.accountservice;
 
 import constants.Constants;
+import main.config.ServerInitializer;
 import main.databaseservice.DataBaseServiceHashMapImpl;
 import main.databaseservice.DataBaseServiceMySQLImpl;
 import org.junit.Before;
@@ -29,7 +30,9 @@ public class AccountServiceImplTest {
                 accountService = new AccountServiceImpl(new DataBaseServiceHashMapImpl());
                 break;
             case REAL:
-                accountService = new AccountServiceImpl(new DataBaseServiceMySQLImpl(DataBaseServiceMySQLImpl.DBTYPE.DEBUG));
+                final ServerInitializer serverInitializer = new ServerInitializer(null);
+                final Map<String, String> properties = serverInitializer.getPropertiesMap();
+                accountService = new AccountServiceImpl(new DataBaseServiceMySQLImpl(properties, DataBaseServiceMySQLImpl.DBTYPE.DEBUG));
                 break;
         }
     }

@@ -1,7 +1,6 @@
 package main.websocketconnection;
 
 import bomberman.service.RoomManager;
-import bomberman.service.RoomManagerImpl;
 import main.accountservice.AccountService;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
@@ -23,6 +22,6 @@ public class WebSocketConnectionServlet extends WebSocketServlet {
     }
 
     private static final int IDLE_TIME = 60 * 1000; // TODO: move to config
-    private RoomManager globalRoomManager;
-    private AccountService globalAccountService;
+    private final RoomManager globalRoomManager;
+    private final AccountService globalAccountService;
 }

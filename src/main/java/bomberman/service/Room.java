@@ -39,7 +39,7 @@ public class Room {
     }
 
     public void insertPlayer(UserProfile user, Session session) {
-        int newID = world.getBombermenIDs()[playerMap.size()];
+        final int newID = world.getBombermenIDs()[playerMap.size()];
         playerMap.put(newID, user);
         reversePlayerMap.put(user, newID);
         websocketMap.put(user, session);
@@ -51,7 +51,7 @@ public class Room {
 
     public void removePlayer(UserProfile user) {
         if (reversePlayerMap.containsKey(user)) {
-            int bombermanID = reversePlayerMap.get(user);
+            final int bombermanID = reversePlayerMap.get(user);
             playerMap.remove(bombermanID);
             reversePlayerMap.remove(user);
             websocketMap.remove(user);

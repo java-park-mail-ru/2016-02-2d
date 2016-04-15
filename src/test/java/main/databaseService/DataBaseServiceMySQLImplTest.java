@@ -1,6 +1,7 @@
 package main.databaseservice;
 
 import constants.Constants;
+import main.config.ServerInitializer;
 import org.junit.Before;
 import org.junit.Test;
 import rest.UserProfile;
@@ -15,7 +16,9 @@ public class DataBaseServiceMySQLImplTest {
 
     @Before
     public void init() throws Exception {
-        dataBase = new DataBaseServiceMySQLImpl(DataBaseServiceMySQLImpl.DBTYPE.DEBUG);
+        final ServerInitializer serverInitializer = new ServerInitializer(null);
+        final Map<String, String> properties = serverInitializer.getPropertiesMap();
+        dataBase = new DataBaseServiceMySQLImpl(properties, DataBaseServiceMySQLImpl.DBTYPE.DEBUG);
     }
 
     @Test

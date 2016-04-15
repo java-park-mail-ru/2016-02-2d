@@ -1,7 +1,6 @@
 package main.websocketconnection;
 
 import bomberman.service.RoomManager;
-import bomberman.service.RoomManagerImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.websocket.api.Session;
@@ -26,7 +25,7 @@ public class WebSocketConnection {
             session.getRemote().sendString("Hi!");
         }
         catch (IOException ex) {
-            logger.error("Could not send message to user #" + user.getId() + " (\"" + user.getLogin() + "\")!", ex);
+            LOGGER.error("Could not send message to user #" + user.getId() + " (\"" + user.getLogin() + "\")!", ex);
         }
     }
 
@@ -38,11 +37,11 @@ public class WebSocketConnection {
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-
+        globalRoomManager.removeUserFromRoom(user);
     }
 
-    private UserProfile user;
-    private RoomManager globalRoomManager;
+    private final UserProfile user;
+    private final RoomManager globalRoomManager;
     private Session session;
-    private static Logger logger = LogManager.getLogger(WebSocketConnection.class);
+    private static final Logger LOGGER = LogManager.getLogger(WebSocketConnection.class);
 }

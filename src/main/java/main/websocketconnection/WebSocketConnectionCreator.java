@@ -2,7 +2,6 @@ package main.websocketconnection;
 
 
 import bomberman.service.RoomManager;
-import bomberman.service.RoomManagerImpl;
 import main.UserTokenManager;
 import main.accountservice.AccountService;
 import org.apache.logging.log4j.LogManager;
@@ -32,32 +31,28 @@ public class WebSocketConnectionCreator implements WebSocketCreator {
             if (cookie.getName().equals(UserTokenManager.COOKIE_NAME))
                 token = cookie.getValue();
 
-        UserProfile user = null;
+        final UserProfile user;
 
         try {
             if (token == null) {
                 servletUpgradeResponse.sendError(Response.Status.BAD_REQUEST.getStatusCode(), "No cookies specified!");
-                logger.debug("No cookies found while upgrading to websocket.");
+                LOGGER.debug("No cookies found while upgrading to websocket.");
                 return null;
             }
             if (!globalAccountService.hasSessionID(token) || (user = globalAccountService.getBySessionID(token)) == null) {
                 servletUpgradeResponse.sendError(Response.Status.UNAUTHORIZED.getStatusCode(), "No suitable user found for this cookie!");
-                logger.debug("No suitable user found while upgrading to websocket.");
+                LOGGER.debug("No suitable user found while upgrading to websocket.");
                 return null;
             }
         } catch (IOException ex) {
-            logger.info("Aurhorization error while upgrading to websocket. Unable to send refusal.", ex);
+            LOGGER.info("Authorization error while upgrading to websocket. Unable to send refusal.", ex);
+            return null;
         }
 
-        /* TODO: Tell me where is an error:
-        //      1: if token == null then return;
-        //      2: if no_such_user then return;
-        //      3: if user == null then return;
-        //      else do_smth_with_user();   // ← user is not null. if it is null goto 3; */
         return new WebSocketConnection(globalRoomManager, user);
     }
 
-    private RoomManager globalRoomManager;
-    private AccountService globalAccountService;
-    private static Logger logger = LogManager.getLogger(WebSocketConnectionCreator.class);
+    private final RoomManager globalRoomManager;
+    private final AccountService globalAccountService;
+    private static final Logger LOGGER = LogManager.getLogger(WebSocketConnectionCreator.class);
 }

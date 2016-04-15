@@ -9,6 +9,7 @@ import java.util.PriorityQueue;
 
 public class RoomManagerImpl implements RoomManager {
 
+    @Override
     public void assignUserToFreeRoom(UserProfile user, Session session) {
         Room room = nonFilledRooms.peek();
         if (room == null)
@@ -18,8 +19,9 @@ public class RoomManagerImpl implements RoomManager {
             nonFilledRooms.remove();
     }
 
+    @Override
     public void removeUserFromRoom(UserProfile user) {
-        Room room = getRoomByUser(user);
+        final Room room = getRoomByUser(user);
         if (room != null) {
             room.removePlayer(user);
             if (room.isEmpty()) {
@@ -31,7 +33,7 @@ public class RoomManagerImpl implements RoomManager {
     }
 
     private Room createNewRoom() {
-        Room room = new Room();
+        final Room room = new Room();
         nonFilledRooms.add(room);
         allRooms.add(room);
         return room;
@@ -45,6 +47,6 @@ public class RoomManagerImpl implements RoomManager {
         return null;
     }
 
-    private PriorityQueue<Room> nonFilledRooms = new PriorityQueue<>();
-    private ArrayList<Room> allRooms = new ArrayList<>();
+    private final PriorityQueue<Room> nonFilledRooms = new PriorityQueue<>();
+    private final ArrayList<Room> allRooms = new ArrayList<>();
 }
