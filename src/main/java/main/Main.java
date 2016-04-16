@@ -1,9 +1,10 @@
 package main;
 
-import bomberman.service.RoomManager;
-import main.accountservice.AccountService;
+import bomberman.service.ReceivedMessageHandler;
 import main.config.Context;
 import main.config.ServerInitializer;
+import main.websocketconnection.WebSocketConnection;
+import main.websocketconnection.WebSocketConnectionCreator;
 import main.websocketconnection.WebSocketConnectionServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -37,7 +38,7 @@ public class Main {
 
 
         final Context bindableContext = context;
-        final ResourceConfig config = new ResourceConfig(RestApplication.class);
+        final ResourceConfig config = new ResourceConfig(RestApplication.class, ReceivedMessageHandler.class, WebSocketConnection.class, WebSocketConnectionCreator.class);
         config.register(new AbstractBinder() {
             @Override
             protected void configure() {
@@ -54,7 +55,7 @@ public class Main {
         restServletHolder.setInitParameter("javax.ws.rs.Application", "main.RestApplication");
 
         contextHandler.addServlet(restServletHolder, "/*");
-        contextHandler.addServlet(new ServletHolder(new WebSocketConnectionServlet(((RoomManager) context.get(RoomManager.class)), ((AccountService) context.get(AccountService.class)), Integer.parseInt(properties.get("ws_timeout")))), "/game");
+        contextHandler.addServlet(new ServletHolder(new WebSocketConnectionServlet(Integer.parseInt(properties.get("ws_timeout")))), "/game");
 
         server.start();
         server.join();

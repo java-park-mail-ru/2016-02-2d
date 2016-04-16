@@ -10,19 +10,15 @@ import javax.servlet.annotation.WebServlet;
 @WebServlet(name = "WebSocketConnectionServlet", urlPatterns = {"/game"})
 public class WebSocketConnectionServlet extends WebSocketServlet {
 
-    public WebSocketConnectionServlet(RoomManager roomManager, AccountService accountService, int timeout) {
-        globalRoomManager = roomManager;
-        globalAccountService = accountService;
+    public WebSocketConnectionServlet(int timeout) {
         idleTime = timeout;
     }
 
     @Override
     public void configure(WebSocketServletFactory webSocketServletFactory) {
         webSocketServletFactory.getPolicy().setIdleTimeout(idleTime);
-        webSocketServletFactory.setCreator(new WebSocketConnectionCreator(globalRoomManager, globalAccountService));
+        webSocketServletFactory.setCreator(new WebSocketConnectionCreator());
     }
 
     private int idleTime;
-    private final RoomManager globalRoomManager;
-    private final AccountService globalAccountService;
 }

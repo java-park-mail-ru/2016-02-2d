@@ -2,8 +2,9 @@ package bomberman.service;
 
 import bomberman.mechanics.World;
 import bomberman.mechanics.interfaces.WorldType;
+import main.websocketconnection.MessageSendable;
+import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
-import org.eclipse.jetty.websocket.api.Session;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,17 @@ public class Room {
         //world = new World(type, playerMap.size());
     }
 
+    public void assignBombermenToPlayers() {
+        world.spawnBombermen(websocketMap.size());
+        final int[] bombermen = world.getBombermenIDs();
+        int i = 0;
+        for (Map.Entry<UserProfile, MessageSendable> player : websocketMap.entrySet()) {
+            playerMap.put(bombermen[i], player.getKey());
+            reversePlayerMap.put(player.getKey(), bombermen[i]);
+            ++i;
+        }
+    }
+
     public int getMaximalCapacity() {
         return capacity;
     }
@@ -43,30 +55,24 @@ public class Room {
         return websocketMap.isEmpty();
     }
 
-    public void insertPlayer(UserProfile user, Session session) {
-        websocketMap.put(user, session);
+    public void insertPlayer(UserProfile user, MessageSendable socket) {
+        websocketMap.put(user, socket);
+        broadcast(MessageCreator.createUserJoinedMessage(user));
     }
 
     public boolean hasPlayer(UserProfile user) {
         return websocketMap.containsKey(user);
     }
 
-    public void removePlayer(UserProfile user) {
+    public void removePlayer(@Nullable UserProfile user) {
         if (websocketMap.containsKey(user)) {
             websocketMap.remove(user);
         }
     }
 
-    public void assignBombermenToPlayers() {
-        world.spawnBombermen(websocketMap.size());
-        final int[] bombermen = world.getBombermenIDs();
-        int i = 0;
-        for (Map.Entry<UserProfile, Session> player: websocketMap.entrySet())
-        {
-            playerMap.put(bombermen[i], player.getKey());
-            reversePlayerMap.put(player.getKey(), bombermen[i]);
-            ++i;
-        }
+    public void broadcast(String message) {
+        for (Map.Entry<UserProfile, MessageSendable> entry: websocketMap.entrySet())
+            entry.getValue().sendMessage(message);
     }
 
     // I can't determine hashCode and equals methods. :(
@@ -74,7 +80,7 @@ public class Room {
     private int capacity = DEFAULT_CAPACITY;
     private final Map<Integer, UserProfile> playerMap = new HashMap<>(4);
     private final Map<UserProfile, Integer> reversePlayerMap = new HashMap<>(4);
-    private final Map<UserProfile, Session> websocketMap = new HashMap<>(4);
+    private final Map<UserProfile, MessageSendable> websocketMap = new HashMap<>(4);
 
     World world;
 

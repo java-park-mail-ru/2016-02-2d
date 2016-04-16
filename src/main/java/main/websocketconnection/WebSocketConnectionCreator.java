@@ -1,9 +1,9 @@
 package main.websocketconnection;
 
 
-import bomberman.service.RoomManager;
 import main.UserTokenManager;
 import main.accountservice.AccountService;
+import main.config.Context;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
@@ -12,15 +12,17 @@ import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.HttpCookie;
 
 public class WebSocketConnectionCreator implements WebSocketCreator {
+    @Inject
+    private Context context;
 
-    public WebSocketConnectionCreator(RoomManager roomManager, AccountService accountService) {
-        globalRoomManager = roomManager;
-        globalAccountService = accountService;
+    public WebSocketConnectionCreator() {
+        accountService = (AccountService) context.get(AccountService.class);
     }
 
     @Override
@@ -39,7 +41,7 @@ public class WebSocketConnectionCreator implements WebSocketCreator {
                 LOGGER.debug("No cookies found while upgrading to websocket.");
                 return null;
             }
-            if (!globalAccountService.hasSessionID(token) || (user = globalAccountService.getBySessionID(token)) == null) {
+            if (!accountService.hasSessionID(token) || (user = accountService.getBySessionID(token)) == null) {
                 servletUpgradeResponse.sendError(Response.Status.UNAUTHORIZED.getStatusCode(), "No suitable user found for this cookie!");
                 LOGGER.debug("No suitable user found while upgrading to websocket.");
                 return null;
@@ -49,10 +51,9 @@ public class WebSocketConnectionCreator implements WebSocketCreator {
             return null;
         }
 
-        return new WebSocketConnection(globalRoomManager, user);
+        return new WebSocketConnection(user);
     }
 
-    private final RoomManager globalRoomManager;
-    private final AccountService globalAccountService;
+    private final AccountService accountService;
     private static final Logger LOGGER = LogManager.getLogger(WebSocketConnectionCreator.class);
 }
