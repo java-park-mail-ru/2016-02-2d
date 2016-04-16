@@ -37,6 +37,8 @@ public class WorldEvent {
     private final EventType eventType;
     private final EntityType entityType;
     private final int entityID;
+    @SuppressWarnings("InstanceVariableNamingConvention")
     private final float x;
+    @SuppressWarnings("InstanceVariableNamingConvention")
     private final float y;
 }

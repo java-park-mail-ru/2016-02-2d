@@ -1,7 +1,6 @@
 package bomberman.service;
 
 import main.websocketconnection.MessageSendable;
-import org.eclipse.jetty.websocket.api.Session;
 import rest.UserProfile;
 
 public interface RoomManager {

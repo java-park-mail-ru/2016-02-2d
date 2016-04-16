@@ -2,7 +2,6 @@ package bomberman.service;
 
 import bomberman.mechanics.interfaces.WorldType;
 import main.websocketconnection.MessageSendable;
-import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 

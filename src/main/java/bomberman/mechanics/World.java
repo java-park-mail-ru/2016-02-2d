@@ -5,9 +5,7 @@ import bomberman.mechanics.interfaces.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
@@ -92,10 +90,10 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     Queue<WorldEvent> newEventQueue;       // Here are new events are stashed
     Queue<WorldEvent> processedEventQueue; // State describer will take events from this list.
 
-    private AtomicInteger uidManager = new AtomicInteger(0);
+    private final AtomicInteger uidManager = new AtomicInteger(0);
 
     private final ITile[][] tileArray;
-    private ArrayList<Bomberman> bombermen = new ArrayList<>(4);
+    private final ArrayList<Bomberman> bombermen = new ArrayList<>(4);
 
     private final float[][] spawnLocations;
     private boolean areBombermenSpawned = false;
@@ -103,5 +101,5 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     private boolean hasWorldReadyAcionFired = false;
 
     private boolean shouldSelfUpdate = false;
-    private Runnable actionOnceWorldIsReady;
+    private final Runnable actionOnceWorldIsReady;
 }

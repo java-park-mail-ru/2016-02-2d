@@ -37,6 +37,7 @@ public class MessageCreator {
         return messageTemplate.toString();
     }
 
+    @SuppressWarnings("OverlyComplexMethod")
     public static String createObjectSpawnedMessage(WorldEvent event) {
         final JSONObject messageTemplate = new JSONObject();
         final String objectType;
