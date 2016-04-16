@@ -20,13 +20,13 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
     public boolean execute() {
         final String messageType = message.getString("type");
         if (messageType.equals("object_changed")) {
-            if (WebErrorManager.showFieldsNotPresent(message, new String[]{"id", "x", "y"}) != null)
+            if (WebErrorManager.showFieldsNotPresent(message, "id", "x", "y") != null)
                 return false;
 
             return true;
         }
         if (messageType.equals("user_state_changed")) {
-            if (WebErrorManager.showFieldsNotPresent(message, new String[]{"isReady", "contentLoaded"}) != null)
+            if (WebErrorManager.showFieldsNotPresent(message, "isReady", "contentLoaded") != null)
                 return false;
 
             final AccountService accountService = (AccountService) context.get(AccountService.class);
@@ -39,7 +39,7 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
             return true;
         }
         if (messageType.equals("chat_message")) {
-            if (WebErrorManager.showFieldsNotPresent(message, new String[]{"message"}) != null)
+            if (WebErrorManager.showFieldsNotPresent(message, "message") != null)
                 return false;
 
             room.broadcast(message.toString());
