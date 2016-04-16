@@ -3,6 +3,7 @@ package bomberman.service;
 import bomberman.mechanics.World;
 import bomberman.mechanics.interfaces.WorldType;
 import main.websocketconnection.MessageSendable;
+import org.javatuples.Pair;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
@@ -56,7 +57,11 @@ public class Room {
     }
 
     public void insertPlayer(UserProfile user, MessageSendable socket) {
+        for (Map.Entry<UserProfile, MessageSendable> entry : websocketMap.entrySet())
+            socket.sendMessage(MessageCreator.createUserJoinedMessage(entry.getKey()));
+
         websocketMap.put(user, socket);
+        readinessMap.put(user, new Pair<>(false, false));
         broadcast(MessageCreator.createUserJoinedMessage(user));
     }
 
@@ -64,10 +69,18 @@ public class Room {
         return websocketMap.containsKey(user);
     }
 
-    public void removePlayer(@Nullable UserProfile user) {
+    public void removePlayer(UserProfile user) {
         if (websocketMap.containsKey(user)) {
             websocketMap.remove(user);
+            readinessMap.remove(user);
+            broadcast(MessageCreator.createUserLeftMessage(user));
         }
+    }
+
+    public void updatePlayerState(UserProfile user, boolean isReady, boolean contentLoaded)
+    {
+        readinessMap.remove(user);
+        readinessMap.put(user, new Pair<>(isReady, contentLoaded));
     }
 
     public void broadcast(String message) {
@@ -78,9 +91,13 @@ public class Room {
     // I can't determine hashCode and equals methods. :(
 
     private int capacity = DEFAULT_CAPACITY;
+    private boolean isEveryoneReady = false;
+    private boolean hasEveryoneLoadedContetnt = false;
+
     private final Map<Integer, UserProfile> playerMap = new HashMap<>(4);
     private final Map<UserProfile, Integer> reversePlayerMap = new HashMap<>(4);
     private final Map<UserProfile, MessageSendable> websocketMap = new HashMap<>(4);
+    private final Map<UserProfile, Pair<Boolean, Boolean>> readinessMap = new HashMap<>(4);
 
     World world;
 

@@ -4,10 +4,13 @@ import bomberman.mechanics.interfaces.EntityType;
 import bomberman.mechanics.interfaces.EventType;
 
 public class WorldEvent {
-    public WorldEvent(EventType eventType, EntityType entityType, int entityID){
+    public WorldEvent(EventType eventType, EntityType entityType, int entityID, float x, float y){
         this.eventType = eventType;
         this.entityType = entityType;
         this.entityID = entityID;
+        this.x = x;
+        this.y = y;
+
     }
 
 
@@ -23,7 +26,17 @@ public class WorldEvent {
         return entityID;
     }
 
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
     private final EventType eventType;
     private final EntityType entityType;
     private final int entityID;
+    private final float x;
+    private final float y;
 }
