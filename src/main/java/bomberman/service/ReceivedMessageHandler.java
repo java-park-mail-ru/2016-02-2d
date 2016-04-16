@@ -32,6 +32,7 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
             return true;
         }*/
         if (messageType.equals("chat_message")) {
+            room.broadcast(message.toString());
             return true;
         }
         return false;
