@@ -1,7 +1,7 @@
 package bomberman.service;
 
 import constants.Constants;
-import org.eclipse.jetty.websocket.api.Session;
+import main.websocketconnection.MessageSendable;
 import org.javatuples.Pair;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,10 +15,10 @@ public class RoomTest {
 
     @BeforeClass
     public static void init() {
-        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u1", "p1", "sid1", 1), Constants.customMockWebsocketSession()));
-        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u2", "p2", "sid2", 2), Constants.customMockWebsocketSession()));
-        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u3", "p3", "sid3", 3), Constants.customMockWebsocketSession()));
-        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u4", "p4", "sid4", 4), Constants.customMockWebsocketSession()));
+        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u1", "p1", "sid1", 1), Constants.uniqueMockMessageSendable()));
+        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u2", "p2", "sid2", 2), Constants.uniqueMockMessageSendable()));
+        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u3", "p3", "sid3", 3), Constants.uniqueMockMessageSendable()));
+        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u4", "p4", "sid4", 4), Constants.uniqueMockMessageSendable()));
     }
 
     @Test
@@ -77,5 +77,5 @@ public class RoomTest {
         assertEquals(false, room.hasPlayer(mockUsers.get(0).getValue0()));
     }
 
-    static ArrayList<Pair<UserProfile, Session>> mockUsers = new ArrayList<>();
+    static final ArrayList<Pair<UserProfile, MessageSendable>> mockUsers = new ArrayList<>();
 }

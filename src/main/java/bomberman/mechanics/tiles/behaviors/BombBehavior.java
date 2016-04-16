@@ -16,7 +16,7 @@ public class BombBehavior extends ActionTileAbstractBehavior {
         bombTimer -= deltaTime;
         if (bombTimer <= 0 && !hasExploded)
         {
-            eventList.addWorldEvent(new WorldEvent(EventType.TILE_REMOVED, owner.getType(), owner.getID()));
+            eventList.addWorldEvent(new WorldEvent(EventType.TILE_REMOVED, owner.getType(), owner.getID(), 0, 0));
             hasExploded = true;
         }
     }

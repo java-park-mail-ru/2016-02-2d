@@ -16,7 +16,7 @@ public class BombRayBehavior extends ActionTileAbstractBehavior {
         bombTimer -= deltaTime;
         if (bombTimer <= 0 && !hasDissipated)
         {
-            eventList.addWorldEvent(new WorldEvent(EventType.TILE_REMOVED, owner.getType(), owner.getID()));
+            eventList.addWorldEvent(new WorldEvent(EventType.TILE_REMOVED, owner.getType(), owner.getID(), 0, 0));
             hasDissipated = true;
         }
     }

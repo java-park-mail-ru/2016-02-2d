@@ -3,7 +3,7 @@ package constants;
 import main.accountservice.AccountService;
 import main.accountservice.AccountServiceImpl;
 import main.UserTokenManager;
-import org.eclipse.jetty.websocket.api.Session;
+import main.websocketconnection.MessageSendable;
 import org.json.JSONObject;
 import rest.UserProfile;
 
@@ -100,12 +100,8 @@ public class Constants {
         return mocked;
     }
 
-    public static Session customMockWebsocketSession() {
-        final Session mocked = mock(Session.class);
-
-        // Mock some behaviour here
-
-        return mocked;
+    public static MessageSendable uniqueMockMessageSendable() {
+        return mock(MessageSendable.class);
     }
 
     public static final String USER_LOGIN = "login";
