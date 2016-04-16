@@ -1,5 +1,6 @@
 package bomberman.service;
 
+import bomberman.mechanics.interfaces.WorldType;
 import org.eclipse.jetty.websocket.api.Session;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
@@ -10,13 +11,14 @@ import java.util.PriorityQueue;
 public class RoomManagerImpl implements RoomManager {
 
     @Override
-    public void assignUserToFreeRoom(UserProfile user, Session session) {
+    public Room assignUserToFreeRoom(UserProfile user, Session session) {
         Room room = nonFilledRooms.peek();
         if (room == null)
             room = createNewRoom();
         room.insertPlayer(user, session);
         if (room.isFilled())
             nonFilledRooms.remove();
+        return room;
     }
 
     @Override
@@ -34,6 +36,7 @@ public class RoomManagerImpl implements RoomManager {
 
     private Room createNewRoom() {
         final Room room = new Room();
+        room.createNewWorld(WorldType.BASIC_WORLD);
         nonFilledRooms.add(room);
         allRooms.add(room);
         return room;

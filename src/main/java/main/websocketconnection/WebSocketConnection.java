@@ -1,5 +1,6 @@
 package main.websocketconnection;
 
+import bomberman.service.Room;
 import bomberman.service.RoomManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +33,7 @@ public class WebSocketConnection {
     @OnWebSocketConnect
     public void onOpen(Session sess) {
         session = sess;
-        globalRoomManager.assignUserToFreeRoom(user, session);
+        room = globalRoomManager.assignUserToFreeRoom(user, session);
     }
 
     @OnWebSocketClose
@@ -41,7 +42,10 @@ public class WebSocketConnection {
     }
 
     private final UserProfile user;
-    private final RoomManager globalRoomManager;
     private Session session;
+    private Room room;
+
+    private final RoomManager globalRoomManager;
+
     private static final Logger LOGGER = LogManager.getLogger(WebSocketConnection.class);
 }

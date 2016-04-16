@@ -3,6 +3,7 @@ package constants;
 import main.accountservice.AccountService;
 import main.accountservice.AccountServiceImpl;
 import main.UserTokenManager;
+import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 import rest.UserProfile;
 
@@ -10,6 +11,7 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -84,8 +86,32 @@ public class Constants {
 
     }
 
+    public static UserProfile customMockUserProfile(String login, String password, String sessionID, Integer score) {
+        final UserProfile mocked = mock(UserProfile.class);
+
+        final long id = RANDOM_ID_GENERATOR.getAndIncrement();
+        when(mocked.getId()).thenReturn(id);
+        when(mocked.getLogin()).thenReturn(login);
+        when(mocked.getPassword()).thenReturn(password);
+        when(mocked.getSessionID()).thenReturn(sessionID);
+        when(mocked.getScore()).thenReturn(score);
+        when(mocked.toJson()).thenReturn(new JSONObject().put("id", id).put("login", login).put("score", score));
+
+        return mocked;
+    }
+
+    public static Session customMockWebsocketSession() {
+        final Session mocked = mock(Session.class);
+
+        // Mock some behaviour here
+
+        return mocked;
+    }
+
     public static final String USER_LOGIN = "login";
     public static final String USER_PASSWORD = "password";
     public static final long USER_ID = 0xDEADBEEF;
     public static final String USER_SESSION_ID = "TEST_SESSION_ID";
+
+    private static final AtomicLong RANDOM_ID_GENERATOR = new AtomicLong(1);
 }

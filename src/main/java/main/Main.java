@@ -54,7 +54,7 @@ public class Main {
         restServletHolder.setInitParameter("javax.ws.rs.Application", "main.RestApplication");
 
         contextHandler.addServlet(restServletHolder, "/*");
-        contextHandler.addServlet(new ServletHolder(new WebSocketConnectionServlet(((RoomManager) context.get(RoomManager.class)), ((AccountService) context.get(AccountService.class)))), "/game");
+        contextHandler.addServlet(new ServletHolder(new WebSocketConnectionServlet(((RoomManager) context.get(RoomManager.class)), ((AccountService) context.get(AccountService.class)), Integer.parseInt(properties.get("ws_timeout")))), "/game");
 
         server.start();
         server.join();
