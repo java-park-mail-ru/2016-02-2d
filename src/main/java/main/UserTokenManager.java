@@ -36,12 +36,19 @@ public class UserTokenManager {
         else return null;
     }
 
+    public static void changeHost(@Nullable String newHost) {
+        if (newHost != null)
+            host = newHost;
+    }
+
     private static NewCookie getNewCookie(@Nullable String sessionID, int maxAge) {
         String sessionID1 = sessionID;
         if (sessionID1 == null)
-            sessionID1 = "";                    // TODO: Sure that ↓ parameter always will be "localhost"?
-        return new NewCookie(COOKIE_NAME, sessionID1, "/", "localhost", "This cookie is used to authenticate users in the Bomberman game.", maxAge, false);
+            sessionID1 = "";
+        return new NewCookie(COOKIE_NAME, sessionID1, "/", host, "This cookie is used to authenticate users in the Bomberman game.", maxAge, false);
     }
+
+    private static String host = "localhost";
 
     public static final String COOKIE_NAME = "BOMBERMAN-SESSION-TOKEN";
 
