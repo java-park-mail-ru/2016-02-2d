@@ -16,35 +16,43 @@ public class RoomManagerImpl implements RoomManager {
     @Override
     public Room assignUserToFreeRoom(UserProfile user, MessageSendable socket) {
         removeUserFromRoom(user);
+
         Room room = nonFilledRooms.peek();
+
         if (room == null)
             room = createNewRoom("");
         room.insertPlayer(user, socket);
         playerWhereabouts.put(user, room);
         if (room.isFilled())
             nonFilledRooms.remove();
+
         return room;
     }
 
     @Override
     public void removeUserFromRoom(UserProfile user) {
         final Room room = getRoomByUser(user);
+
         if (room != null) {
             playerWhereabouts.remove(user);
             room.removePlayer(user);
+
             if (room.isEmpty()) {
                 allRooms.remove(room);
                 nonFilledRooms.remove(room);
             } else
-                nonFilledRooms.add(room);
+                if (!room.isActive())
+                    nonFilledRooms.add(room);
         }
     }
 
     private Room createNewRoom(String worldType) {
         final Room room = new Room();
+
         room.createNewWorld(WorldType.BASIC_WORLD);
         nonFilledRooms.add(room);
         allRooms.add(room);
+
         return room;
     }
 

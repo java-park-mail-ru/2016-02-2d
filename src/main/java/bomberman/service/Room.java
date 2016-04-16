@@ -1,6 +1,7 @@
 package bomberman.service;
 
 import bomberman.mechanics.World;
+import bomberman.mechanics.WorldEvent;
 import bomberman.mechanics.interfaces.WorldType;
 import main.websocketconnection.MessageSendable;
 import org.javatuples.Pair;
@@ -9,6 +10,8 @@ import rest.UserProfile;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
+import java.util.function.BinaryOperator;
 
 public class Room {
 
@@ -20,7 +23,7 @@ public class Room {
 
     public void createNewWorld(WorldType type)
     {
-        world = new World(type, playerMap.size());
+        world = new World(type, playerMap.size(), this::transmitWorldDetails);
     }
 
     @Deprecated
@@ -57,6 +60,9 @@ public class Room {
     }
 
     public void insertPlayer(UserProfile user, MessageSendable socket) {
+        isEveryoneReady = false;
+        hasEveryoneLoadedContent = false;
+
         for (Map.Entry<UserProfile, MessageSendable> entry : websocketMap.entrySet())
             socket.sendMessage(MessageCreator.createUserJoinedMessage(entry.getKey()));
 
@@ -77,10 +83,29 @@ public class Room {
         }
     }
 
-    public void updatePlayerState(UserProfile user, boolean isReady, boolean contentLoaded)
-    {
+    public void updatePlayerState(UserProfile user, boolean isReady, boolean contentLoaded) {
         readinessMap.remove(user);
         readinessMap.put(user, new Pair<>(isReady, contentLoaded));
+
+        boolean isEveryoneReadyTMP = true;
+        boolean hasEveryoneLoadedContentTMP = true;
+        for (Map.Entry<UserProfile, Pair<Boolean, Boolean>> entry : readinessMap.entrySet())
+        {
+            if (!entry.getValue().getValue0())
+                isEveryoneReadyTMP = false;
+            if (!entry.getValue().getValue1())
+                hasEveryoneLoadedContentTMP = false;
+        }
+        isEveryoneReady = isEveryoneReadyTMP;
+        hasEveryoneLoadedContent = hasEveryoneLoadedContentTMP;
+
+        if (hasEveryoneLoadedContent && isEveryoneReady)
+            // Wait three seconds
+            if (hasEveryoneLoadedContent && isEveryoneReady /*&& timer <= 0*/) {
+                assignBombermenToPlayers();
+                transmitWorldDetails();
+            }
+            // else break;
     }
 
     public void broadcast(String message) {
@@ -88,11 +113,21 @@ public class Room {
             entry.getValue().sendMessage(message);
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+
+    private void transmitWorldDetails() {
+        isActive = true;
+        for (WorldEvent spawnEvent: world.getFreshEvents())
+            broadcast(MessageCreator.createObjectSpawnedMessage(spawnEvent));
+    }
+
     // I can't determine hashCode and equals methods. :(
 
     private int capacity = DEFAULT_CAPACITY;
     private boolean isEveryoneReady = false;
-    private boolean hasEveryoneLoadedContetnt = false;
+    private boolean hasEveryoneLoadedContent = false;
 
     private final Map<Integer, UserProfile> playerMap = new HashMap<>(4);
     private final Map<UserProfile, Integer> reversePlayerMap = new HashMap<>(4);
@@ -100,6 +135,7 @@ public class Room {
     private final Map<UserProfile, Pair<Boolean, Boolean>> readinessMap = new HashMap<>(4);
 
     World world;
+    private boolean isActive = false;
 
     public static final int DEFAULT_CAPACITY = 4;
 }

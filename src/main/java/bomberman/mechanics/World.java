@@ -5,26 +5,28 @@ import bomberman.mechanics.interfaces.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
-    public World(WorldType type, int numberOfPlayers) {
+    public World(WorldType type, int numberOfPlayers, Runnable actionOnWorldReady) {
         final IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(type);
 
+        actionOnceWorldIsReady = actionOnWorldReady;
         tileArray = builder.getITileArray(this, this);
         spawnLocations = builder.getBombermenSpawns();
         registerNewTiles();
-        isWorldReady = true;
     }
 
-    public World(WorldType type, int numberOfPlayers, int width, int height) {
+    public World(WorldType type, int numberOfPlayers, int width, int height, Runnable actionOnWorldReady) {
         final IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(type);
 
+        actionOnceWorldIsReady = actionOnWorldReady;
         tileArray = builder.getITileArray(height, width, this, this);
         spawnLocations = builder.getBombermenSpawns();
         registerNewTiles();
-        isWorldReady = true;
     }
 
     @Override
@@ -44,8 +46,11 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         return newQueue;
     }
 
-    public boolean isWorldReady() {
-        return isWorldReady;
+    public void doSomethingIfWorldReady() {
+        if (areBombermenSpawned && areTilesPositioned && !hasWorldReadyAcionFired){
+            hasWorldReadyAcionFired = true;
+            actionOnceWorldIsReady.run();
+        }
     }
 
     // For linking to Players via Room
@@ -66,31 +71,37 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
             final Bomberman newBomberman = new Bomberman(getNextID());
             newBomberman.setCoordinates(spawnLocations[i]);
             bombermen.add(newBomberman);
-            processedEventQueue.add(new WorldEvent(EventType.ENTITY_UPDATED, newBomberman.getType(), newBomberman.getID()));
+            processedEventQueue.add(new WorldEvent(EventType.ENTITY_UPDATED, newBomberman.getType(), newBomberman.getID(), spawnLocations[i][0], spawnLocations[i][1]));
         }
-
+        areBombermenSpawned = true;
     }
 
     // Run only once at the very beginning
     private void registerNewTiles() {
-        for (ITile[] row : tileArray)
-            for(ITile tile : row)
+        for (int y = 0; y < tileArray.length; ++y) {
+            final ITile[] row = tileArray[y];
+            for (int x = 0; x < tileArray[y].length; ++x) {
+                final ITile tile = row[x];
                 if (tile != null)
-                    processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, tile.getType(), tile.getID()));
-
-
+                    processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, tile.getType(), tile.getID(), x, y));
+            }
+        }
+        areTilesPositioned = true;
     }
 
     Queue<WorldEvent> newEventQueue;       // Here are new events are stashed
     Queue<WorldEvent> processedEventQueue; // State describer will take events from this list.
 
     private AtomicInteger uidManager = new AtomicInteger(0);
+
     private final ITile[][] tileArray;
-    private final float[][] spawnLocations;
-    private boolean isWorldReady = false;
-    private boolean shouldSelfUpdate = false;
     private ArrayList<Bomberman> bombermen = new ArrayList<>(4);
 
+    private final float[][] spawnLocations;
+    private boolean areBombermenSpawned = false;
+    private boolean areTilesPositioned = false;
+    private boolean hasWorldReadyAcionFired = false;
 
-
+    private boolean shouldSelfUpdate = false;
+    private Runnable actionOnceWorldIsReady;
 }
