@@ -2,7 +2,6 @@ package bomberman.service;
 
 import bomberman.mechanics.World;
 import bomberman.mechanics.WorldEvent;
-import bomberman.mechanics.interfaces.WorldType;
 import main.websocketconnection.MessageSendable;
 import org.javatuples.Pair;
 import rest.UserProfile;
@@ -18,14 +17,9 @@ public class Room {
         capacity = overrideCapacity;
     }
 
-    public void createNewWorld(WorldType type)
+    public void createNewWorld(String type)
     {
         world = new World(type, playerMap.size(), this::transmitWorldDetails);
-    }
-
-    @Deprecated
-    public void createNewWorld(String type) {
-        //world = new World(type, playerMap.size());
     }
 
     public void assignBombermenToPlayers() {

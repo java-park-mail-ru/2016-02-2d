@@ -7,7 +7,7 @@ import bomberman.mechanics.interfaces.*;
 import javax.inject.Singleton;
 
 @Singleton
-public class BasicWorldBuilder extends IWorldBuilder {
+public class BasicWorldBuilder implements IWorldBuilder {
 
     @Override
     public ITile[][] getITileArray(UniqueIDManager supplicant, EventStashable eventQueue) {
@@ -38,4 +38,12 @@ public class BasicWorldBuilder extends IWorldBuilder {
     public float[][] getBombermenSpawns() {
         return new float[][]{{1.0f, 1.0f},{1.0f, (float)(DEFAULT_WORLD_HEIGHT - 1)},{(float)(DEFAULT_WORLD_WIDTH - 1), 1.0f},{(float)(DEFAULT_WORLD_HEIGHT - 1), (float)(DEFAULT_WORLD_WIDTH - 1)}};
     }
+
+    @Override
+    public String getName() {
+        return "REPORT AS A BUG";
+    }
+
+    private static final int DEFAULT_WORLD_HEIGHT = 32;
+    private static final int DEFAULT_WORLD_WIDTH = 32;
 }

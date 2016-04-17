@@ -2,27 +2,47 @@ package bomberman.mechanics.worldbuilders;
 
 import bomberman.mechanics.TileFactory;
 import bomberman.mechanics.interfaces.*;
-import bomberman.mechanics.worldbuilders.blueprints.SpiralWorldBlueprint;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import sun.plugin.dom.exception.WrongDocumentException;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.io.File;
+import java.util.*;
 
-public class TextWorldBuilder extends IWorldBuilder {
+public class TextWorldBuilder implements IWorldBuilder {
 
-    public TextWorldBuilder(WorldType worldType){
-        switch (worldType)
-        {
-            case TEXT_SPIRAL_WORLD:
-                blueprint = new SpiralWorldBlueprint();
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
+    public static Map<String, IWorldBuilder> getAllTextBuilders() {
+        final HashMap<String, IWorldBuilder> builders = new HashMap<>();
+        final File[] worldBlueprints = new File("data/worlds").listFiles();
+
+        if (worldBlueprints == null)
+            LOGGER.fatal("Cannot access world blueprints folder or it is empty!");
+        else
+            for (final File blueprint : worldBlueprints)
+                if (!blueprint.isDirectory())
+                    try {
+                        final String nameWithoutExtension = blueprint.getName().substring(0, blueprint.getName().lastIndexOf('.'));
+                        builders.put(nameWithoutExtension, new TextWorldBuilder(blueprint));
+                    } catch (Exception ex) {
+                        LOGGER.error("Cannot build world from file\"" + blueprint.getAbsolutePath() + "\". It is corrupted.");
+                    }
+
+        return builders;
+    }
+
+    public TextWorldBuilder(File blueprint) throws Exception {
+        final String[] strings = blueprint.list();
+
+        if (!strings[0].equals(CURRENT_VERSION) || strings.length < WORLD_HEIGHT + 2)
+            throw new Exception();
+        name = strings[1];
+        for (int i = 2; i < WORLD_HEIGHT; ++i)
+            rawTiles.add(strings[i]);
     }
 
     @Override
-    public ITile[][] getITileArray(int height, int width, UniqueIDManager newSupplicant, EventStashable newEventQueue) {
+    public ITile[][] getITileArray(UniqueIDManager newSupplicant, EventStashable newEventQueue) {
         supplicant = newSupplicant;
         eventQueue = newEventQueue;
         generateWorldFromText();
@@ -45,11 +65,16 @@ public class TextWorldBuilder extends IWorldBuilder {
         return spawnArray;
     }
 
+    @Override
+    public String getName() {
+        return name;
+    }
+
     private void generateWorldFromText() {
-        tileArray = new ITile[blueprint.getHeight()][blueprint.getWidth()];
+        tileArray = new ITile[WORLD_HEIGHT][WORLD_WIDTH];
 
         int y = 0;
-        for (String row : blueprint.getBlueprint())
+        for (String row : rawTiles)
         {
             int x = 0;
             for (char tileChar : row.toCharArray())
@@ -69,23 +94,34 @@ public class TextWorldBuilder extends IWorldBuilder {
                 return null;
             case '#':
                 return TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID(), x, y);
-            case '+':
+            case 'd':
                 return TileFactory.getInstance().getNewTile(EntityType.DESTRUCTIBLE_WALL, supplicant.getNextID(), x, y);
-            case 'H':
-                return TileFactory.getInstance().getNewTile(EntityType.BONUS_HEAL, eventQueue, supplicant.getNextID(), x, y);
+            case 'E':
+                return TileFactory.getInstance().getNewTile(EntityType.BONUS_DECBOMBFUSE, eventQueue, supplicant.getNextID(), x, y);
+            case 'P':
+                return TileFactory.getInstance().getNewTile(EntityType.BONUS_DECBOMBSPAWN, eventQueue, supplicant.getNextID(), x, y);
+            case 'R':
+                return TileFactory.getInstance().getNewTile(EntityType.BONUS_INCMAXRANGE, eventQueue, supplicant.getNextID(), x, y);
             case 'S':
-                spawnList.add(new float[]{x, y});
+                spawnList.add(new float[]{x + 0.5f, y + 0.5f});
                 return null;
-            default:    //TODO: Assign all bonuses to symbols!
-                throw new IllegalArgumentException();
+            default:
+                LOGGER.warn("Found undocumented symbol '" + c + "'. Treating him like an empty place.");
+                return null;
         }
     }
 
 
-    private Blueprintable blueprint;
     private UniqueIDManager supplicant;
     private EventStashable eventQueue;
     private ITile[][] tileArray;
     private final Queue<float[]> spawnList = new LinkedList<>();
+    private String name = "REPORT AS A BUG";
+    private final ArrayList<String> rawTiles = new ArrayList<>(32);
+
+    private static final Logger LOGGER = LogManager.getLogger(TextWorldBuilder.class);
+    private static final String CURRENT_VERSION = "v1.0";
+    private static final int WORLD_HEIGHT = 32;
+    private static final int WORLD_WIDTH = 32;
 
 }

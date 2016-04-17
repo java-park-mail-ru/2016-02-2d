@@ -1,6 +1,6 @@
 package bomberman.service;
 
-import bomberman.mechanics.interfaces.WorldType;
+import bomberman.mechanics.WorldBuilderForeman;
 import main.websocketconnection.MessageSendable;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
@@ -48,7 +48,7 @@ public class RoomManagerImpl implements RoomManager {
     private Room createNewRoom(String worldType) {
         final Room room = new Room();
 
-        room.createNewWorld(WorldType.BASIC_WORLD);
+        room.createNewWorld(WorldBuilderForeman.getRandomWorldName());
         nonFilledRooms.add(room);
         allRooms.add(room);
 

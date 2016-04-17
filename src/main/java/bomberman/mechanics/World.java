@@ -9,20 +9,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
-    public World(WorldType type, int numberOfPlayers, Runnable actionOnWorldReady) {
-        final IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(type);
+    public World(String worldType, int numberOfPlayers, Runnable actionOnWorldReady) {
+        final IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(worldType);
 
         actionOnceWorldIsReady = actionOnWorldReady;
         tileArray = builder.getITileArray(this, this);
-        spawnLocations = builder.getBombermenSpawns();
-        registerNewTiles();
-    }
-
-    public World(WorldType type, int numberOfPlayers, int width, int height, Runnable actionOnWorldReady) {
-        final IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(type);
-
-        actionOnceWorldIsReady = actionOnWorldReady;
-        tileArray = builder.getITileArray(height, width, this, this);
         spawnLocations = builder.getBombermenSpawns();
         registerNewTiles();
     }
