@@ -31,36 +31,34 @@ public class Main {
 
             properties = serverInitializer.getPropertiesMap();
             context = serverInitializer.fillNewContext();
-            UserTokenManager.changeHost(properties.get("host"));
+            UserTokenManager.changeHost(properties.get(""));
+
+            globalContext = context;
         } catch (Exception ex) {
             LOGGER.fatal("Could not setup server. Aborting...", ex);
             System.exit(1);
         }
-
-
-        final Context bindableContext = context;
-        final ResourceConfig config = new ResourceConfig(RestApplication.class, ReceivedMessageHandler.class, WebSocketConnection.class, WebSocketConnectionCreator.class);
-        config.register(new AbstractBinder() {
-            @Override
-            protected void configure() {
-                bind(bindableContext);
-            }
-        });
 
         final int port = Integer.parseInt(properties.get("port"));
         LOGGER.info("Starting at " + port + " port");
         final Server server = new Server(port);
 
         final ServletContextHandler contextHandler = new ServletContextHandler(server, "/api/", ServletContextHandler.SESSIONS);
+
         final ServletHolder restServletHolder = new ServletHolder(ServletContainer.class);
         restServletHolder.setInitParameter("javax.ws.rs.Application", "main.RestApplication");
 
         contextHandler.addServlet(restServletHolder, "/*");
-        contextHandler.addServlet(new ServletHolder(new WebSocketConnectionServlet(Integer.parseInt(properties.get("ws_timeout")))), "/game");
+        contextHandler.addServlet(new ServletHolder(new WebSocketConnectionServlet(context, Integer.parseInt(properties.get("ws_timeout")))), "/game");
 
         server.start();
         server.join();
     }
 
+    public static Context getGlobalContext() {
+        return globalContext;
+    }
+
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
+    private static Context globalContext;
 }

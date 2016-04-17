@@ -18,11 +18,10 @@ import java.io.IOException;
 import java.net.HttpCookie;
 
 public class WebSocketConnectionCreator implements WebSocketCreator {
-    @Inject
-    private Context context;
 
-    public WebSocketConnectionCreator() {
-        accountService = (AccountService) context.get(AccountService.class);
+    public WebSocketConnectionCreator(Context context) {
+        bindableContext = context;
+        accountService = (AccountService) bindableContext.get(AccountService.class);
     }
 
     @Override
@@ -51,9 +50,11 @@ public class WebSocketConnectionCreator implements WebSocketCreator {
             return null;
         }
 
-        return new WebSocketConnection(user);
+        return new WebSocketConnection(user, bindableContext);
     }
 
     private final AccountService accountService;
+    private final Context bindableContext;
+
     private static final Logger LOGGER = LogManager.getLogger(WebSocketConnectionCreator.class);
 }

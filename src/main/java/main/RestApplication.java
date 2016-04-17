@@ -13,11 +13,9 @@ import java.util.Set;
 
 @ApplicationPath("api")
 public class RestApplication extends Application {
-    @Inject
-    private Context context;
 
     public RestApplication() {
-        final AccountService accountService = (AccountService) context.get(AccountService.class);
+        final AccountService accountService = (AccountService) Main.getGlobalContext().get(AccountService.class);
         objects.add(new Users(accountService));
         objects.add(new Sessions(accountService));
     }
@@ -28,5 +26,4 @@ public class RestApplication extends Application {
     }
 
     private final HashSet<Object> objects = new HashSet<>();
-
 }

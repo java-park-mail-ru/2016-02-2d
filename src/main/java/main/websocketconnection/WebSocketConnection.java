@@ -20,10 +20,8 @@ import java.io.IOException;
 
 @WebSocket
 public class WebSocketConnection implements MessageSendable{
-    @Inject
-    private Context context;
 
-    public WebSocketConnection(UserProfile owner) {
+    public WebSocketConnection(UserProfile owner, Context context) {
         user = owner;
         roomManager = (RoomManager) context.get(RoomManager.class);
     }
