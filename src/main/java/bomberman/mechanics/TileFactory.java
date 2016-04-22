@@ -39,15 +39,15 @@ public class TileFactory {
         switch (type)
         {
             case BONUS_HEAL:
-                return newBonusHealAllHP(id  , list);
+                return newBonusHealAllHP(id, list);
             case BONUS_INCMAXHP:
-                return newBonusIncreaseMaxHP(id  , list);
+                return newBonusIncreaseMaxHP(id, list);
             case BONUS_INCMAXRANGE:
-                return newBonusIncreaseBombRange(id  , list);
+                return newBonusIncreaseBombRange(id, list);
             case BONUS_DECBOMBFUSE:
-                return newBonusDecreaseSpawnDelay(id  , list);
+                return newBonusDecreaseExplosionDelay(id, list);
             case BONUS_DECBOMBSPAWN:
-                return newBonusDecreaseExplosionDelay(id  , list);
+                return newBonusDecreaseSpawnDelay(id, list);
             default:
                 throw new IllegalArgumentException();
         }
