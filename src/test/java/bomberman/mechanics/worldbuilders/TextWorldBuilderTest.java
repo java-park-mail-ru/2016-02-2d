@@ -31,7 +31,9 @@ public class TextWorldBuilderTest {
         expectedTileArray[1][0] = new UndestructibleWall(2);
         expectedTileArray[2][2] = new DestructibleWall(3);
 
-        assertEquals(expectedTileArray, actualTileArray);
+        assertEquals(expectedTileArray.length, actualTileArray.length);
+        for (int i = 0; i < expectedTileArray.length; ++i)
+            assertArrayEquals(expectedTileArray[i], actualTileArray[i]);
     }
 
     @Test
@@ -39,7 +41,9 @@ public class TextWorldBuilderTest {
         final float[][] actualSpawns = testWorldBuilder.getBombermenSpawns();
         final float[][] expectedSpawns = new float[][] {{31.5f, 31.5f}};
 
-        assertEquals(expectedSpawns, actualSpawns);
+        assertEquals(expectedSpawns.length, actualSpawns.length);
+        for (int i = 0; i < expectedSpawns.length; ++i)
+            assertArrayEquals(expectedSpawns[i], actualSpawns[i], SOME_ERROR_DELTA);
     }
 
     @Test
@@ -49,4 +53,5 @@ public class TextWorldBuilderTest {
     }
 
     private static IWorldBuilder testWorldBuilder;
+    private static final float SOME_ERROR_DELTA = 10e-3f;
 }

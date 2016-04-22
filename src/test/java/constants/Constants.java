@@ -1,5 +1,6 @@
 package constants;
 
+import bomberman.mechanics.Bomberman;
 import bomberman.mechanics.interfaces.EventObtainable;
 import bomberman.mechanics.interfaces.EventStashable;
 import bomberman.mechanics.interfaces.UniqueIDManager;
@@ -100,6 +101,10 @@ public class Constants {
             return EVENT_STASHABLE;
         }
 
+        public static Bomberman getBomberman() {
+            return BOMBERMAN;
+        }
+
         private static void configure() {
             uniqueIDManager = new UniqueIDManager() {
                 @Override
@@ -110,10 +115,12 @@ public class Constants {
                 private AtomicInteger mockedIDGenerator = new AtomicInteger();
             };
 
+            when(BOMBERMAN.getID()).thenReturn((int)USER_ID);
         }
 
         private static UniqueIDManager uniqueIDManager = null;
         private static final EventStashable EVENT_STASHABLE = mock(EventStashable.class);
+        private static final Bomberman BOMBERMAN = mock(Bomberman.class);
     }
 
     public static UserProfile customMockUserProfile(String login, String password, String sessionID, Integer score) {

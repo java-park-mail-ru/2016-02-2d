@@ -21,4 +21,20 @@ public class UndestructibleWall extends AbstractTile{
     public boolean shouldBeDestroyed() {
         return false;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final UndestructibleWall that = (UndestructibleWall) o;
+
+        return getType() == that.getType();
+
+    }
+
+    @Override
+    public int hashCode() {
+        return getType().hashCode();
+    }
 }

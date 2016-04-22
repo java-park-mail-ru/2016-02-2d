@@ -37,9 +37,24 @@ public class ActionTile extends AbstractTile {
         functor.applyAction(bomberman);
     }
 
-
     public void markForDestruction() {
         shouldBeDestroyed = true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final ActionTile that = (ActionTile) o;
+
+        return entityType == that.entityType;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return entityType.hashCode();
     }
 
     private boolean shouldBeDestroyed;

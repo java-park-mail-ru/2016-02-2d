@@ -26,4 +26,21 @@ public class DestructibleWall extends AbstractTile {
     public EntityType getType() {
         return EntityType.DESTRUCTIBLE_WALL;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final DestructibleWall that = (DestructibleWall) o;
+
+        return getType() == that.getType();
+
+    }
+
+    @Override
+    public int hashCode() {
+        return getType().hashCode();
+    }
+
 }
