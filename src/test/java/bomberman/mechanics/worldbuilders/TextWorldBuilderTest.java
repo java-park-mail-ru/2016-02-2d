@@ -5,6 +5,7 @@ import bomberman.mechanics.interfaces.IWorldBuilder;
 import bomberman.mechanics.tiles.DestructibleWall;
 import bomberman.mechanics.tiles.UndestructibleWall;
 import constants.Constants;
+import org.javatuples.Triplet;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -16,30 +17,32 @@ public class TextWorldBuilderTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        testWorldBuilder = new TextWorldBuilder(new File("data/unit-test-world-do-not-alter.txt"));
+        testWorldData = new TextWorldBuilder(new File("data/unit-test-world-do-not-alter.txt")).getWorldData(Constants.GameMechanicsMocks.getUniqueIDManager(), Constants.GameMechanicsMocks.getEventStashable());
     }
 
     @Test
-    public void testGetITileArray() throws Exception {
-        final ITile[][] actualTileArray = testWorldBuilder.getITileArray(Constants.GameMechanicsMocks.getUniqueIDManager(), Constants.GameMechanicsMocks.getEventStashable());
+    public void testGetITileArrayAndSpawnsArray() throws Exception {
+        final ITile[][] actualTileArray = testWorldData.getValue0();
         final ITile[][] expectedTileArray = new ITile[32][32];
+
+        assertEquals(expectedTileArray.length, actualTileArray.length);
+
         for (int j = 0; j < expectedTileArray.length; ++j)
-            for (int i = 0; i < expectedTileArray[i].length; ++i)
+            for (int i = 0; i < expectedTileArray[j].length; ++i)
                 expectedTileArray[j][i] = null;
         expectedTileArray[0][0] = new UndestructibleWall(0);
         expectedTileArray[0][1] = new UndestructibleWall(1);
         expectedTileArray[1][0] = new UndestructibleWall(2);
         expectedTileArray[2][2] = new DestructibleWall(3);
 
-        assertEquals(expectedTileArray.length, actualTileArray.length);
         for (int i = 0; i < expectedTileArray.length; ++i)
             assertArrayEquals(expectedTileArray[i], actualTileArray[i]);
     }
 
     @Test
     public void testGetBombermenSpawns() throws Exception {
-        final float[][] actualSpawns = testWorldBuilder.getBombermenSpawns();
-        final float[][] expectedSpawns = new float[][] {{31.5f, 31.5f}};
+        final float[][] actualSpawns = testWorldData.getValue1();
+        final float[][] expectedSpawns = new float[][]{{31.5f, 31.5f}};
 
         assertEquals(expectedSpawns.length, actualSpawns.length);
         for (int i = 0; i < expectedSpawns.length; ++i)
@@ -48,10 +51,10 @@ public class TextWorldBuilderTest {
 
     @Test
     public void testGetName() throws Exception {
-        final String worldName = testWorldBuilder.getName();
+        final String worldName = testWorldData.getValue2();
         assertEquals("Unit test", worldName);
     }
 
-    private static IWorldBuilder testWorldBuilder;
+    private static Triplet<ITile[][], float[][], String> testWorldData;
     private static final float SOME_ERROR_DELTA = 10e-3f;
 }

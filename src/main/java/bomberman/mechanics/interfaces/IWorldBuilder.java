@@ -1,9 +1,7 @@
 package bomberman.mechanics.interfaces;
 
-// Can I call it interface with "safe" default implementation?
+import org.javatuples.Triplet;
 
 public interface IWorldBuilder {
-    ITile[][] getITileArray(UniqueIDManager supplicant, EventStashable eventQueue);
-    float[][] getBombermenSpawns();
-    String getName();
+    Triplet<ITile[][], float[][], String> getWorldData(UniqueIDManager supplicant, EventStashable eventQueue);
 }

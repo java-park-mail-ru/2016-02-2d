@@ -32,7 +32,10 @@ REPORT AS A BUG!
 ................................
 ................................
 ................................
+
 d — destructible wall
 # — undestructible wall
 S — spawn
-other things are bonuses.
+. — empty space
+E, P, R are bonuses.
+Others are treated like empty space

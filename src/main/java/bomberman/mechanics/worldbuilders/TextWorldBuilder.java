@@ -4,6 +4,7 @@ import bomberman.mechanics.TileFactory;
 import bomberman.mechanics.interfaces.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.javatuples.Triplet;
 import org.jetbrains.annotations.Nullable;
 import sun.plugin.dom.exception.WrongDocumentException;
 
@@ -41,8 +42,10 @@ public class TextWorldBuilder implements IWorldBuilder {
             if (!strings.readLine().equals(CURRENT_VERSION))
                 throw new Exception();
             name = strings.readLine();
-            for (int i = 2; i < WORLD_HEIGHT; ++i)
+            for (int i = 0; i < WORLD_HEIGHT; ++i)
                 rawTiles.add(strings.readLine());
+            if (rawTiles.size() != WORLD_HEIGHT)
+                throw new Exception();
         }
         catch (Exception ex)
         {
@@ -55,18 +58,14 @@ public class TextWorldBuilder implements IWorldBuilder {
     }
 
     @Override
-    public ITile[][] getITileArray(UniqueIDManager newSupplicant, EventStashable newEventQueue) {
+    public Triplet<ITile[][], float[][], String> getWorldData(UniqueIDManager newSupplicant, EventStashable newEventQueue) {
         supplicant = newSupplicant;
         eventQueue = newEventQueue;
         generateWorldFromText();
-        return tileArray;
+        return new Triplet<>(tileArray, getBombermenSpawns(), name);
     }
 
-    @Override
-    public float[][] getBombermenSpawns() {
-        if (spawnList.isEmpty())
-            generateWorldFromText();
-
+    private float[][] getBombermenSpawns() {
         final float[][] spawnArray = new float[spawnList.size()][2];  // 2 for x and y coordinates
         int i = 0;
 
@@ -78,17 +77,11 @@ public class TextWorldBuilder implements IWorldBuilder {
         return spawnArray;
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
-
     private void generateWorldFromText() {
         tileArray = new ITile[WORLD_HEIGHT][WORLD_WIDTH];
 
         int y = 0;
-        for (String row : rawTiles)
-        {
+        for (String row : rawTiles) {
             int x = 0;
             for (char tileChar : row.toCharArray())
             {

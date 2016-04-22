@@ -3,6 +3,7 @@ package bomberman.mechanics.worldbuilders;
 
 import bomberman.mechanics.TileFactory;
 import bomberman.mechanics.interfaces.*;
+import org.javatuples.Triplet;
 
 import javax.inject.Singleton;
 
@@ -10,7 +11,11 @@ import javax.inject.Singleton;
 public class BasicWorldBuilder implements IWorldBuilder {
 
     @Override
-    public ITile[][] getITileArray(UniqueIDManager supplicant, EventStashable eventQueue) {
+    public Triplet<ITile[][], float[][], String> getWorldData(UniqueIDManager supplicant, EventStashable eventQueue) {
+        return new Triplet<>(getITileArray(supplicant, eventQueue), getBombermenSpawns(), getName());
+    }
+
+    private ITile[][] getITileArray(UniqueIDManager supplicant, EventStashable eventQueue) {
         // Array has dimensions YxX because java multi-dimensional arrays are arrays of arrays.
         // This means [first][] bracket pair is number of array we want to access.
         // And [][second] bracket pair is true position of an element we want to access.
@@ -34,13 +39,12 @@ public class BasicWorldBuilder implements IWorldBuilder {
         return tileArray;
     }
 
-    @Override// x y
-    public float[][] getBombermenSpawns() {
+              // x y
+    private float[][] getBombermenSpawns() {
         return new float[][]{{1.0f, 1.0f},{1.0f, (float)(DEFAULT_WORLD_HEIGHT - 1)},{(float)(DEFAULT_WORLD_WIDTH - 1), 1.0f},{(float)(DEFAULT_WORLD_HEIGHT - 1), (float)(DEFAULT_WORLD_WIDTH - 1)}};
     }
 
-    @Override
-    public String getName() {
+    private String getName() {
         return "REPORT AS A BUG";
     }
 

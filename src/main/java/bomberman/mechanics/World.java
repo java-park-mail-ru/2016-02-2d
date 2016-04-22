@@ -1,6 +1,7 @@
 package bomberman.mechanics;
 
 import bomberman.mechanics.interfaces.*;
+import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -12,10 +13,12 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
     public World(String worldType, int numberOfPlayers, Runnable actionOnWorldReady) {
         final IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(worldType);
+        final Triplet<ITile[][], float[][], String> worldData = builder.getWorldData(this, this);
 
         actionOnceWorldIsReady = actionOnWorldReady;
-        tileArray = builder.getITileArray(this, this);
-        spawnLocations = builder.getBombermenSpawns();
+        tileArray = worldData.getValue0();
+        spawnLocations = worldData.getValue1();
+        name = worldData.getValue2();
         registerNewTiles();
     }
 
@@ -83,6 +86,8 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     private final Queue<WorldEvent> processedEventQueue = new PriorityQueue<>(); // State describer will take events from this list.
 
     private final AtomicInteger uidManager = new AtomicInteger(0);
+
+    private final String name;
 
     private final ITile[][] tileArray;
     private final ArrayList<Bomberman> bombermen = new ArrayList<>(4);

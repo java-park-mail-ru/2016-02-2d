@@ -94,33 +94,43 @@ public class Constants {
     public static class GameMechanicsMocks {
 
         public static UniqueIDManager getUniqueIDManager() {
+            configure();
             return uniqueIDManager;
         }
 
         public static EventStashable getEventStashable() {
+            configure();
             return EVENT_STASHABLE;
         }
 
         public static Bomberman getBomberman() {
+            configure();
             return BOMBERMAN;
         }
 
         private static void configure() {
-            uniqueIDManager = new UniqueIDManager() {
-                @Override
-                public int getNextID() {
-                    return mockedIDGenerator.getAndIncrement();
-                }
+            if (!isConfigured) {
 
-                private AtomicInteger mockedIDGenerator = new AtomicInteger();
-            };
+                uniqueIDManager = new UniqueIDManager() {
+                    @Override
+                    public int getNextID() {
+                        return mockedIDGenerator.getAndIncrement();
+                    }
 
-            when(BOMBERMAN.getID()).thenReturn((int)USER_ID);
+                    private AtomicInteger mockedIDGenerator = new AtomicInteger();
+                };
+
+                when(BOMBERMAN.getID()).thenReturn((int) USER_ID);
+
+                isConfigured = true;
+            }
         }
 
         private static UniqueIDManager uniqueIDManager = null;
         private static final EventStashable EVENT_STASHABLE = mock(EventStashable.class);
         private static final Bomberman BOMBERMAN = mock(Bomberman.class);
+
+        private static boolean isConfigured = false;
     }
 
     public static UserProfile customMockUserProfile(String login, String password, String sessionID, Integer score) {
