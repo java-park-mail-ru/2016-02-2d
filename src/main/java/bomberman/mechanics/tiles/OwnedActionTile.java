@@ -7,8 +7,8 @@ import bomberman.mechanics.tiles.behaviors.ActionTileAbstractBehavior;
 import bomberman.mechanics.tiles.functors.ActionTileAbstractFunctor;
 
 public class OwnedActionTile extends ActionTile implements Ownable {
-    public OwnedActionTile(int id, int x, int y, ActionTileAbstractFunctor functor, ActionTileAbstractBehavior behavior, EntityType entityType, Bomberman owner) {
-        super(id, x, y, functor, behavior, entityType);
+    public OwnedActionTile(int id, ActionTileAbstractFunctor functor, ActionTileAbstractBehavior behavior, EntityType entityType, Bomberman owner) {
+        super(id, functor, behavior, entityType);
         this.owner = owner;
     }
 

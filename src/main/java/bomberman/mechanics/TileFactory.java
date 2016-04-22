@@ -21,13 +21,13 @@ public class TileFactory {
         return SINGLETON;
     }
 
-    public ITile getNewTile(EntityType type, int id, int x, int y) throws IllegalArgumentException {
+    public ITile getNewTile(EntityType type, int id) throws IllegalArgumentException {
         switch (type)
         {
             case UNDESTRUCTIBLE_WALL:
-                return newUndestructibleWall(id, x, y);
+                return newUndestructibleWall(id);
             case DESTRUCTIBLE_WALL:
-                return newDestructibleWall(id, x, y);
+                return newDestructibleWall(id);
             default:
                 throw new IllegalArgumentException();
         }
@@ -35,64 +35,64 @@ public class TileFactory {
     }
 
     // ATTENTION! FALSE WARNING! It is just not fully implemented yet. We will use much more parameters soon.
-    public ITile getNewTile(EntityType type, EventStashable list, int id, int x, int y) throws IllegalArgumentException {
+    public ITile getNewTile(EntityType type, EventStashable list, int id) throws IllegalArgumentException {
         switch (type)
         {
             case BONUS_HEAL:
-                return newBonusHealAllHP(id, x, y, list);
+                return newBonusHealAllHP(id  , list);
             case BONUS_INCMAXHP:
-                return newBonusIncreaseMaxHP(id, x, y, list);
+                return newBonusIncreaseMaxHP(id  , list);
             case BONUS_INCMAXRANGE:
-                return newBonusIncreaseBombRange(id, x, y, list);
+                return newBonusIncreaseBombRange(id  , list);
             case BONUS_DECBOMBFUSE:
-                return newBonusDecreaseSpawnDelay(id, x, y, list);
+                return newBonusDecreaseSpawnDelay(id  , list);
             case BONUS_DECBOMBSPAWN:
-                return newBonusDecreaseExplosionDelay(id, x, y, list);
+                return newBonusDecreaseExplosionDelay(id  , list);
             default:
                 throw new IllegalArgumentException();
         }
     }
 
-    public ITile getNewTile(EntityType type, EventStashable list, Bomberman owner, int id, int x, int y) throws IllegalArgumentException {
+    public ITile getNewTile(EntityType type, EventStashable list, Bomberman owner, int id) throws IllegalArgumentException {
         switch (type)
         {
             case BOMB:
-                return newBomb(id, x, y, list, owner);
+                return newBomb(id, list, owner);
             case BOMB_RAY:
-                return newBombRay(id, x, y, list, owner);
+                return newBombRay(id, list, owner);
             default:
                 throw new IllegalArgumentException();
         }
     }
 
-    private ITile newUndestructibleWall(int id, int x, int y) {
-        return new UndestructibleWall(id, x, y);
+    private ITile newUndestructibleWall(int id) {
+        return new UndestructibleWall(id);
     }
-    private ITile newDestructibleWall(int id, int x, int y) {
-        return new DestructibleWall(id, x, y);
-    }
-
-    private ITile newBomb(int id, int x, int y, EventStashable list, Bomberman owner) {
-        return new OwnedActionTile(id, x, y, new NullFunctor(list), new BombBehavior(list, owner.getBombExplosionDelay()), EntityType.BOMB, owner);
-    }
-    private ITile newBombRay(int id, int x, int y, EventStashable list, Bomberman owner) {
-        return new OwnedActionTile(id, x, y, new NullFunctor(list), new BombRayBehavior(list), EntityType.BOMB_RAY, owner);
+    private ITile newDestructibleWall(int id ) {
+        return new DestructibleWall(id);
     }
 
-    private ITile newBonusHealAllHP(int id, int x, int y, EventStashable list){
-        return new ActionTile(id, x, y, new HealAllHPFunctor(list), new NullBehavior(list), EntityType.BONUS_HEAL);
+    private ITile newBomb(int id, EventStashable list, Bomberman owner) {
+        return new OwnedActionTile(id, new NullFunctor(list), new BombBehavior(list, owner.getBombExplosionDelay()), EntityType.BOMB, owner);
     }
-    private ITile newBonusIncreaseMaxHP(int id, int x, int y, EventStashable list){
-        return new ActionTile(id, x, y, new IncreaseMaxHPFunctor(list), new NullBehavior(list), EntityType.BONUS_INCMAXHP);
+    private ITile newBombRay(int id, EventStashable list, Bomberman owner) {
+        return new OwnedActionTile(id, new NullFunctor(list), new BombRayBehavior(list), EntityType.BOMB_RAY, owner);
     }
-    private ITile newBonusIncreaseBombRange(int id, int x, int y, EventStashable list){
-        return new ActionTile(id, x, y, new IncreaseBombRangeFunctor(list), new NullBehavior(list), EntityType.BONUS_INCMAXRANGE);
+
+    private ITile newBonusHealAllHP(int id, EventStashable list){
+        return new ActionTile(id, new HealAllHPFunctor(list), new NullBehavior(list), EntityType.BONUS_HEAL);
     }
-    private ITile newBonusDecreaseSpawnDelay(int id, int x, int y, EventStashable list){
-        return new ActionTile(id, x, y, new DecreaseBombSpawnDelayFunctor(list), new NullBehavior(list), EntityType.BONUS_DECBOMBSPAWN);
+    private ITile newBonusIncreaseMaxHP(int id, EventStashable list){
+        return new ActionTile(id, new IncreaseMaxHPFunctor(list), new NullBehavior(list), EntityType.BONUS_INCMAXHP);
     }
-    private ITile newBonusDecreaseExplosionDelay(int id, int x, int y, EventStashable list){
-        return new ActionTile(id, x, y, new DecreaseBombExplosionDelayFunctor(list), new NullBehavior(list), EntityType.BONUS_DECBOMBFUSE);
+    private ITile newBonusIncreaseBombRange(int id, EventStashable list){
+        return new ActionTile(id, new IncreaseBombRangeFunctor(list), new NullBehavior(list), EntityType.BONUS_INCMAXRANGE);
+    }
+    private ITile newBonusDecreaseSpawnDelay(int id, EventStashable list){
+        return new ActionTile(id, new DecreaseBombSpawnDelayFunctor(list), new NullBehavior(list), EntityType.BONUS_DECBOMBSPAWN);
+    }
+    private ITile newBonusDecreaseExplosionDelay(int id, EventStashable list){
+        return new ActionTile(id, new DecreaseBombExplosionDelayFunctor(list), new NullBehavior(list), EntityType.BONUS_DECBOMBFUSE);
     }
 
 

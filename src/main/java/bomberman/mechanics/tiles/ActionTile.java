@@ -7,8 +7,8 @@ import bomberman.mechanics.tiles.functors.ActionTileAbstractFunctor;
 
 public class ActionTile extends AbstractTile {
 
-    public ActionTile(int id, int x, int y, ActionTileAbstractFunctor functor, ActionTileAbstractBehavior behavior, EntityType entityType ) {
-        super(id, x, y);
+    public ActionTile(int id, ActionTileAbstractFunctor functor, ActionTileAbstractBehavior behavior, EntityType entityType ) {
+        super(id);
         this.functor = functor;
         functor.linkWithTile(this);
         this.behavior = behavior;

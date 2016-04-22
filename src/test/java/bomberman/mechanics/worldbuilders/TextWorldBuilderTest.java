@@ -26,10 +26,10 @@ public class TextWorldBuilderTest {
         for (int j = 0; j < expectedTileArray.length; ++j)
             for (int i = 0; i < expectedTileArray[i].length; ++i)
                 expectedTileArray[j][i] = null;
-        expectedTileArray[0][0] = new UndestructibleWall(0, 0, 0);
-        expectedTileArray[0][1] = new UndestructibleWall(1, 1, 0);
-        expectedTileArray[1][0] = new UndestructibleWall(2, 0, 1);
-        expectedTileArray[2][2] = new DestructibleWall(3, 2, 2);
+        expectedTileArray[0][0] = new UndestructibleWall(0);
+        expectedTileArray[0][1] = new UndestructibleWall(1);
+        expectedTileArray[1][0] = new UndestructibleWall(2);
+        expectedTileArray[2][2] = new DestructibleWall(3);
 
         assertEquals(expectedTileArray, actualTileArray);
     }

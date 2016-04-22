@@ -20,15 +20,15 @@ public class BasicWorldBuilder implements IWorldBuilder {
         // Filling left and right borders
         for (int j = 0; j <= tileArray.length; ++j)
         {
-            TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID(), 0, j);
-            TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID(), DEFAULT_WORLD_WIDTH - 1, j);
-        }                                                                                                                //    ^-- Thanks this is not a magic number. ^_^
+            TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID());
+            TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID());
+        }
 
         // Filling top and bottom borders except for first and las columns: something is already there.
         for (int i = 1; i <= tileArray[0].length - 1; ++i)
         {
-            TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID(), i, 0);
-            TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID(), i, DEFAULT_WORLD_HEIGHT - 1);
+            TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID());
+            TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID());
         }
 
         return tileArray;

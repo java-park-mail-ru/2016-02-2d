@@ -5,15 +5,8 @@ import bomberman.mechanics.interfaces.ITile;
 
 public abstract class AbstractTile implements ITile{
 
-    public AbstractTile(int id, int x, int y) {
+    public AbstractTile(int id) {
         this.id = id;
-        this.x = x;
-        this.y = y;
-    }
-
-    @Override
-    public int[] getCoordinates() {
-        return new int[]{x, y};
     }
 
     // May be overriden later.
@@ -66,8 +59,4 @@ public abstract class AbstractTile implements ITile{
     // Having long names is much more confusing than simple self-describing "x".
     @SuppressWarnings("InstanceVariableNamingConvention")
     private final int id;
-    @SuppressWarnings("InstanceVariableNamingConvention")
-    private final int x;
-    @SuppressWarnings("InstanceVariableNamingConvention")
-    private final int y;
 }

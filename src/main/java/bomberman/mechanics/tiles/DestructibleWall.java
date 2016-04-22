@@ -3,8 +3,8 @@ package bomberman.mechanics.tiles;
 import bomberman.mechanics.interfaces.EntityType;
 
 public class DestructibleWall extends AbstractTile {
-    public DestructibleWall(int id, int x, int y) {
-        super(id, x, y);
+    public DestructibleWall(int id) {
+        super(id);
     }
 
     @Override

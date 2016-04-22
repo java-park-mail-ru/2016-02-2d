@@ -106,15 +106,15 @@ public class TextWorldBuilder implements IWorldBuilder {
             case '.':
                 return null;
             case '#':
-                return TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID(), x, y);
+                return TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID());
             case 'd':
-                return TileFactory.getInstance().getNewTile(EntityType.DESTRUCTIBLE_WALL, supplicant.getNextID(), x, y);
+                return TileFactory.getInstance().getNewTile(EntityType.DESTRUCTIBLE_WALL, supplicant.getNextID());
             case 'E':
-                return TileFactory.getInstance().getNewTile(EntityType.BONUS_DECBOMBFUSE, eventQueue, supplicant.getNextID(), x, y);
+                return TileFactory.getInstance().getNewTile(EntityType.BONUS_DECBOMBFUSE, eventQueue, supplicant.getNextID());
             case 'P':
-                return TileFactory.getInstance().getNewTile(EntityType.BONUS_DECBOMBSPAWN, eventQueue, supplicant.getNextID(), x, y);
+                return TileFactory.getInstance().getNewTile(EntityType.BONUS_DECBOMBSPAWN, eventQueue, supplicant.getNextID());
             case 'R':
-                return TileFactory.getInstance().getNewTile(EntityType.BONUS_INCMAXRANGE, eventQueue, supplicant.getNextID(), x, y);
+                return TileFactory.getInstance().getNewTile(EntityType.BONUS_INCMAXRANGE, eventQueue, supplicant.getNextID());
             case 'S':
                 spawnList.add(new float[]{x + 0.5f, y + 0.5f});
                 return null;
