@@ -19,7 +19,7 @@ public class TokenManagerTest {
 
     @Test
     public void testGetSIDStringFromHeaders() throws Exception {
-        assertEquals(Constants.USER_SESSION_ID, UserTokenManager.getSIDStringFromHeaders(Constants.FunctionalTestMocks.getOkCookieHeaders()));
-        assertEquals(null, UserTokenManager.getSIDStringFromHeaders(Constants.FunctionalTestMocks.getNoCookieHeaders()));
+        assertEquals(Constants.USER_SESSION_ID, UserTokenManager.getSIDStringFromHeaders(Constants.RestApplicationMocks.getOkCookieHeaders()));
+        assertEquals(null, UserTokenManager.getSIDStringFromHeaders(Constants.RestApplicationMocks.getNoCookieHeaders()));
     }
 }

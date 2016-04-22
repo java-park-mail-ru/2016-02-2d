@@ -1,5 +1,8 @@
 package constants;
 
+import bomberman.mechanics.interfaces.EventObtainable;
+import bomberman.mechanics.interfaces.EventStashable;
+import bomberman.mechanics.interfaces.UniqueIDManager;
 import main.accountservice.AccountService;
 import main.accountservice.AccountServiceImpl;
 import main.UserTokenManager;
@@ -11,6 +14,7 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.mockito.Mockito.mock;
@@ -18,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 public class Constants {
 
-    public static class FunctionalTestMocks {
+    public static class RestApplicationMocks {
 
         public static AccountService getMockedAccountService() {
             configure();
@@ -84,6 +88,32 @@ public class Constants {
 
         private static boolean isConfigured = false;
 
+    }
+
+    public static class GameMechanicsMocks {
+
+        public static UniqueIDManager getUniqueIDManager() {
+            return uniqueIDManager;
+        }
+
+        public static EventStashable getEventStashable() {
+            return EVENT_STASHABLE;
+        }
+
+        private static void configure() {
+            uniqueIDManager = new UniqueIDManager() {
+                @Override
+                public int getNextID() {
+                    return mockedIDGenerator.getAndIncrement();
+                }
+
+                private AtomicInteger mockedIDGenerator = new AtomicInteger();
+            };
+
+        }
+
+        private static UniqueIDManager uniqueIDManager = null;
+        private static final EventStashable EVENT_STASHABLE = mock(EventStashable.class);
     }
 
     public static UserProfile customMockUserProfile(String login, String password, String sessionID, Integer score) {

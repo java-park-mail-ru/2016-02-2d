@@ -4,6 +4,7 @@ import bomberman.mechanics.interfaces.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -78,8 +79,8 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         areTilesPositioned = true;
     }
 
-    Queue<WorldEvent> newEventQueue;       // Here are new events are stashed
-    Queue<WorldEvent> processedEventQueue; // State describer will take events from this list.
+    private final Queue<WorldEvent> newEventQueue = new PriorityQueue<>();       // Here are new events are stashed
+    private final Queue<WorldEvent> processedEventQueue = new PriorityQueue<>(); // State describer will take events from this list.
 
     private final AtomicInteger uidManager = new AtomicInteger(0);
 

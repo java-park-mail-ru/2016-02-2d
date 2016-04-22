@@ -95,7 +95,7 @@ public class UsersTest extends JerseyTest {
     // A bit of magic, without which nothing works.
     @Override
     protected Application configure() {
-        final AccountService mockedAccountService = Constants.FunctionalTestMocks.getMockedAccountService();
+        final AccountService mockedAccountService = Constants.RestApplicationMocks.getMockedAccountService();
         users = new Users(mockedAccountService);
         return new ResourceConfig(UsersTest.class);
     }
@@ -197,9 +197,9 @@ public class UsersTest extends JerseyTest {
 
 
     private Users users;
-    private static final HttpHeaders NO_COOKIE_HEADERS = Constants.FunctionalTestMocks.getNoCookieHeaders();
-    private static final HttpHeaders OK_COOKIE_HEADERS = Constants.FunctionalTestMocks.getOkCookieHeaders();
-    private static final HttpHeaders WRONG_COOKIE_HEADERS = Constants.FunctionalTestMocks.getWrongCookieHeaders();
+    private static final HttpHeaders NO_COOKIE_HEADERS = Constants.RestApplicationMocks.getNoCookieHeaders();
+    private static final HttpHeaders OK_COOKIE_HEADERS = Constants.RestApplicationMocks.getOkCookieHeaders();
+    private static final HttpHeaders WRONG_COOKIE_HEADERS = Constants.RestApplicationMocks.getWrongCookieHeaders();
     @SuppressWarnings("ConstantNamingConvention")
     private static final long ID = Constants.USER_ID;
     private static final String LOGIN = Constants.USER_LOGIN;

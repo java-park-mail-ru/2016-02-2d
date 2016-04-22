@@ -7,7 +7,9 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import sun.plugin.dom.exception.WrongDocumentException;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.*;
 
 public class TextWorldBuilder implements IWorldBuilder {
@@ -32,13 +34,24 @@ public class TextWorldBuilder implements IWorldBuilder {
     }
 
     public TextWorldBuilder(File blueprint) throws Exception {
-        final String[] strings = blueprint.list();
+        BufferedReader strings = null;
+        try {
+             strings = new BufferedReader(new FileReader(blueprint));
 
-        if (!strings[0].equals(CURRENT_VERSION) || strings.length < WORLD_HEIGHT + 2)
-            throw new Exception();
-        name = strings[1];
-        for (int i = 2; i < WORLD_HEIGHT; ++i)
-            rawTiles.add(strings[i]);
+            if (!strings.readLine().equals(CURRENT_VERSION))
+                throw new Exception();
+            name = strings.readLine();
+            for (int i = 2; i < WORLD_HEIGHT; ++i)
+                rawTiles.add(strings.readLine());
+        }
+        catch (Exception ex)
+        {
+            LOGGER.error("Cannot read\"" + blueprint.getAbsolutePath() + "\" due to some weird reason! Check server's rights.");
+            throw ex;
+        } finally {
+            if (strings != null)
+                strings.close();
+        }
     }
 
     @Override
