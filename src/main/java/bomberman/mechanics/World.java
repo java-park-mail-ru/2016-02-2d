@@ -46,6 +46,14 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         }
     }
 
+    public void update() {
+        runGameCycle();
+        if (shouldSelfUpdate != 0) {
+            // Sleep for 60 ms
+            runGameCycle();
+        }
+    }
+
     // For linking to Players via Room
     public int[] getBombermenIDs(){
         final int[] ids = new int[bombermen.size()];
@@ -82,8 +90,45 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         areTilesPositioned = true;
     }
 
-    private final Queue<WorldEvent> newEventQueue = new PriorityQueue<>();       // Here are new events are stashed
-    private final Queue<WorldEvent> processedEventQueue = new PriorityQueue<>(); // State describer will take events from this list.
+    private void runGameCycle() {
+        while (!newEventQueue.isEmpty())
+        {
+            final WorldEvent elderEvent = newEventQueue.remove();
+            switch (elderEvent.getEventType()){
+                case ENTITY_UPDATED:
+                    processEntityUpdatedEvent(elderEvent);
+                    processedEventQueue.add(elderEvent);
+                    break;
+                case TILE_SPAWNED:
+                    processTileSpawnedEvent(elderEvent);
+                    processedEventQueue.add(elderEvent);
+                    break;
+                case TILE_REMOVED:
+                    processTileRemovedEvent(elderEvent);
+                    processedEventQueue.add(elderEvent);
+                    break;
+            }
+        }
+    }
+
+    private void processEntityUpdatedEvent(WorldEvent event) {
+        // TODO: Bombermen movement
+        // TODO: Bomberman bonus pickup
+    }
+
+    private void processTileSpawnedEvent(WorldEvent event) {
+        // TODO: Bomb placement
+        // TODO: Bomb raycasting and destroying walls
+    }
+
+    private void processTileRemovedEvent(WorldEvent event) {
+        // TODO: Bomb explosion
+        // TODO: Bomb Ray dissipation
+        // TODO: Bonuses pickup?
+    }
+
+    private final Queue<WorldEvent> newEventQueue = new LinkedList<>();       // Here are new events are stashed
+    private final Queue<WorldEvent> processedEventQueue = new LinkedList<>(); // State describer will take events from this list.
 
     private final AtomicInteger uidManager = new AtomicInteger(0);
 
@@ -97,6 +142,6 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     private boolean areTilesPositioned = false;
     private boolean hasWorldReadyAcionFired = false;
 
-    private boolean shouldSelfUpdate = false;
+    private int shouldSelfUpdate = 0;
     private final Runnable actionOnceWorldIsReady;
 }
