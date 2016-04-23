@@ -5,10 +5,7 @@ import main.websocketconnection.MessageSendable;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class RoomManagerImpl implements RoomManager {
 
@@ -43,6 +40,11 @@ public class RoomManagerImpl implements RoomManager {
                 if (!room.isActive())
                     nonFilledRooms.add(room);
         }
+    }
+
+    @Override
+    public List<Room> getAllRooms() {
+        return allRooms;
     }
 
     private Room createNewRoom(String worldType) {
