@@ -26,7 +26,7 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
             return true;
         }
         if (messageType.equals("user_state_changed")) {
-            if (WebErrorManager.showFieldsNotPresent(message, "isReady", "contentLoaded") != null)
+            if (WebErrorManager.showFieldsNotPresent(message, "id", "isReady", "contentLoaded") != null)
                 return false;
 
             final AccountService accountService = (AccountService) context.get(AccountService.class);
@@ -39,7 +39,7 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
             return true;
         }
         if (messageType.equals("chat_message")) {
-            if (WebErrorManager.showFieldsNotPresent(message, "message") != null)
+            if (WebErrorManager.showFieldsNotPresent(message, "user_id", "text") != null)
                 return false;
 
             room.broadcast(message.toString());
