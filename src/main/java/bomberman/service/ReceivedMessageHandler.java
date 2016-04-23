@@ -23,6 +23,8 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
             if (WebErrorManager.showFieldsNotPresent(message, "id", "x", "y") != null)
                 return false;
 
+            // TODO: Logic here
+
             return true;
         }
         if (messageType.equals("user_state_changed")) {
@@ -43,6 +45,7 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
                 return false;
 
             room.broadcast(message.toString());
+
             return true;
         }
         return false;

@@ -20,18 +20,12 @@ import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.javatuples.Pair;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import rest.UserProfile;
 import rest.WebErrorManager;
 
 import java.sql.Connection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
@@ -74,26 +68,47 @@ public class RoomFuncTest {
 
     @After
     public void wasUserJoinedAndBroadcastTested() {
-        assertEquals(true, wasUserJoinedTested);    // room.broadcast() was tested here too.
+        assertEquals(true, joinedBroadcasts.isPassed());    // room.broadcast() was tested here too.
         casesSuccesfullyTested++;
         System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] user_joined was tested!");
     }
 
     @After
     public void wasUserLeftTested() {
-        assertEquals(true, wasUserLeftTested);
+        assertEquals(true, leftBroadcasts.isPassed());
         casesSuccesfullyTested++;
         System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] user_left was tested!");
     }
 
+    @After
+    public void wasUserReadyTested() {
+        assertEquals(true, readyBroadcasts.isPassed());
+        casesSuccesfullyTested++;
+        System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] user_state_changed was tested!");
+    }
+
+    @BeforeClass
+    public static void defineTests() {
+
+    }
+
     private void run() {
         logUsersOut();
+        makeUsersReady();
     }
 
     private void logUsersOut() {
         for (Pair<UserProfile, WebSocketConnection> entry: users) {
             entry.getValue1().onClose(0, "Hate \"Magic numbers\" isnpections");
             ((AccountService) context.get(AccountService.class)).logoutUser(entry.getValue0().getSessionID());
+        }
+    }
+
+    private void makeUsersReady() {
+        for (Pair<UserProfile, WebSocketConnection> entry : users) {
+            final JSONObject message = new JSONObject().put("type", "user_state_changed").put("id", entry.getValue0().getId())
+                    .put("isReady", true).put("contentLoaded", false);
+            entry.getValue1().onMessage(message.toString());
         }
     }
 
@@ -110,9 +125,13 @@ public class RoomFuncTest {
         assertNull(WebErrorManager.showFieldsNotPresent(jsonnedMessage, "type"));
 
         if (jsonnedMessage.getString("type").equals("user_joined"))
-            testUserJoined(jsonnedMessage);
+            joinedBroadcasts.count(jsonnedMessage);
         if (jsonnedMessage.getString("type").equals("user_left"))
-            testUserLeft(jsonnedMessage);
+            leftBroadcasts.count(jsonnedMessage);
+        if (jsonnedMessage.getString("type").equals("user_state_changed") && !jsonnedMessage.getBoolean("contentLoaded"))
+            readyBroadcasts.count(jsonnedMessage);
+//      if (jsonnedMessage.getString("type").equals("user_state_changed") && jsonnedMessage.getBoolean("contentLoaded"))
+//            readyBroadcasts.count(jsonnedMessage);
     }
 
     private Set<UserProfile> createUsers() {
@@ -129,58 +148,55 @@ public class RoomFuncTest {
         return result;
     }
 
-    private void testUserJoined(JSONObject message) {
-        amountOfJoinedBroadcasts++;
-        boolean isAnExistingUser = false;
 
-        for (Pair<UserProfile, WebSocketConnection> entry: users)
-            if (entry.getValue0().getLogin().equals(message.get("name"))) {
-                isAnExistingUser = true;
-                usersJoinedBroadcasted.add(entry.getValue0());
-            }
+    private static class BroadcastsCounter {
+        BroadcastsCounter(int totalBroadcasts, int userMentions) {
+            totalAmountOfBroadcasts = totalBroadcasts;
+            usersToBeMentioned = userMentions;
+        }
 
-        assertEquals(true, isAnExistingUser);
+        public void count(JSONObject message) {
+            currentAmountOfBroadcasts++;
+            boolean isAnExistingUser = false;
 
-        // times(16)
-        if (amountOfJoinedBroadcasts == AMOUNT_OF_JOINED_BROADCASTS && usersJoinedBroadcasted.size() == users.size())
-            wasUserJoinedTested = true;
-        if (amountOfJoinedBroadcasts > AMOUNT_OF_JOINED_BROADCASTS)
-            wasUserJoinedTested = false;
-    }
+            for (Pair<UserProfile, WebSocketConnection> entry: users)
+                if (entry.getValue0().getId() == message.getInt("id")) {
+                    isAnExistingUser = true;
+                    usersMentioned.add(entry.getValue0());
+                }
 
-    private void testUserLeft(JSONObject message) {
-        amountOfLeftBroadcasts++;
-        boolean isAnExistingUser = false;
+            assertEquals(true, isAnExistingUser);
 
-        for (Pair<UserProfile, WebSocketConnection> entry : users)
-            if (entry.getValue0().getId() == message.getInt("id")) {
-                isAnExistingUser = true;
-                usersLeftBroadcasted.add(entry.getValue0());
-            }
+            if (currentAmountOfBroadcasts == totalAmountOfBroadcasts && usersMentioned.size() == usersToBeMentioned)
+                isPassed = true;
+            if (currentAmountOfBroadcasts > totalAmountOfBroadcasts)
+                isPassed = false;
+        }
 
-        assertEquals(true, isAnExistingUser);
+        public boolean isPassed() {return isPassed;}
 
-        if (amountOfLeftBroadcasts == AMOUNT_OF_LEFT_BROADCASTS && usersLeftBroadcasted.size() == users.size() - 1)
-            wasUserLeftTested = true;
-        if (amountOfLeftBroadcasts > AMOUNT_OF_LEFT_BROADCASTS)
-            wasUserLeftTested = false;
+        private final int totalAmountOfBroadcasts;
+        private final int usersToBeMentioned;
+
+        private int currentAmountOfBroadcasts = 0;
+        private boolean isPassed = false;
+        private Set<UserProfile> usersMentioned = new HashSet<>();
     }
 
     private final Context context = new Context();
     private Room room = null;
-    private List<Pair<UserProfile, WebSocketConnection>> users = new LinkedList<>();
+    private static List<Pair<UserProfile, WebSocketConnection>> users = new LinkedList<>();
 
-    private boolean wasUserJoinedTested = false;
-    private Set<UserProfile> usersJoinedBroadcasted = new HashSet<>();
     private static final int AMOUNT_OF_JOINED_BROADCASTS = 16;  // 1 user — tell him he is accepted. 2 users — send data to #1 about #2 and #2 about #1 plus tell #2  he is joined. 3 users: #1↔#3 and #2↔#3 plus #3→#3, while #1 and #2 already know about themselves.
-    private int amountOfJoinedBroadcasts = 0;                   // So, number of broadcast on new user joined is (prev_user_amnt)*2 + 1. And f(1) + f(2) + f(3) + f(4) = 1 + 3 + 5 + 7 = 16. Or simply new_user_amt^2
+    private static BroadcastsCounter joinedBroadcasts = new BroadcastsCounter(AMOUNT_OF_JOINED_BROADCASTS, 4); // So, number of broadcast on new user joined is (prev_user_amnt)*2 + 1. And f(1) + f(2) + f(3) + f(4) = 1 + 3 + 5 + 7 = 16. Or simply new_user_amt^2
 
-    private boolean wasUserLeftTested = false;
-    private Set<UserProfile> usersLeftBroadcasted = new HashSet<>();
     private static final int AMOUNT_OF_LEFT_BROADCASTS = 6;  // 3! transmissions for 4 users
-    private int amountOfLeftBroadcasts = 0;
+    private static BroadcastsCounter leftBroadcasts = new BroadcastsCounter(AMOUNT_OF_LEFT_BROADCASTS, 3);
 
-    private static final int TOTAL_CASES_TO_TEST = 2;
+    private static final int AMOUNT_OF_USER_READY_BROADCASTS = 16;  // 4^2 transmissions for 4 users
+    private static BroadcastsCounter readyBroadcasts = new BroadcastsCounter(AMOUNT_OF_USER_READY_BROADCASTS, 4);
+
+    private static final int TOTAL_CASES_TO_TEST = 3;
     private int casesSuccesfullyTested = 0;
 
 }
