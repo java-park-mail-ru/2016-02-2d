@@ -6,8 +6,6 @@ import org.json.JSONObject;
 import rest.UserProfile;
 import rest.WebErrorManager;
 
-import javax.inject.Inject;
-
 public class ReceivedMessageHandler /*implements Runnable*/ {
     public ReceivedMessageHandler(Room userRoom, JSONObject jsonMessage, Context globalContext) {
         room = userRoom;

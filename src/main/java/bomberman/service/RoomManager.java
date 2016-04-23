@@ -4,7 +4,6 @@ import main.websocketconnection.MessageSendable;
 import rest.UserProfile;
 
 import java.util.List;
-import java.util.Set;
 
 public interface RoomManager {
     Room assignUserToFreeRoom(UserProfile user, MessageSendable socket);

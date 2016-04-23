@@ -27,6 +27,7 @@ public class DestructibleWall extends AbstractTile {
         return EntityType.DESTRUCTIBLE_WALL;
     }
 
+    @SuppressWarnings("QuestionableName")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,11 +1,9 @@
 package main;
 
 import main.accountservice.AccountService;
-import main.config.Context;
 import rest.Sessions;
 import rest.Users;
 
-import javax.inject.Inject;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import java.util.HashSet;

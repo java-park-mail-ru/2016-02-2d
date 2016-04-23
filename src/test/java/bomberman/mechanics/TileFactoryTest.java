@@ -3,11 +3,6 @@ package bomberman.mechanics;
 import bomberman.mechanics.interfaces.EntityType;
 import bomberman.mechanics.interfaces.ITile;
 import bomberman.mechanics.interfaces.Ownable;
-import bomberman.mechanics.tiles.ActionTile;
-import bomberman.mechanics.tiles.DestructibleWall;
-import bomberman.mechanics.tiles.UndestructibleWall;
-import bomberman.mechanics.tiles.behaviors.NullBehavior;
-import bomberman.mechanics.tiles.functors.NullFunctor;
 import constants.Constants;
 import org.junit.Test;
 

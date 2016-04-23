@@ -1,7 +1,6 @@
 package constants;
 
 import bomberman.mechanics.Bomberman;
-import bomberman.mechanics.interfaces.EventObtainable;
 import bomberman.mechanics.interfaces.EventStashable;
 import bomberman.mechanics.interfaces.UniqueIDManager;
 import main.accountservice.AccountService;
@@ -150,6 +149,7 @@ public class Constants {
         private static void configure() {
             if (!isConfigured) {
 
+                //noinspection InnerClassTooDeeplyNested
                 uniqueIDManager = new UniqueIDManager() {
                     @Override
                     public int getNextID() {

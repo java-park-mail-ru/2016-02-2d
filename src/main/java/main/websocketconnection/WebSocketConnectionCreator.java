@@ -12,7 +12,6 @@ import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
-import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.HttpCookie;

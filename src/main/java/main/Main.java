@@ -1,16 +1,11 @@
 package main;
 
-import bomberman.service.ReceivedMessageHandler;
 import main.config.Context;
 import main.config.ServerInitializer;
-import main.websocketconnection.WebSocketConnection;
-import main.websocketconnection.WebSocketConnectionCreator;
 import main.websocketconnection.WebSocketConnectionServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

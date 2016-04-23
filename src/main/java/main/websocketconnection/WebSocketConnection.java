@@ -15,7 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rest.UserProfile;
 
-import javax.inject.Inject;
 import java.io.IOException;
 
 @WebSocket

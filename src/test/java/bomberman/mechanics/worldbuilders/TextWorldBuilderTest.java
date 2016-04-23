@@ -1,7 +1,6 @@
 package bomberman.mechanics.worldbuilders;
 
 import bomberman.mechanics.interfaces.ITile;
-import bomberman.mechanics.interfaces.IWorldBuilder;
 import bomberman.mechanics.tiles.DestructibleWall;
 import bomberman.mechanics.tiles.UndestructibleWall;
 import constants.Constants;

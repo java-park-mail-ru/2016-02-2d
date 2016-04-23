@@ -1,8 +1,6 @@
 package bomberman.service;
 
-import bomberman.mechanics.Bomberman;
 import constants.Constants;
-import main.UserTokenManager;
 import main.accountservice.AccountService;
 import main.accountservice.AccountServiceImpl;
 import main.config.Context;
@@ -10,13 +8,8 @@ import main.databaseservice.DataBaseService;
 import main.databaseservice.DataBaseServiceHashMapImpl;
 import main.websocketconnection.WebSocketConnection;
 import main.websocketconnection.WebSocketConnectionCreator;
-import java.net.HttpCookie;
 
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.common.WebSocketSession;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.javatuples.Pair;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,17 +17,13 @@ import org.junit.*;
 import rest.UserProfile;
 import rest.WebErrorManager;
 
-import java.sql.Connection;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class RoomFuncTest {
 
+    @SuppressWarnings("ConstantConditions")
     @Test
     //@Ignore
     public void setupApplication() {
@@ -212,6 +201,7 @@ public class RoomFuncTest {
             super(totalBroadcasts, 0);
         }
 
+        @Override
         public void count(JSONObject message) {
             currentAmountOfBroadcasts++; // Also looks like "int latestID"
             //System.out.println(message.toString());
