@@ -125,7 +125,7 @@ public class MessageCreator {
         messageTemplate.put("type", "user_state_changed");
         messageTemplate.put("id", user.getId());
         messageTemplate.put("isReady", isReady);
-        messageTemplate.put("isReady", contentLoaded);
+        messageTemplate.put("contentLoaded", contentLoaded);
 
         return messageTemplate.toString();
     }
