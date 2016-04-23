@@ -58,6 +58,7 @@ public class RoomFuncTest {
             }
 
             room = roomManager.getAllRooms().get(0);
+            room.createNewWorld("non-exisitng-name-for-basic-world");
 
             run();
         } catch (Exception ex) {
@@ -87,13 +88,16 @@ public class RoomFuncTest {
         System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] user_state_changed was tested!");
     }
 
-    @BeforeClass
-    public static void defineTests() {
-
+    @After
+    public void wasWorldTransmissionTested() {
+        assertEquals(true, tileBroadcasts.isPassed());
+        casesSuccesfullyTested++;
+        System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] world creation was tested!");
     }
 
     private void run() {
         makeUsersReady();
+        makeUsersHaveContentLoaded();
         // New code here!
         logUsersOut();
     }
@@ -109,6 +113,14 @@ public class RoomFuncTest {
         for (Pair<UserProfile, WebSocketConnection> entry : users) {
             final JSONObject message = new JSONObject().put("type", "user_state_changed").put("id", entry.getValue0().getId())
                     .put("isReady", true).put("contentLoaded", false);
+            entry.getValue1().onMessage(message.toString());
+        }
+    }
+
+    private void makeUsersHaveContentLoaded() {
+        for (Pair<UserProfile, WebSocketConnection> entry : users) {
+            final JSONObject message = new JSONObject().put("type", "user_state_changed").put("id", entry.getValue0().getId())
+                    .put("isReady", true).put("contentLoaded", true);
             entry.getValue1().onMessage(message.toString());
         }
     }
@@ -133,6 +145,8 @@ public class RoomFuncTest {
             readyBroadcasts.count(jsonnedMessage);
 //      else if (jsonnedMessage.getString("type").equals("user_state_changed") && jsonnedMessage.getBoolean("contentLoaded"))
 //            readyBroadcasts.count(jsonnedMessage);
+        else if (jsonnedMessage.getString("type").equals("object_spawned") && !wasWorldCreated)
+            tileBroadcasts.count(jsonnedMessage);
     }
 
     private Set<UserProfile> createUsers() {
@@ -176,19 +190,34 @@ public class RoomFuncTest {
 
         public boolean isPassed() {return isPassed;}
 
-        private final int totalAmountOfBroadcasts;
+        protected final int totalAmountOfBroadcasts;
         private final int usersToBeMentioned;
 
-        private int currentAmountOfBroadcasts = 0;
-        private boolean isPassed = false;
+        protected int currentAmountOfBroadcasts = 0;
+        protected boolean isPassed = false;
         private Set<UserProfile> usersMentioned = new HashSet<>();
+    }
+
+    private static class TileBroadcastsCounter extends BroadcastsCounter {
+        TileBroadcastsCounter(int totalBroadcasts) {
+            super(totalBroadcasts, 0);
+        }
+
+        public void count(JSONObject message) {
+            currentAmountOfBroadcasts++; // Also looks like "int latestID"
+            //System.out.println(message.toString());
+            if (currentAmountOfBroadcasts == totalAmountOfBroadcasts)
+                isPassed = true;
+            if (currentAmountOfBroadcasts > totalAmountOfBroadcasts)
+                isPassed = false;
+        }
     }
 
     private final Context context = new Context();
     private Room room = null;
     private static List<Pair<UserProfile, WebSocketConnection>> users = new LinkedList<>();
 
-    private static final int AMOUNT_OF_JOINED_BROADCASTS = 16;  // 1 user — tell him he is accepted. 2 users — send data to #1 about #2 and #2 about #1 plus tell #2  he is joined. 3 users: #1↔#3 and #2↔#3 plus #3→#3, while #1 and #2 already know about themselves.
+    private static final int AMOUNT_OF_JOINED_BROADCASTS = 16;  // 1 user — tell him he is accepted. 2 users — send data to #1 about #2 and #2 about #1 plus tell #2 he is joined. 3 users: #1↔#3 and #2↔#3 plus #3→#3, while #1 and #2 already know about themselves.
     private static BroadcastsCounter joinedBroadcasts = new BroadcastsCounter(AMOUNT_OF_JOINED_BROADCASTS, 4); // So, number of broadcast on new user joined is (prev_user_amnt)*2 + 1. And f(1) + f(2) + f(3) + f(4) = 1 + 3 + 5 + 7 = 16. Or simply new_user_amt^2
 
     private static final int AMOUNT_OF_LEFT_BROADCASTS = 6;  // 3! transmissions for 4 users
@@ -197,7 +226,11 @@ public class RoomFuncTest {
     private static final int AMOUNT_OF_USER_READY_BROADCASTS = 16;  // 4^2 transmissions for 4 users
     private static BroadcastsCounter readyBroadcasts = new BroadcastsCounter(AMOUNT_OF_USER_READY_BROADCASTS, 4);
 
-    private static final int TOTAL_CASES_TO_TEST = 3;
+    private static final int AMOUNT_OF_WORLD_TILES_BROADCASTS = 512;  // (tile_counts+bombermen)*4 = (31*4 + 4)*4 for basic world
+    private static BroadcastsCounter tileBroadcasts = new TileBroadcastsCounter(AMOUNT_OF_WORLD_TILES_BROADCASTS);
+    private static boolean wasWorldCreated = false;
+
+    private static final int TOTAL_CASES_TO_TEST = 4;
     private int casesSuccesfullyTested = 0;
 
 }

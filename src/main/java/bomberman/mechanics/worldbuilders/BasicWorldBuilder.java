@@ -23,17 +23,17 @@ public class BasicWorldBuilder implements IWorldBuilder {
         final ITile[][] tileArray = new ITile[DEFAULT_WORLD_HEIGHT][DEFAULT_WORLD_WIDTH];
 
         // Filling left and right borders
-        for (int j = 0; j <= tileArray.length; ++j)
+        for (int j = 0; j < tileArray.length; ++j)
         {
-            TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID());
-            TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID());
+            tileArray[j][0] = TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID());
+            tileArray[j][DEFAULT_WORLD_HEIGHT - 1] = TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID());
         }
 
         // Filling top and bottom borders except for first and las columns: something is already there.
-        for (int i = 1; i <= tileArray[0].length - 1; ++i)
+        for (int i = 1; i < tileArray[0].length - 1; ++i)
         {
-            TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID());
-            TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID());
+            tileArray[0][i] = TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID());
+            tileArray[DEFAULT_WORLD_WIDTH - 1][i] = TileFactory.getInstance().getNewTile(EntityType.UNDESTRUCTIBLE_WALL, supplicant.getNextID());
         }
 
         return tileArray;
