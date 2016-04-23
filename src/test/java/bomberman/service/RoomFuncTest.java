@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 public class RoomFuncTest {
 
     @Test
-    @Ignore
+    //@Ignore
     public void setupApplication() {
         try {
             final DataBaseService db = new DataBaseServiceHashMapImpl();
@@ -93,8 +93,9 @@ public class RoomFuncTest {
     }
 
     private void run() {
-        logUsersOut();
         makeUsersReady();
+        // New code here!
+        logUsersOut();
     }
 
     private void logUsersOut() {
@@ -126,11 +127,11 @@ public class RoomFuncTest {
 
         if (jsonnedMessage.getString("type").equals("user_joined"))
             joinedBroadcasts.count(jsonnedMessage);
-        if (jsonnedMessage.getString("type").equals("user_left"))
+        else if (jsonnedMessage.getString("type").equals("user_left"))
             leftBroadcasts.count(jsonnedMessage);
-        if (jsonnedMessage.getString("type").equals("user_state_changed") && !jsonnedMessage.getBoolean("contentLoaded"))
+        else if (jsonnedMessage.getString("type").equals("user_state_changed") && !jsonnedMessage.getBoolean("contentLoaded"))
             readyBroadcasts.count(jsonnedMessage);
-//      if (jsonnedMessage.getString("type").equals("user_state_changed") && jsonnedMessage.getBoolean("contentLoaded"))
+//      else if (jsonnedMessage.getString("type").equals("user_state_changed") && jsonnedMessage.getBoolean("contentLoaded"))
 //            readyBroadcasts.count(jsonnedMessage);
     }
 
