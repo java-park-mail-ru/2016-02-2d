@@ -77,6 +77,7 @@ public class Room {
     public void updatePlayerState(UserProfile user, boolean isReady, boolean contentLoaded) {
         readinessMap.remove(user);
         readinessMap.put(user, new Pair<>(isReady, contentLoaded));
+        broadcast(MessageCreator.createUserStateChangedMessage(user, isReady, contentLoaded));
 
         boolean isEveryoneReadyTMP = true;
         boolean hasEveryoneLoadedContentTMP = true;

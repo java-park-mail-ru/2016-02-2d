@@ -9,12 +9,10 @@ import rest.WebErrorManager;
 import javax.inject.Inject;
 
 public class ReceivedMessageHandler /*implements Runnable*/ {
-    @Inject
-    private Context context;
-
-    public ReceivedMessageHandler(Room userRoom, JSONObject jsonMessage) {
+    public ReceivedMessageHandler(Room userRoom, JSONObject jsonMessage, Context globalContext) {
         room = userRoom;
         message = jsonMessage;
+        context = globalContext;
     }
 
     public boolean execute() {
@@ -53,4 +51,5 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
 
     private final Room room;
     private final JSONObject message;
+    private final Context context;
 }

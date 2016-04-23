@@ -21,9 +21,10 @@ import java.io.IOException;
 @WebSocket
 public class WebSocketConnection implements MessageSendable{
 
-    public WebSocketConnection(UserProfile owner, Context context) {
+    public WebSocketConnection(UserProfile owner, Context globalContext) {
         user = owner;
-        roomManager = (RoomManager) context.get(RoomManager.class);
+        roomManager = (RoomManager) globalContext.get(RoomManager.class);
+        context = globalContext;
     }
 
     @OnWebSocketMessage
@@ -36,7 +37,7 @@ public class WebSocketConnection implements MessageSendable{
             return;
         }
         // sendMessage("Hi! Processing your request... This is debug response, by the way.");
-        if (!new ReceivedMessageHandler(room, message).execute())
+        if (!new ReceivedMessageHandler(room, message, context).execute())
             sendMessage("Bad message type!");
     }
 
@@ -65,6 +66,7 @@ public class WebSocketConnection implements MessageSendable{
     private Room room;
 
     private final RoomManager roomManager;
+    private final Context context;
 
     private static final Logger LOGGER = LogManager.getLogger(WebSocketConnection.class);
 }
