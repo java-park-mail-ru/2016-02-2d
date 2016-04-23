@@ -65,7 +65,7 @@ public class RoomManagerImpl implements RoomManager {
             return null;
     }
 
-    private final PriorityQueue<Room> nonFilledRooms = new PriorityQueue<>();
+    private final Queue<Room> nonFilledRooms = new LinkedList<>();
     private final ArrayList<Room> allRooms = new ArrayList<>();
     private final Map<UserProfile, Room> playerWhereabouts = new HashMap<>();
 }

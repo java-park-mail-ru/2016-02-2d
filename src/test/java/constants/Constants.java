@@ -8,16 +8,30 @@ import main.accountservice.AccountService;
 import main.accountservice.AccountServiceImpl;
 import main.UserTokenManager;
 import main.websocketconnection.MessageSendable;
+import main.websocketconnection.WebSocketConnection;
+import main.websocketconnection.WebSocketConnectionCreator;
+import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.common.WebSocketSession;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.json.JSONObject;
+import org.mockito.stubbing.Answer;
 import rest.UserProfile;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
+import java.net.HttpCookie;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -93,6 +107,31 @@ public class Constants {
 
     public static class GameMechanicsMocks {
 
+        public static WebSocketConnection createMockedConnection(UserProfile user, WebSocketConnectionCreator servlet) {
+            final ServletUpgradeRequest mockedRequest = mock(ServletUpgradeRequest.class);
+            final List<HttpCookie> oneCookieList = new LinkedList<>();
+            oneCookieList.add(new HttpCookie(UserTokenManager.COOKIE_NAME, user.getSessionID()));
+            when(mockedRequest.getCookies()).thenReturn(oneCookieList);
+
+            final WebSocketConnection connection = (WebSocketConnection) servlet.createWebSocket(mockedRequest, mock(ServletUpgradeResponse.class));
+            assertNotNull(connection);
+
+            return connection;
+        }
+
+        public static Session createMockedSession(Answer messageHandler) throws Exception {
+            final Session session = mock(WebSocketSession.class);
+            final RemoteEndpoint remote = mock(RemoteEndpoint.class);
+            when(session.getRemote()).thenReturn(remote);
+            doAnswer(messageHandler).when(remote).sendString(anyString());
+
+            return session;
+        }
+
+        public static MessageSendable uniqueMockMessageSendable() {
+            return mock(MessageSendable.class);
+        }
+
         public static UniqueIDManager getUniqueIDManager() {
             configure();
             return uniqueIDManager;
@@ -145,10 +184,6 @@ public class Constants {
         when(mocked.toJson()).thenReturn(new JSONObject().put("id", id).put("login", login).put("score", score));
 
         return mocked;
-    }
-
-    public static MessageSendable uniqueMockMessageSendable() {
-        return mock(MessageSendable.class);
     }
 
     public static final String USER_LOGIN = "login";

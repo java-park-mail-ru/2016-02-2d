@@ -15,10 +15,10 @@ public class RoomTest {
 
     @BeforeClass
     public static void init() {
-        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u1", "p1", "sid1", 1), Constants.uniqueMockMessageSendable()));
-        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u2", "p2", "sid2", 2), Constants.uniqueMockMessageSendable()));
-        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u3", "p3", "sid3", 3), Constants.uniqueMockMessageSendable()));
-        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u4", "p4", "sid4", 4), Constants.uniqueMockMessageSendable()));
+        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u1", "p1", "sid1", 1), Constants.GameMechanicsMocks.uniqueMockMessageSendable()));
+        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u2", "p2", "sid2", 2), Constants.GameMechanicsMocks.uniqueMockMessageSendable()));
+        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u3", "p3", "sid3", 3), Constants.GameMechanicsMocks.uniqueMockMessageSendable()));
+        mockUsers.add(new Pair<>(Constants.customMockUserProfile("u4", "p4", "sid4", 4), Constants.GameMechanicsMocks.uniqueMockMessageSendable()));
     }
 
     @Test
