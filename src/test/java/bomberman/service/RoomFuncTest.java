@@ -95,6 +95,13 @@ public class RoomFuncTest {
         System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] world creation was tested!");
     }
 
+    @After
+    public void wasWorldCreated() {
+        assertEquals(true, wasWorldCreated);
+        casesSuccesfullyTested++;
+        System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] world_created was tested!");
+    }
+
     private void run() {
         makeUsersReady();
         makeUsersHaveContentLoaded();
@@ -147,6 +154,8 @@ public class RoomFuncTest {
 //            readyBroadcasts.count(jsonnedMessage);
         else if (jsonnedMessage.getString("type").equals("object_spawned") && !wasWorldCreated)
             tileBroadcasts.count(jsonnedMessage);
+        else if (jsonnedMessage.getString("type").equals("world_created") && !wasWorldCreated)
+            wasWorldCreated = true;
     }
 
     private Set<UserProfile> createUsers() {
@@ -230,7 +239,7 @@ public class RoomFuncTest {
     private static BroadcastsCounter tileBroadcasts = new TileBroadcastsCounter(AMOUNT_OF_WORLD_TILES_BROADCASTS);
     private static boolean wasWorldCreated = false;
 
-    private static final int TOTAL_CASES_TO_TEST = 4;
+    private static final int TOTAL_CASES_TO_TEST = 5;
     private int casesSuccesfullyTested = 0;
 
 }

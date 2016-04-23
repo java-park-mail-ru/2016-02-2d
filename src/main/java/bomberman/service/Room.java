@@ -96,6 +96,7 @@ public class Room {
             if (hasEveryoneLoadedContent && isEveryoneReady /*&& timer <= 0*/) {
                 assignBombermenToPlayers();
                 transmitWorldDetails();
+                broadcast(MessageCreator.createWorldCreatedMessage());
             }
             // else break;
     }
