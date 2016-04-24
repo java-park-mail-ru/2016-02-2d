@@ -1,4 +1,4 @@
-package main.websocketconnection;
+package main.websockets;
 
 
 import main.UserTokenManager;

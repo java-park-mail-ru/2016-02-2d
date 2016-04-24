@@ -1,10 +1,7 @@
 package bomberman.mechanics;
 
-import antlr.collections.impl.Vector;
 import bomberman.mechanics.interfaces.*;
-import bomberman.service.MessageCreator;
 import bomberman.service.TimeHelper;
-import com.sun.javafx.geom.Vec2d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javatuples.Triplet;
@@ -156,6 +153,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     }
 
     // Hard maths. PM @Xobotun to get an explanation, don't be shy!
+    @SuppressWarnings("OverlyComplexMethod")
     private void tryMovingBomberman(WorldEvent event, float deltaT) {
         final int worldWidth = tileArray.length - 1;
         final int worldHeight = tileArray[0].length - 1;

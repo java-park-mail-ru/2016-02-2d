@@ -4,7 +4,7 @@ import bomberman.mechanics.World;
 import bomberman.mechanics.WorldEvent;
 import bomberman.mechanics.interfaces.EntityType;
 import bomberman.mechanics.interfaces.EventType;
-import main.websocketconnection.MessageSendable;
+import main.websockets.MessageSendable;
 import org.javatuples.Pair;
 import rest.UserProfile;
 

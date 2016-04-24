@@ -6,8 +6,8 @@ import main.accountservice.AccountServiceImpl;
 import main.config.Context;
 import main.databaseservice.DataBaseService;
 import main.databaseservice.DataBaseServiceHashMapImpl;
-import main.websocketconnection.WebSocketConnection;
-import main.websocketconnection.WebSocketConnectionCreator;
+import main.websockets.WebSocketConnection;
+import main.websockets.WebSocketConnectionCreator;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.javatuples.Pair;
@@ -27,6 +27,7 @@ public class RoomFuncTest {
     @Test
     //@Ignore
     public void setupApplication() {
+        //noinspection OverlyBroadCatchBlock
         try {
             final DataBaseService db = new DataBaseServiceHashMapImpl();
             final RoomManager roomManager = new RoomManagerImpl();
@@ -130,6 +131,7 @@ public class RoomFuncTest {
         }
     }
 
+    @SuppressWarnings("OverlyComplexMethod")    // This is just a switch("type") workaround.
     private void handleMessages(String message) throws JSONException {
         assertNotNull(message);
         final JSONObject jsonnedMessage;
@@ -148,7 +150,8 @@ public class RoomFuncTest {
             leftBroadcasts.count(jsonnedMessage);
         else if (jsonnedMessage.getString("type").equals("user_state_changed") && !jsonnedMessage.getBoolean("contentLoaded"))
             readyBroadcasts.count(jsonnedMessage);
-        else if (jsonnedMessage.getString("type").equals("user_state_changed") && jsonnedMessage.getBoolean("contentLoaded"))
+        else //noinspection StatementWithEmptyBody
+            if (jsonnedMessage.getString("type").equals("user_state_changed") && jsonnedMessage.getBoolean("contentLoaded"))
         {/* ignore */}
         else if (jsonnedMessage.getString("type").equals("object_spawned") && !worldCreatedBroadcasts.isPassed())
             tileBroadcasts.count(jsonnedMessage);

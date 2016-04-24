@@ -1,4 +1,4 @@
-package main.websocketconnection;
+package main.websockets;
 
 import bomberman.service.ReceivedMessageHandler;
 import bomberman.service.Room;

@@ -120,6 +120,7 @@ public class PropertyReader {
 
     private static final Logger LOGGER = LogManager.getLogger(PropertyReader.class);
 
+    @SuppressWarnings("ConstantNamingConvention")
     private static final String DEFAULT_PROPERTIES_FILENAME_DEFAULT = "cfg/default.properties";
     private static final String PROPERTIES_FILENAME_DEFAULT = "cfg/server.properties";
     private static final String[] NECESSARY_FIELDS = new String[]{"ip", "port", "db_type", "db_domain", "db_port", "db_name", "db_user", "db_password", "db_creation_method"};

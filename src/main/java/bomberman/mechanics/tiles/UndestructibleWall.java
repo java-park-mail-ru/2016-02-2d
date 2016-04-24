@@ -27,9 +27,9 @@ public class UndestructibleWall extends AbstractTile{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        final UndestructibleWall that = (UndestructibleWall) o;
+        final UndestructibleWall another = (UndestructibleWall) o;
 
-        return getType() == that.getType();
+        return getType() == another.getType();
 
     }
 

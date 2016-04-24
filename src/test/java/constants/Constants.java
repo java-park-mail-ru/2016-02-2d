@@ -6,9 +6,9 @@ import bomberman.mechanics.interfaces.UniqueIDManager;
 import main.accountservice.AccountService;
 import main.accountservice.AccountServiceImpl;
 import main.UserTokenManager;
-import main.websocketconnection.MessageSendable;
-import main.websocketconnection.WebSocketConnection;
-import main.websocketconnection.WebSocketConnectionCreator;
+import main.websockets.MessageSendable;
+import main.websockets.WebSocketConnection;
+import main.websockets.WebSocketConnectionCreator;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.common.WebSocketSession;
@@ -20,6 +20,7 @@ import rest.UserProfile;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
+import java.io.IOException;
 import java.net.HttpCookie;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -118,7 +119,7 @@ public class Constants {
             return connection;
         }
 
-        public static Session createMockedSession(Answer messageHandler) throws Exception {
+        public static Session createMockedSession(Answer messageHandler) throws IOException {
             final Session session = mock(WebSocketSession.class);
             final RemoteEndpoint remote = mock(RemoteEndpoint.class);
             when(session.getRemote()).thenReturn(remote);

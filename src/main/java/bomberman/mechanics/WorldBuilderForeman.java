@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WorldBuilderForeman {
 
@@ -21,10 +22,7 @@ public class WorldBuilderForeman {
 
     public static String getRandomWorldName() {
         final Set<Map.Entry<String, IWorldBuilder>> builderSet = builders.entrySet();
-        final ArrayList<String> names = new ArrayList<>();
-
-        for (Map.Entry<String, IWorldBuilder> entry: builderSet)
-            names.add(entry.getKey());
+        final ArrayList<String> names = builderSet.stream().map(Map.Entry::getKey).collect(Collectors.toCollection(ArrayList::new));
 
         final Random randomInt = new Random(new Date().hashCode());
         return names.get(randomInt.nextInt() % names.size());

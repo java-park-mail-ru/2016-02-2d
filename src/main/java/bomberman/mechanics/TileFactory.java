@@ -22,6 +22,7 @@ public class TileFactory {
     }
 
     public ITile getNewTile(EntityType type, int id) throws IllegalArgumentException {
+        //noinspection EnumSwitchStatementWhichMissesCases
         switch (type)
         {
             case UNDESTRUCTIBLE_WALL:
@@ -36,6 +37,7 @@ public class TileFactory {
 
     // ATTENTION! FALSE WARNING! It is just not fully implemented yet. We will use much more parameters soon.
     public ITile getNewTile(EntityType type, EventStashable list, int id) throws IllegalArgumentException {
+        //noinspection EnumSwitchStatementWhichMissesCases
         switch (type)
         {
             case BONUS_HEAL:
@@ -54,6 +56,7 @@ public class TileFactory {
     }
 
     public ITile getNewTile(EntityType type, EventStashable list, Bomberman owner, int id) throws IllegalArgumentException {
+        //noinspection EnumSwitchStatementWhichMissesCases
         switch (type)
         {
             case BOMB:

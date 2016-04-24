@@ -17,6 +17,7 @@ public class TimeHelper {
         }
     }
 
+    @SuppressWarnings("StaticMethodNamingConvention")
     public static long now() {
         return clock.millis();
     }

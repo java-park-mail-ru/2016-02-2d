@@ -1,6 +1,6 @@
 package bomberman.service;
 
-import main.websocketconnection.MessageSendable;
+import main.websockets.MessageSendable;
 import rest.UserProfile;
 
 import java.util.List;

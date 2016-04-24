@@ -33,8 +33,10 @@ public class TextWorldBuilder implements IWorldBuilder {
         return builders;
     }
 
+    @SuppressWarnings("OverlyBroadThrowsClause")
     public TextWorldBuilder(File blueprint) throws Exception {
         BufferedReader strings = null;
+        //noinspection OverlyBroadCatchBlock
         try {
              strings = new BufferedReader(new FileReader(blueprint));
 

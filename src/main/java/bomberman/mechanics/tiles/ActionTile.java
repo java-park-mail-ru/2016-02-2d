@@ -46,9 +46,9 @@ public class ActionTile extends AbstractTile {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        final ActionTile that = (ActionTile) o;
+        final ActionTile another = (ActionTile) o;
 
-        return entityType == that.entityType;
+        return entityType == another.entityType;
 
     }
 

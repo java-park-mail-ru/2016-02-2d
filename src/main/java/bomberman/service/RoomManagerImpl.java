@@ -1,7 +1,7 @@
 package bomberman.service;
 
 import bomberman.mechanics.WorldBuilderForeman;
-import main.websocketconnection.MessageSendable;
+import main.websockets.MessageSendable;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 

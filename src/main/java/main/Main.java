@@ -2,7 +2,7 @@ package main;
 
 import main.config.Context;
 import main.config.ServerInitializer;
-import main.websocketconnection.WebSocketConnectionServlet;
+import main.websockets.WebSocketConnectionServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
