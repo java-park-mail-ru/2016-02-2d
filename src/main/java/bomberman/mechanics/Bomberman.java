@@ -137,7 +137,17 @@ public class Bomberman implements IEntity {
         currentPlaceableBombs += BOMB_AMOUNT_INCREMENT;
     }
 
+    //
+    // Speed Actions
+    //
 
+    public void increaseMaximalSpeed() {
+        maximalSpeed += MAX_SPEED_INCREMENT;
+    }
+
+    public float getMaximalSpeed() {
+        return maximalSpeed;
+    }
 
     // In-World desctription
     @SuppressWarnings("InstanceVariableNamingConvention")
@@ -174,4 +184,9 @@ public class Bomberman implements IEntity {
     public static final int BASE_BOMB_AMOUNT = 1;    // 1 tile
     public static final int BOMB_AMOUNT_INCREMENT = 1;
 
+    private float maximalSpeed;
+    public static final float BASE_ = 0.5f;    // 0.5 tile per second
+    public static final float MAX_SPEED_INCREMENT = 0.25f; // 0.5 → 0.75 → 1.0 → 1.25 → 1.5. Higher the harder. :)
+
+    public static final float DIAMETER = 0.75f; // ¾ of a tile.
 }

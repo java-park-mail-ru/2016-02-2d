@@ -1,7 +1,10 @@
 package bomberman.mechanics;
 
+import antlr.collections.impl.Vector;
 import bomberman.mechanics.interfaces.*;
+import bomberman.service.MessageCreator;
 import bomberman.service.TimeHelper;
+import com.sun.javafx.geom.Vec2d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javatuples.Triplet;
@@ -115,14 +118,14 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         areTilesPositioned = true;
     }
 
-    private void runGameCycle(long delta) {
+    private void runGameCycle(long deltaT) {
         // foreach entity => etnity.update(delta)
         while (!newEventQueue.isEmpty())
         {
             final WorldEvent elderEvent = newEventQueue.remove();
             switch (elderEvent.getEventType()){
                 case ENTITY_UPDATED:
-                    processEntityUpdatedEvent(elderEvent);
+                    processEntityUpdatedEvent(elderEvent, deltaT);
                     processedEventQueue.add(elderEvent);
                     break;
                 case TILE_SPAWNED:
@@ -137,10 +140,11 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         }
     }
 
-    private void processEntityUpdatedEvent(WorldEvent event) {
+    private void processEntityUpdatedEvent(WorldEvent event, float deltaT) {
         LOGGER.debug("Processing object_updated");
         // TODO: Bombermen movement
         // TODO: Bomberman bonus pickup
+        tryMovingBomberman(event, deltaT);
     }
 
     private void processTileSpawnedEvent(WorldEvent event) {
@@ -156,6 +160,76 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         // TODO: Bonuses pickup?
     }
 
+    // Hard maths. PM @Xobotun to get an explanation, don't be shy!
+    private void tryMovingBomberman(WorldEvent event, float deltaT) {
+        final int worldWidth = tileArray.length - 1;
+        final int worldHeight = tileArray[0].length - 1;
+
+        final Bomberman actor = bombermen.get(event.getEntityID());
+        final boolean isMovingRight = event.getX() > 0;
+        final boolean isMovingDown = event.getY() > 0;
+
+        boolean shouldCheckXCorner = false;
+        boolean shouldCheckYCorner = false;
+
+        final float x = actor.getCoordinates()[0];
+        final int ix = (int) Math.floor(x);
+        final float y = actor.getCoordinates()[1];
+        final int iy = (int) Math.floor(y);
+
+        final float xSpeed = ((isMovingRight) ? 1 : -1) * actor.getMaximalSpeed() * (float)(event.getX() / Math.sqrt(event.getX() * event.getX() + event.getY() * event.getY()));
+        final float ySpeed = ((isMovingDown) ? 1 : -1) * actor.getMaximalSpeed() * (float) (event.getY() / Math.sqrt(event.getX() * event.getX() + event.getY() * event.getY()));
+
+        float predictedX = x + xSpeed * (deltaT / 1000);
+        float predictedY = y + ySpeed * (deltaT / 1000);
+        final float radius = Bomberman.DIAMETER / 2;
+
+        final float xBoundary = (float) (Math.floor(x) + ((isMovingRight) ? 1 : 0));
+        final float yBoundary = (float) (Math.floor(y) + ((isMovingDown) ? 1 : 0));
+
+        if (predictedX - radius < 0)
+            predictedX = radius;
+        else if (predictedX + radius > worldWidth)
+            predictedX = worldWidth - radius;
+        else if (x - radius >= 1 && !isMovingRight && predictedX - radius < xBoundary) {
+                final ITile leftTile = tileArray[iy][ix - 1];
+                if (!leftTile.isPassable())
+                    predictedX = xBoundary + radius;
+                else shouldCheckXCorner = true; }
+        else if (x + radius >= worldWidth - 1 && isMovingRight && predictedX + radius > xBoundary) {
+            final ITile rightTile = tileArray[iy][ix + 1];
+            if (!rightTile.isPassable())
+                predictedX = xBoundary - radius;
+            else shouldCheckXCorner = true; }
+
+        if (predictedY - radius < 0)
+            predictedY = radius;
+        else if (predictedY + radius > worldHeight)
+            predictedY = worldHeight - radius;
+        else if (x - radius >= 1 && !isMovingDown && predictedY - radius < yBoundary) {
+            final ITile upTile = tileArray[iy][ix - 1];
+            if (!upTile.isPassable())
+                predictedY = yBoundary + radius;
+            else shouldCheckYCorner = true; }
+        else if (x + radius >= worldHeight - 1 && isMovingDown && predictedY + radius > yBoundary) {
+            final ITile downTile = tileArray[iy][ix + 1];
+            if (!downTile.isPassable())
+                predictedY = yBoundary - radius;
+            else shouldCheckYCorner = true; }
+
+        if (shouldCheckXCorner && shouldCheckYCorner)
+        {
+            final ITile cornerTile = tileArray[iy + ((isMovingDown) ? 1 : -1)][ix + ((isMovingRight) ? 1 : -1)];
+            if (!cornerTile.isPassable())
+                if (Math.abs(xSpeed) > Math.abs(ySpeed))
+                    predictedY = y + ((isMovingDown) ? 1 : -1) * (float) Math.sqrt(radius * radius - (predictedX - x) * (predictedX - x));
+                else
+                    predictedX = x + ((isMovingRight) ? 1 : -1)* (float) Math.sqrt(radius * radius - (predictedY - y) * (predictedY - y));
+        }
+
+        actor.setCoordinates(new float[]{x + predictedX, y + predictedY});
+        processedEventQueue.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, event.getEntityID(), predictedX, predictedY));
+    }
 
     private void logGameCycleTime(long timeSpentWhileRunning) {
         if (timeSpentWhileRunning >= FIXED_TIME_STEP)
@@ -163,8 +237,6 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         else
             LOGGER.debug("World " + this.toString() + " self updated. It took " + timeSpentWhileRunning + " < " + FIXED_TIME_STEP + ". OK.");
     }
-
-
 
     private final Queue<WorldEvent> newEventQueue = new LinkedList<>();       // Here are new events are stashed
     private final Queue<WorldEvent> processedEventQueue = new LinkedList<>(); // State describer will take events from this list.
@@ -185,6 +257,8 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
     private int selfUpdatingEntities = 0;
     public static final int FIXED_TIME_STEP = 25; //ms
+
+    public static final float BOMB_RAY_HANDICAP_DIAMETER = 0.05f; // 0.75-0.05 will
 
     private static final Logger LOGGER = LogManager.getLogger(World.class);
 }
