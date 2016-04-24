@@ -16,11 +16,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
-    public World(String worldType, int numberOfPlayers, Runnable actionOnWorldReady) {
+    public World(String worldType, int numberOfPlayers, Runnable actionOnWorldUpdated) {
         final IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(worldType);
         final Triplet<ITile[][], float[][], String> worldData = builder.getWorldData(this, this);
 
-        actionOnceWorldIsReady = actionOnWorldReady;
+        actionOnUpdate = actionOnWorldUpdated;
         tileArray = worldData.getValue0();
         spawnLocations = worldData.getValue1();
         name = worldData.getValue2();
@@ -44,13 +44,6 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         return newQueue;
     }
 
-    public void doSomethingIfWorldReady() {
-        if (areBombermenSpawned && areTilesPositioned && !hasWorldReadyAcionFired){
-            hasWorldReadyAcionFired = true;
-            actionOnceWorldIsReady.run();
-        }
-    }
-
     // This is how timeline works:
     // |--------running---------|----------------------sleeping---------------------|
     // ↑                        ↑                                                   ↑
@@ -64,6 +57,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     public void update() {
         long afterSleep = TimeHelper.now();
         runGameCycle(FIXED_TIME_STEP);
+        actionOnUpdate.run();
         long afterRun = TimeHelper.now();
 
         long timeSpentWhileRunning = afterRun - afterSleep;
@@ -75,6 +69,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
             afterSleep = TimeHelper.now();
 
             runGameCycle(FIXED_TIME_STEP);
+            actionOnUpdate.run();
             afterRun = TimeHelper.now();
 
             timeSpentWhileRunning = afterRun - afterSleep;
@@ -100,7 +95,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
             final Bomberman newBomberman = new Bomberman(getNextID());
             newBomberman.setCoordinates(spawnLocations[i]);
             bombermen.add(newBomberman);
-            processedEventQueue.add(new WorldEvent(EventType.ENTITY_UPDATED, newBomberman.getType(), newBomberman.getID(), spawnLocations[i][0], spawnLocations[i][1]));
+            processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, newBomberman.getType(), newBomberman.getID(), spawnLocations[i][0], spawnLocations[i][1]));
         }
         areBombermenSpawned = true;
     }
@@ -165,7 +160,15 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         final int worldWidth = tileArray.length - 1;
         final int worldHeight = tileArray[0].length - 1;
 
-        final Bomberman actor = bombermen.get(event.getEntityID());
+        Bomberman actor = null;
+        for (Bomberman bomberman: bombermen)
+            if (bomberman.getID() == event.getEntityID())
+                actor = bomberman;
+        if (actor == null) {
+            LOGGER.warn("No bomberman with id \"" + event.getEntityID() + "\" exists!");
+            return;
+        }
+
         final boolean isMovingRight = event.getX() > 0;
         final boolean isMovingDown = event.getY() > 0;
 
@@ -253,7 +256,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     private boolean areTilesPositioned = false;
     private boolean hasWorldReadyAcionFired = false;
 
-    private final Runnable actionOnceWorldIsReady;
+    private final Runnable actionOnUpdate;
 
     private int selfUpdatingEntities = 0;
     public static final int FIXED_TIME_STEP = 25; //ms

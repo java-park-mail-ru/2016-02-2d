@@ -157,7 +157,7 @@ public class RoomFuncTest {
         else
         {
             System.out.println(message);
-            throw new UnsupportedOperationException(); // For messages not implemented yet. :)
+            //throw new UnsupportedOperationException(); // For messages not implemented yet. :)
         }
     }
 
@@ -242,8 +242,8 @@ public class RoomFuncTest {
     private static final int AMOUNT_OF_WORLD_TILES_BROADCASTS = 512;  // (tile_counts+bombermen)*4 = (31*4 + 4)*4 for basic world
     private static BroadcastsCounter tileBroadcasts = new SimpleBroadcastsCounter(AMOUNT_OF_WORLD_TILES_BROADCASTS);
 
-    private static final int AMOUNT_OF_WORLD_CREATED_BROADCASTS = 4;  // (tile_counts+bombermen)*4 = (31*4 + 4)*4 for basic world
-    private static BroadcastsCounter worldCreatedBroadcasts = new SimpleBroadcastsCounter(AMOUNT_OF_WORLD_CREATED_BROADCASTS);
+    private static final int AMNT_OF_WORLD_CREATED_BROADCASTS = 4;  // (tile_counts+bombermen)*4 = (31*4 + 4)*4 for basic world
+    private static BroadcastsCounter worldCreatedBroadcasts = new SimpleBroadcastsCounter(AMNT_OF_WORLD_CREATED_BROADCASTS);
 
 
     private static final int TOTAL_CASES_TO_TEST = 5;

@@ -23,7 +23,7 @@ public class Room {
 
     public void createNewWorld(String type)
     {
-        world = new World(type, playerMap.size(), this::transmitWorldDetails);
+        world = new World(type, playerMap.size(), this::broadcastFreshEvents);
     }
 
     public void assignBombermenToPlayers() {
@@ -97,9 +97,9 @@ public class Room {
 
         if (hasEveryoneLoadedContent && isEveryoneReady)
             TimeHelper.executeAfter(TIME_TO_WAIT_AFTER_READY, ()->
-                {if (hasEveryoneLoadedContent && isEveryoneReady /*&& timer <= 0*/) {
+                {if (hasEveryoneLoadedContent && isEveryoneReady) {
                     assignBombermenToPlayers();
-                    transmitWorldDetails();
+                    transmitEventsOnWorldCreation();
                     broadcast(MessageCreator.createWorldCreatedMessage());
                 }
             });
@@ -135,10 +135,24 @@ public class Room {
         world.update();
     }
 
-    private void transmitWorldDetails() {
+    private void transmitEventsOnWorldCreation() {
         isActive = true;
-        for (WorldEvent spawnEvent: world.getFreshEvents())
-            broadcast(MessageCreator.createObjectSpawnedMessage(spawnEvent));
+        broadcastFreshEvents();
+    }
+
+    private void broadcastFreshEvents() {
+        for (WorldEvent event : world.getFreshEvents())
+        switch (event.getEventType()) {
+            case ENTITY_UPDATED:
+                broadcast(MessageCreator.createObjectChangedMessage(event));
+                break;
+            case TILE_SPAWNED:
+                broadcast(MessageCreator.createObjectSpawnedMessage(event));
+                break;
+            case TILE_REMOVED:
+                broadcast(MessageCreator.createObjectDesrtoyedMessage(event));
+                break;
+        }
     }
 
     // I can't determine hashCode and equals methods. :(
