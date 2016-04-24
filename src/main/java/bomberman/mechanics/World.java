@@ -1,6 +1,9 @@
 package bomberman.mechanics;
 
 import bomberman.mechanics.interfaces.*;
+import bomberman.service.TimeHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -45,11 +48,34 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         }
     }
 
+    // This is how timeline works:
+    // |--------running---------|----------------------sleeping---------------------|
+    // ↑                        ↑                                                   ↑
+    // afterSleep0            afterRun1                                             afterSleep1
+    // Total length of "running" and "sleeping" equals "FIXED_TIME_STEP"
+    // If the "running" state continues longer than "FIXED_TIME_STEP", following happens:
+    // |--------running1_starts-----------------------------------------------------+-running1_ends-|---running2------------|----------sleeping2-----------------|
+    // ↑                                                                            ↑               ↑                       ↑                                    ↑
+    // afterSleep0                                                    FIXED_TIME_STEP               |                       afterRun2                            afterSleep2
+    //                                                                                              afterRun1 & afterSleep1
     public void update() {
-        runGameCycle();
-        if (shouldSelfUpdate != 0) {
-            // Sleep for 60 ms
-            runGameCycle();
+        long afterSleep = TimeHelper.now();
+        runGameCycle(FIXED_TIME_STEP);
+        long afterRun = TimeHelper.now();
+
+        long timeSpentWhileRunning = afterRun - afterSleep;
+        logGameCycleTime(timeSpentWhileRunning);
+
+        while (selfUpdatingEntities > 0) {
+            final long timeToSleep = FIXED_TIME_STEP - timeSpentWhileRunning;
+            TimeHelper.sleepFor(timeToSleep);
+            afterSleep = TimeHelper.now();
+
+            runGameCycle(FIXED_TIME_STEP);
+            afterRun = TimeHelper.now();
+
+            timeSpentWhileRunning = afterRun - afterSleep;
+            logGameCycleTime(timeSpentWhileRunning);
         }
     }
 
@@ -89,7 +115,8 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         areTilesPositioned = true;
     }
 
-    private void runGameCycle() {
+    private void runGameCycle(long delta) {
+        // foreach entity => etnity.update(delta)
         while (!newEventQueue.isEmpty())
         {
             final WorldEvent elderEvent = newEventQueue.remove();
@@ -126,6 +153,16 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         // TODO: Bonuses pickup?
     }
 
+
+    private void logGameCycleTime(long timeSpentWhileRunning) {
+        if (timeSpentWhileRunning >= FIXED_TIME_STEP)
+            LOGGER.warn("World " + this.toString() + " self updated. It took " + timeSpentWhileRunning + " >= " + FIXED_TIME_STEP + '!');
+        else
+            LOGGER.info("World " + this.toString() + " self updated. It took " + timeSpentWhileRunning + " < " + FIXED_TIME_STEP + '!');
+    }
+
+
+
     private final Queue<WorldEvent> newEventQueue = new LinkedList<>();       // Here are new events are stashed
     private final Queue<WorldEvent> processedEventQueue = new LinkedList<>(); // State describer will take events from this list.
 
@@ -141,6 +178,10 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     private boolean areTilesPositioned = false;
     private boolean hasWorldReadyAcionFired = false;
 
-    private int shouldSelfUpdate = 0;
     private final Runnable actionOnceWorldIsReady;
+
+    private int selfUpdatingEntities = 0;
+    public static final int FIXED_TIME_STEP = 25; //ms
+
+    private static final Logger LOGGER = LogManager.getLogger(World.class);
 }

@@ -19,22 +19,13 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
             if (WebErrorManager.showFieldsNotPresent(message, "id", "x", "y") != null)
                 return false;
 
-            // TODO: Logic here
-
-            return true;
+            return doIfUserExists((user) -> room.scheduleBombermanMovement(user, message.getInt("x"), message.getInt("y")));
         }
         if (messageType.equals("user_state_changed")) {
             if (WebErrorManager.showFieldsNotPresent(message, "id", "isReady", "contentLoaded") != null)
                 return false;
 
-            final AccountService accountService = (AccountService) context.get(AccountService.class);
-            final UserProfile user = accountService.getUser(message.getLong("id"));
-
-            if (user == null)
-                return false;
-            else
-                room.updatePlayerState(user, message.getBoolean("isReady"), message.getBoolean("contentLoaded"));
-            return true;
+            return doIfUserExists((user) -> room.updatePlayerState(user, message.getBoolean("isReady"), message.getBoolean("contentLoaded")));
         }
         if (messageType.equals("chat_message")) {
             if (WebErrorManager.showFieldsNotPresent(message, "user_id", "text") != null)
@@ -45,6 +36,22 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
             return true;
         }
         return false;
+    }
+
+    private boolean doIfUserExists(Executor action)
+    {
+        final AccountService accountService = (AccountService) context.get(AccountService.class);
+        final UserProfile user = accountService.getUser(message.getLong("id"));
+
+        if (user == null)
+            return false;
+        else
+            action.execute(user);
+        return true;
+    }
+
+    private interface Executor {
+        void execute(UserProfile user);
     }
 
     private final Room room;

@@ -2,11 +2,15 @@ package bomberman.service;
 
 import bomberman.mechanics.World;
 import bomberman.mechanics.WorldEvent;
+import bomberman.mechanics.interfaces.EntityType;
+import bomberman.mechanics.interfaces.EventType;
 import main.websocketconnection.MessageSendable;
 import org.javatuples.Pair;
 import rest.UserProfile;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class Room {
@@ -92,12 +96,13 @@ public class Room {
         hasEveryoneLoadedContent = hasEveryoneLoadedContentTMP;
 
         if (hasEveryoneLoadedContent && isEveryoneReady)
-            // Wait three seconds
-            if (hasEveryoneLoadedContent && isEveryoneReady /*&& timer <= 0*/) {
-                assignBombermenToPlayers();
-                transmitWorldDetails();
-                broadcast(MessageCreator.createWorldCreatedMessage());
-            }
+            TimeHelper.executeAfter(TIME_TO_WAIT_AFTER_READY, ()->
+                {if (hasEveryoneLoadedContent && isEveryoneReady /*&& timer <= 0*/) {
+                    assignBombermenToPlayers();
+                    transmitWorldDetails();
+                    broadcast(MessageCreator.createWorldCreatedMessage());
+                }
+            });
             // else break;
     }
 
@@ -108,6 +113,21 @@ public class Room {
 
     public boolean isActive() {
         return isActive;
+    }
+
+    public void scheduleBombermanMovement(UserProfile user, int dirX, int dirY) {
+        final int bombermanID = reversePlayerMap.get(user);
+
+        if (scheduledMovements.isEmpty())
+            TimeHelper.executeAfter(World.FIXED_TIME_STEP, this::passScheduledMovementsToWorld);
+
+        scheduledMovements.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermanID, dirX, dirY));
+    }
+
+    private void passScheduledMovementsToWorld()
+    {
+        for (WorldEvent movement: scheduledMovements)
+            world.addWorldEvent(movement);
     }
 
     private void transmitWorldDetails() {
@@ -130,5 +150,8 @@ public class Room {
     World world;
     private boolean isActive = false;
 
+    private final List<WorldEvent> scheduledMovements = new LinkedList<>();
+
     public static final int DEFAULT_CAPACITY = 4;
+    public static final int TIME_TO_WAIT_AFTER_READY = 3000; // ms
 }
