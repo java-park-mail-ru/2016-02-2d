@@ -138,16 +138,19 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     }
 
     private void processEntityUpdatedEvent(WorldEvent event) {
+        LOGGER.debug("Processing object_updated");
         // TODO: Bombermen movement
         // TODO: Bomberman bonus pickup
     }
 
     private void processTileSpawnedEvent(WorldEvent event) {
+        LOGGER.debug("Processing object_spawned");
         // TODO: Bomb placement
         // TODO: Bomb raycasting and destroying walls
     }
 
     private void processTileRemovedEvent(WorldEvent event) {
+        LOGGER.debug("Processing object_destroyed");
         // TODO: Bomb explosion
         // TODO: Bomb Ray dissipation
         // TODO: Bonuses pickup?
@@ -156,9 +159,9 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
     private void logGameCycleTime(long timeSpentWhileRunning) {
         if (timeSpentWhileRunning >= FIXED_TIME_STEP)
-            LOGGER.warn("World " + this.toString() + " self updated. It took " + timeSpentWhileRunning + " >= " + FIXED_TIME_STEP + '!');
+            LOGGER.warn("World " + this.toString() + " self updated. It took " + timeSpentWhileRunning + " >= " + FIXED_TIME_STEP + "! Fix the bugs!");
         else
-            LOGGER.info("World " + this.toString() + " self updated. It took " + timeSpentWhileRunning + " < " + FIXED_TIME_STEP + '!');
+            LOGGER.debug("World " + this.toString() + " self updated. It took " + timeSpentWhileRunning + " < " + FIXED_TIME_STEP + ". OK.");
     }
 
 

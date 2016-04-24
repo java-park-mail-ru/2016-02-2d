@@ -116,18 +116,23 @@ public class Room {
     }
 
     public void scheduleBombermanMovement(UserProfile user, int dirX, int dirY) {
-        final int bombermanID = reversePlayerMap.get(user);
+        if (isActive) {
+            final int bombermanID = reversePlayerMap.get(user);
 
-        if (scheduledMovements.isEmpty())
-            TimeHelper.executeAfter(World.FIXED_TIME_STEP, this::passScheduledMovementsToWorld);
+            final boolean noMessagesScheduled = scheduledMovements.isEmpty();
 
-        scheduledMovements.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermanID, dirX, dirY));
+            scheduledMovements.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermanID, dirX, dirY));
+            if (noMessagesScheduled)
+                TimeHelper.executeAfter(World.FIXED_TIME_STEP, this::passScheduledMovementsToWorld);
+        }
     }
 
     private void passScheduledMovementsToWorld()
     {
         for (WorldEvent movement: scheduledMovements)
             world.addWorldEvent(movement);
+        scheduledMovements.clear();
+        world.update();
     }
 
     private void transmitWorldDetails() {

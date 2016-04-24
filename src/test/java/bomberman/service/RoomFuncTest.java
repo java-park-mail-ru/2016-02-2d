@@ -94,6 +94,7 @@ public class RoomFuncTest {
     private void run() {
         makeUsersReady();
         makeUsersHaveContentLoaded();
+        makeUsersMove();
         // New code here!
         logUsersOut();
     }
@@ -117,6 +118,14 @@ public class RoomFuncTest {
         for (Pair<UserProfile, WebSocketConnection> entry : users) {
             final JSONObject message = new JSONObject().put("type", "user_state_changed").put("id", entry.getValue0().getId())
                     .put("isReady", true).put("contentLoaded", true);
+            entry.getValue1().onMessage(message.toString());
+        }
+    }
+
+    private void makeUsersMove() {
+        for (Pair<UserProfile, WebSocketConnection> entry : users) {
+            final JSONObject message = new JSONObject().put("type", "object_changed").put("id", entry.getValue0().getId())
+                    .put("x", 1).put("y", 1); // move somewhere.
             entry.getValue1().onMessage(message.toString());
         }
     }
@@ -201,8 +210,8 @@ public class RoomFuncTest {
         private Set<UserProfile> usersMentioned = new HashSet<>();
     }
 
-    private static class TileBroadcastsCounter extends BroadcastsCounter {
-        TileBroadcastsCounter(int totalBroadcasts) {
+    private static class SimpleBroadcastsCounter extends BroadcastsCounter {
+        SimpleBroadcastsCounter(int totalBroadcasts) {
             super(totalBroadcasts, 0);
         }
 
@@ -231,10 +240,10 @@ public class RoomFuncTest {
     private static BroadcastsCounter readyBroadcasts = new BroadcastsCounter(AMOUNT_OF_USER_READY_BROADCASTS, 4);
 
     private static final int AMOUNT_OF_WORLD_TILES_BROADCASTS = 512;  // (tile_counts+bombermen)*4 = (31*4 + 4)*4 for basic world
-    private static BroadcastsCounter tileBroadcasts = new TileBroadcastsCounter(AMOUNT_OF_WORLD_TILES_BROADCASTS);
+    private static BroadcastsCounter tileBroadcasts = new SimpleBroadcastsCounter(AMOUNT_OF_WORLD_TILES_BROADCASTS);
 
     private static final int AMOUNT_OF_WORLD_CREATED_BROADCASTS = 4;  // (tile_counts+bombermen)*4 = (31*4 + 4)*4 for basic world
-    private static BroadcastsCounter worldCreatedBroadcasts = new TileBroadcastsCounter(AMOUNT_OF_WORLD_CREATED_BROADCASTS);
+    private static BroadcastsCounter worldCreatedBroadcasts = new SimpleBroadcastsCounter(AMOUNT_OF_WORLD_CREATED_BROADCASTS);
 
 
     private static final int TOTAL_CASES_TO_TEST = 5;
