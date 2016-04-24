@@ -86,7 +86,7 @@ public class RoomFuncTest {
 
     @After
     public void wasWorldCreated() {
-        assertEquals(true, wasWorldCreated);
+        assertEquals(true, worldCreatedBroadcasts.isPassed());
         casesSuccesfullyTested++;
         System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] world_created was tested!");
     }
@@ -139,12 +139,17 @@ public class RoomFuncTest {
             leftBroadcasts.count(jsonnedMessage);
         else if (jsonnedMessage.getString("type").equals("user_state_changed") && !jsonnedMessage.getBoolean("contentLoaded"))
             readyBroadcasts.count(jsonnedMessage);
-//      else if (jsonnedMessage.getString("type").equals("user_state_changed") && jsonnedMessage.getBoolean("contentLoaded"))
-//            readyBroadcasts.count(jsonnedMessage);
-        else if (jsonnedMessage.getString("type").equals("object_spawned") && !wasWorldCreated)
+        else if (jsonnedMessage.getString("type").equals("user_state_changed") && jsonnedMessage.getBoolean("contentLoaded"))
+        {/* ignore */}
+        else if (jsonnedMessage.getString("type").equals("object_spawned") && !worldCreatedBroadcasts.isPassed())
             tileBroadcasts.count(jsonnedMessage);
-        else if (jsonnedMessage.getString("type").equals("world_created") && !wasWorldCreated)
-            wasWorldCreated = true;
+        else if (jsonnedMessage.getString("type").equals("world_created") && !worldCreatedBroadcasts.isPassed())
+            worldCreatedBroadcasts.count(jsonnedMessage);
+        else
+        {
+            System.out.println(message);
+            throw new UnsupportedOperationException(); // For messages not implemented yet. :)
+        }
     }
 
     private Set<UserProfile> createUsers() {
@@ -203,8 +208,8 @@ public class RoomFuncTest {
 
         @Override
         public void count(JSONObject message) {
-            currentAmountOfBroadcasts++; // Also looks like "int latestID"
-            //System.out.println(message.toString());
+            currentAmountOfBroadcasts++;
+
             if (currentAmountOfBroadcasts == totalAmountOfBroadcasts)
                 isPassed = true;
             if (currentAmountOfBroadcasts > totalAmountOfBroadcasts)
@@ -227,7 +232,10 @@ public class RoomFuncTest {
 
     private static final int AMOUNT_OF_WORLD_TILES_BROADCASTS = 512;  // (tile_counts+bombermen)*4 = (31*4 + 4)*4 for basic world
     private static BroadcastsCounter tileBroadcasts = new TileBroadcastsCounter(AMOUNT_OF_WORLD_TILES_BROADCASTS);
-    private static boolean wasWorldCreated = false;
+
+    private static final int AMOUNT_OF_WORLD_CREATED_BROADCASTS = 4;  // (tile_counts+bombermen)*4 = (31*4 + 4)*4 for basic world
+    private static BroadcastsCounter worldCreatedBroadcasts = new TileBroadcastsCounter(AMOUNT_OF_WORLD_CREATED_BROADCASTS);
+
 
     private static final int TOTAL_CASES_TO_TEST = 5;
     private int casesSuccesfullyTested = 0;
