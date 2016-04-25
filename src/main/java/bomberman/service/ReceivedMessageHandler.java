@@ -16,10 +16,16 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
     public boolean execute() {
         final String messageType = message.getString("type");
         if (messageType.equals("object_changed")) {
-            return WebErrorManager.showFieldsNotPresent(message, "id", "x", "y") == null && doIfUserExists((user) -> room.scheduleBombermanMovement(user, message.getInt("x"), message.getInt("y")));
+            if( WebErrorManager.showFieldsNotPresent(message, "id", "x", "y") != null)
+                return false;
+            else
+                return doIfUserExists((user) -> room.scheduleBombermanMovement(user, message.getInt("x"), message.getInt("y")));
         }
         if (messageType.equals("user_state_changed")) {
-            return WebErrorManager.showFieldsNotPresent(message, "id", "isReady", "contentLoaded") == null && doIfUserExists((user) -> room.updatePlayerState(user, message.getBoolean("isReady"), message.getBoolean("contentLoaded")));
+            if (WebErrorManager.showFieldsNotPresent(message, "id", "isReady", "contentLoaded") != null)
+                return false;
+            else
+                return doIfUserExists((user) -> room.updatePlayerState(user, message.getBoolean("isReady"), message.getBoolean("contentLoaded")));
         }
         if (messageType.equals("chat_message")) {
             if (WebErrorManager.showFieldsNotPresent(message, "user_id", "text") != null)
