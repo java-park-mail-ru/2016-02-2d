@@ -110,11 +110,13 @@ public class MessageCreator {
         return messageTemplate.toString();
     }
 
-    public static String createWorldCreatedMessage() {
+    public static String createWorldCreatedMessage(String title, int width, int height) {
         final JSONObject messageTemplate = new JSONObject();
 
         messageTemplate.put("type", "world_created");
-        messageTemplate.put("comment", "I don't know what reason this message exists for...");
+        messageTemplate.put("title", title);
+        messageTemplate.put("width", width);
+        messageTemplate.put("height", height);
 
         return messageTemplate.toString();
     }

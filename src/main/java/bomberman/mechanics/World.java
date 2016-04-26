@@ -97,6 +97,19 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         areBombermenSpawned = true;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getWidth() {
+        return tileArray[0].length;
+    }
+
+    public int getHeight() {
+        return tileArray.length;
+    }
+
+
     // Run only once at the very beginning
     private void registerNewTiles() {
         for (int y = 0; y < tileArray.length; ++y) {

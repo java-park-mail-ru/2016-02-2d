@@ -4,6 +4,8 @@ import bomberman.mechanics.World;
 import bomberman.mechanics.WorldEvent;
 import bomberman.mechanics.interfaces.EntityType;
 import bomberman.mechanics.interfaces.EventType;
+import bomberman.mechanics.worldbuilders.BasicWorldBuilder;
+import bomberman.mechanics.worldbuilders.TextWorldBuilder;
 import main.websockets.MessageSendable;
 import org.javatuples.Pair;
 import rest.UserProfile;
@@ -100,7 +102,7 @@ public class Room {
                 {if (hasEveryoneLoadedContent && isEveryoneReady) {
                     assignBombermenToPlayers();
                     transmitEventsOnWorldCreation();
-                    broadcast(MessageCreator.createWorldCreatedMessage());
+                    broadcast(MessageCreator.createWorldCreatedMessage(world.getName(), world.getWidth(), world.getHeight()));
                 }
             });
             // else break;
