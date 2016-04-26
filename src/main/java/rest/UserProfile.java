@@ -1,6 +1,6 @@
 package rest;
 
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.Nullable;
 import main.UserTokenManager;
 import main.databaseservice.UserProfileData;
 import org.jetbrains.annotations.NotNull;
