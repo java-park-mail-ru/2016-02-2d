@@ -38,13 +38,16 @@ public class Main {
         LOGGER.info("Starting at " + port + " port");
         final Server server = new Server(port);
 
-        final ServletContextHandler contextHandler = new ServletContextHandler(server, "/api/", ServletContextHandler.SESSIONS);
-
         final ServletHolder restServletHolder = new ServletHolder(ServletContainer.class);
         restServletHolder.setInitParameter("javax.ws.rs.Application", "main.RestApplication");
 
+        final ServletHolder websocketServletHolder = new ServletHolder(new WebSocketConnectionServlet(context, Integer.parseInt(properties.get("ws_timeout"))));
+
+        final ServletContextHandler contextHandler = new ServletContextHandler(server, "/api");
+        contextHandler.addServlet(websocketServletHolder, "/game");
         contextHandler.addServlet(restServletHolder, "/*");
-        contextHandler.addServlet(new ServletHolder(new WebSocketConnectionServlet(context, Integer.parseInt(properties.get("ws_timeout")))), "/game");
+
+        server.setHandler(contextHandler);
 
         server.start();
         server.join();

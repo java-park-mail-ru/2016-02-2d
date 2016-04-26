@@ -12,7 +12,7 @@ import org.json.*;
 import java.util.Collection;
 
 @Singleton
-@Path("/user")
+@Path("user/")
 public class Users {
 
     public Users(AccountService accountService) {

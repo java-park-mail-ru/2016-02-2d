@@ -11,7 +11,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
 @Singleton
-@Path("/session")
+@Path("session/")
 public class Sessions {
 
     public Sessions(AccountService accountService) {
