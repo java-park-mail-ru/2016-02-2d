@@ -36,12 +36,12 @@ public class WebSocketConnectionCreator implements WebSocketCreator {
         try {
             if (token == null) {
                 servletUpgradeResponse.sendError(Response.Status.BAD_REQUEST.getStatusCode(), "No cookies specified!");
-                LOGGER.debug("No cookies found while upgrading to websocket.");
+                LOGGER.info("No cookies found while upgrading to websocket.");
                 return null;
             }
             if (!accountService.hasSessionID(token) || (user = accountService.getBySessionID(token)) == null) {
                 servletUpgradeResponse.sendError(Response.Status.UNAUTHORIZED.getStatusCode(), "No suitable user found for this cookie!");
-                LOGGER.debug("No suitable user found while upgrading to websocket.");
+                LOGGER.info("No suitable user found while upgrading to websocket.");
                 return null;
             }
         } catch (IOException ex) {

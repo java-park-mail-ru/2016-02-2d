@@ -43,9 +43,9 @@ public class Main {
 
         final ServletHolder websocketServletHolder = new ServletHolder(new WebSocketConnectionServlet(context, Integer.parseInt(properties.get("ws_timeout"))));
 
-        final ServletContextHandler contextHandler = new ServletContextHandler(server, "/api");
+        final ServletContextHandler contextHandler = new ServletContextHandler(server, "/*");
         contextHandler.addServlet(websocketServletHolder, "/game");
-        contextHandler.addServlet(restServletHolder, "/*");
+        contextHandler.addServlet(restServletHolder, "/api/*");
 
         server.setHandler(contextHandler);
 
