@@ -1,6 +1,7 @@
 package bomberman.mechanics;
 
 import bomberman.mechanics.interfaces.*;
+import bomberman.service.Room;
 import bomberman.service.TimeHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,39 +42,6 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         return newQueue;
     }
 
-    // This is how timeline works:
-    // |--------running---------|----------------------sleeping---------------------|
-    // ↑                        ↑                                                   ↑
-    // afterSleep0            afterRun1                                             afterSleep1
-    // Total length of "running" and "sleeping" equals "FIXED_TIME_STEP"
-    // If the "running" state continues longer than "FIXED_TIME_STEP", following happens:
-    // |--------running1_starts-----------------------------------------------------+-running1_ends-|---running2------------|----------sleeping2-----------------|
-    // ↑                                                                            ↑               ↑                       ↑                                    ↑
-    // afterSleep0                                                    FIXED_TIME_STEP               |                       afterRun2                            afterSleep2
-    //                                                                                              afterRun1 & afterSleep1
-    public void update() {
-        long afterSleep = TimeHelper.now();
-        runGameCycle(FIXED_TIME_STEP);
-        actionOnUpdate.run();
-        long afterRun = TimeHelper.now();
-
-        long timeSpentWhileRunning = afterRun - afterSleep;
-        logGameCycleTime(timeSpentWhileRunning);
-
-        while (selfUpdatingEntities > 0) {
-            final long timeToSleep = FIXED_TIME_STEP - timeSpentWhileRunning;
-            TimeHelper.sleepFor(timeToSleep);
-            afterSleep = TimeHelper.now();
-
-            runGameCycle(FIXED_TIME_STEP);
-            actionOnUpdate.run();
-            afterRun = TimeHelper.now();
-
-            timeSpentWhileRunning = afterRun - afterSleep;
-            logGameCycleTime(timeSpentWhileRunning);
-        }
-    }
-
     // For linking to Players via Room
     public int[] getBombermenIDs(){
         final int[] ids = new int[bombermen.size()];
@@ -109,6 +77,9 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         return tileArray.length;
     }
 
+    public boolean shouldBeUpdated() {
+        return selfUpdatingEntities > 0 || !newEventQueue.isEmpty();
+    }
 
     // Run only once at the very beginning
     private void registerNewTiles() {
@@ -123,14 +94,15 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         areTilesPositioned = true;
     }
 
-    private void runGameCycle(long deltaT) {
+    public void runGameCycle(long deltaT) {
         // foreach entity => etnity.update(delta)
+
         while (!newEventQueue.isEmpty())
         {
             final WorldEvent elderEvent = newEventQueue.remove();
             switch (elderEvent.getEventType()){
                 case ENTITY_UPDATED:
-                    processEntityUpdatedEvent(elderEvent, deltaT);
+                    processEntityUpdatedEvent(elderEvent);
                     processedEventQueue.add(elderEvent);
                     break;
                 case TILE_SPAWNED:
@@ -143,13 +115,17 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
                     break;
             }
         }
+
+        tryMovingBombermen(deltaT);
+
     }
 
-    private void processEntityUpdatedEvent(WorldEvent event, float deltaT) {
+    private void processEntityUpdatedEvent(WorldEvent event) {
         LOGGER.debug("Processing object_updated");
-        // TODO: Bombermen movement
+
         // TODO: Bomberman bonus pickup
-        tryMovingBomberman(event, deltaT);
+        assignBombermanMovement(event);
+        //tryMovingBomberman(event, deltaT);
     }
 
     private void processTileSpawnedEvent(WorldEvent event) {
@@ -165,14 +141,9 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         // TODO: Bonuses pickup?
     }
 
-    // Hard maths. PM @Xobotun to get an explanation, don't be shy!
-    @SuppressWarnings("OverlyComplexMethod")
-    private void tryMovingBomberman(WorldEvent event, float deltaT) {
-        final int worldWidth = tileArray.length - 1;
-        final int worldHeight = tileArray[0].length - 1;
-
+    private void assignBombermanMovement(WorldEvent event) {
         Bomberman actor = null;
-        for (Bomberman bomberman: bombermen)
+        for (Bomberman bomberman : bombermen)
             if (bomberman.getID() == event.getEntityID())
                 actor = bomberman;
         if (actor == null) {
@@ -180,8 +151,44 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
             return;
         }
 
-        final boolean isMovingRight = event.getX() > 0;
-        final boolean isMovingDown = event.getY() > 0;
+        actor.addMovement(new Triplet<>(event.getX(), event.getY(), event.getTimestamp()));
+    }
+
+    // Movements are not at the same time, they have bomberman spawn priorities over timestap priorities! Bad, yet should work on small deltaT intervals.
+    private void tryMovingBombermen(long deltaT) {
+        for (Bomberman bomberman: bombermen) {
+            Triplet<Float, Float, Long> previousMovement = bomberman.getMovementDirection();
+            long timeSpentMoving = 0;
+            while (bomberman.getMovementsDuringTick().peek() != null) {
+                final Triplet<Float, Float, Long> movement = bomberman.getMovementsDuringTick().poll();
+
+                long dt = movement.getValue2() - previousMovement.getValue2();
+                if (dt > deltaT)
+                    dt = deltaT;
+
+                timeSpentMoving += dt;
+
+                tryMovingBomberman(bomberman, movement.getValue0(), movement.getValue1(), dt);
+                activateTilesWereSteppedOn(bomberman);
+
+                previousMovement = movement;
+            }
+
+            bomberman.setMovementDirection(previousMovement);
+
+            tryMovingBomberman(bomberman, previousMovement.getValue0(), previousMovement.getValue1(), deltaT - timeSpentMoving);
+            activateTilesWereSteppedOn(bomberman);
+        }
+    }
+
+    // Hard maths. PM @Xobotun to get an explanation, don't be shy!
+    @SuppressWarnings("OverlyComplexMethod")
+    private void tryMovingBomberman(Bomberman actor, float dx, float dy, long deltaT) {
+        final int worldWidth = tileArray.length - 1;
+        final int worldHeight = tileArray[0].length - 1;
+
+        final boolean isMovingRight = dx > 0;
+        final boolean isMovingDown = dy > 0;
 
         boolean shouldCheckXCorner = false;
         boolean shouldCheckYCorner = false;
@@ -191,8 +198,8 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         final float y = actor.getCoordinates()[1];
         final int iy = (int) Math.floor(y);
 
-        final float xSpeed = ((isMovingRight) ? 1 : -1) * actor.getMaximalSpeed() * (float)(event.getX() / Math.sqrt(event.getX() * event.getX() + event.getY() * event.getY()));
-        final float ySpeed = ((isMovingDown) ? 1 : -1) * actor.getMaximalSpeed() * (float) (event.getY() / Math.sqrt(event.getX() * event.getX() + event.getY() * event.getY()));
+        final float xSpeed = ((isMovingRight) ? 1 : -1) * actor.getMaximalSpeed() * (float)(dx / Math.sqrt(dx * dx + dy * dy));
+        final float ySpeed = ((isMovingDown) ? 1 : -1) * actor.getMaximalSpeed() * (float) (dy / Math.sqrt(dx * dx + dy * dy));
 
         float predictedX = x + xSpeed * (deltaT / 1000);
         float predictedY = y + ySpeed * (deltaT / 1000);
@@ -242,14 +249,11 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         }
 
         actor.setCoordinates(new float[]{x + predictedX, y + predictedY});
-        processedEventQueue.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, event.getEntityID(), predictedX, predictedY));
+        processedEventQueue.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, actor.getID(), predictedX, predictedY));
     }
 
-    private void logGameCycleTime(long timeSpentWhileRunning) {
-        if (timeSpentWhileRunning >= FIXED_TIME_STEP)
-            LOGGER.warn("World " + this.toString() + " self updated. It took " + timeSpentWhileRunning + " >= " + FIXED_TIME_STEP + "! Fix the bugs!");
-        else
-            LOGGER.debug("World " + this.toString() + " self updated. It took " + timeSpentWhileRunning + " < " + FIXED_TIME_STEP + ". OK.");
+    private void activateTilesWereSteppedOn(Bomberman actor) {
+
     }
 
     private final Queue<WorldEvent> newEventQueue = new LinkedList<>();       // Here are new events are stashed
@@ -270,9 +274,8 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     private final Runnable actionOnUpdate;
 
     private int selfUpdatingEntities = 0;
-    public static final int FIXED_TIME_STEP = 25; //ms
 
-    public static final float BOMB_RAY_HANDICAP_DIAMETER = 0.05f; // 0.75-0.05 will
+    public static final float ACTION_TILE_HANDICAP_DIAMETER = 0.05f; // 0.75-0.05 will
 
     private static final Logger LOGGER = LogManager.getLogger(World.class);
 }

@@ -35,7 +35,7 @@ public class WebSocketConnection implements MessageSendable{
             sendMessage("Bad json!");
             return;
         }
-        // sendMessage("Hi! Processing your request... This is debug response, by the way.");
+
         if (!new ReceivedMessageHandler(room, message, context).execute())
             sendMessage("Bad message type!");
     }

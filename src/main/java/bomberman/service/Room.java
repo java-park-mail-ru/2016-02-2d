@@ -7,13 +7,14 @@ import bomberman.mechanics.interfaces.EventType;
 import bomberman.mechanics.worldbuilders.BasicWorldBuilder;
 import bomberman.mechanics.worldbuilders.TextWorldBuilder;
 import main.websockets.MessageSendable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.javatuples.Pair;
 import rest.UserProfile;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Room {
 
@@ -121,20 +122,16 @@ public class Room {
         if (isActive) {
             final int bombermanID = reversePlayerMap.get(user);
 
-            final boolean noMessagesScheduled = scheduledMovements.isEmpty();
+            scheduledMovements.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermanID, dirX, dirY, TimeHelper.now()));  // TODO: Should TimeHelper.now() be client's timestamp?
 
-            scheduledMovements.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermanID, dirX, dirY));
-            if (noMessagesScheduled)
-                TimeHelper.executeAfter(World.FIXED_TIME_STEP, this::passScheduledMovementsToWorld);
+            updateIfNeeded();
         }
     }
 
-    private void passScheduledMovementsToWorld()
-    {
+    private void passScheduledMovementsToWorld() {
         for (WorldEvent movement: scheduledMovements)
             world.addWorldEvent(movement);
         scheduledMovements.clear();
-        world.update();
     }
 
     private void transmitEventsOnWorldCreation() {
@@ -157,6 +154,34 @@ public class Room {
         }
     }
 
+    // http://gafferongames.com/game-physics/fix-your-timestep/
+    // Variable delta time variant
+    private void updateIfNeeded() {
+        if (!updateScheduled) {
+            updateScheduled = true;
+            final long beforeUpdate = TimeHelper.now();
+            passScheduledMovementsToWorld();
+
+            world.runGameCycle(previousTickDuration);
+            final long gameLoopTook = TimeHelper.now() - beforeUpdate;
+
+            TimeHelper.sleepFor(MINIMAL_TIME_STEP - gameLoopTook);
+            broadcastFreshEvents();
+
+            previousTickDuration = beforeUpdate - TimeHelper.now();
+            logGameCycleTime(previousTickDuration);
+
+            updateScheduled = world.shouldBeUpdated();
+        }
+    }
+
+    private void logGameCycleTime(long timeSpentWhileRunning) {
+        if (timeSpentWhileRunning >= Room.MINIMAL_TIME_STEP)
+            LOGGER.warn("Room " + this.toString() + " updated. It took " + timeSpentWhileRunning + " >= " + Room.MINIMAL_TIME_STEP + "! Fix the bugs!");
+        else
+            LOGGER.debug("Room " + this.toString() + " updated. It took " + timeSpentWhileRunning + " < " + Room.MINIMAL_TIME_STEP + ". OK.");
+    }
+
     // I can't determine hashCode and equals methods. :(
 
     private int capacity = DEFAULT_CAPACITY;
@@ -170,9 +195,14 @@ public class Room {
 
     World world;
     private boolean isActive = false;
+    private boolean updateScheduled = false;
+    private long previousTickDuration = MINIMAL_TIME_STEP;
+    public static final int MINIMAL_TIME_STEP = 25; //ms
 
-    private final List<WorldEvent> scheduledMovements = new LinkedList<>();
+    private final Queue<WorldEvent> scheduledMovements = new ConcurrentLinkedQueue<>();
 
     public static final int DEFAULT_CAPACITY = 4;
     public static final int TIME_TO_WAIT_AFTER_READY = 3000; // ms
+
+    private static final Logger LOGGER = LogManager.getLogger(Room.class);
 }
