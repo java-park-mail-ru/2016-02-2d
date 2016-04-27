@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -93,8 +94,8 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         areTilesPositioned = true;
     }
 
-    public void runGameCycle(long deltaT) {
-        // foreach entity => etnity.update(delta)
+    public void runGameLoop(long deltaT) {
+        updateEverything(deltaT);
 
         while (!newEventQueue.isEmpty())
         {
@@ -116,21 +117,16 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         }
 
         tryMovingBombermen(deltaT);
-
     }
 
     private void processEntityUpdatedEvent(WorldEvent event) {
         LOGGER.debug("Processing object_updated");
-
-        // TODO: Bomberman bonus pickup
         assignBombermanMovement(event);
-        //tryMovingBomberman(event, deltaT);
     }
 
     private void processTileSpawnedEvent(WorldEvent event) {
         LOGGER.debug("Processing object_spawned");
-        // TODO: Bomb placement
-        // TODO: Bomb raycasting and destroying walls
+        tryPlacingBomb(event.getEntityID());
     }
 
     private void processTileRemovedEvent(WorldEvent event) {
@@ -141,10 +137,8 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     }
 
     private void assignBombermanMovement(WorldEvent event) {
-        Bomberman actor = null;
-        for (Bomberman bomberman : bombermen)
-            if (bomberman.getID() == event.getEntityID())
-                actor = bomberman;
+        final Bomberman actor = getBombermanByID(event.getEntityID());
+
         if (actor == null) {
             LOGGER.warn("No bomberman with id \"" + event.getEntityID() + "\" exists!");
             return;
@@ -270,6 +264,43 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
         for (ITile uniqueTile: uniqueTiles)
             uniqueTile.applyAction(actor);
+    }
+
+    private void tryPlacingBomb(int bombermanID) {
+        final Bomberman actor = getBombermanByID(bombermanID);
+        if (actor == null)
+            return;
+
+        final int x = (int) Math.floor(actor.getCoordinates()[0]);
+        final int y = (int) Math.floor(actor.getCoordinates()[1]);
+
+        if (actor.canSpawnBomb() && tileArray[y][x] == null)
+        {
+            tileArray[y][x] = TileFactory.getInstance().getNewTile(EntityType.BOMB, this, actor, getNextID());
+            actor.takeOnePlaceableBomb();
+            processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB, tileArray[y][x].getID(), x, y));
+        }
+    }
+
+    @Nullable
+    private Bomberman getBombermanByID(int id) {
+        Bomberman result = null;
+
+        for (Bomberman bomberman : bombermen)
+            if (bomberman.getID() == id)
+                result = bomberman;
+
+        return result;
+    }
+
+    private void updateEverything(long deltaT) {
+        for (Bomberman bomberman : bombermen)
+            bomberman.update(deltaT);
+
+        for (ITile[] row: tileArray)
+            for (ITile tile: row)
+                if (tile != null)
+                    tile.update(deltaT);
     }
 
     private final Queue<WorldEvent> newEventQueue = new LinkedList<>();       // Here are new events are stashed

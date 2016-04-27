@@ -4,8 +4,6 @@ import bomberman.mechanics.World;
 import bomberman.mechanics.WorldEvent;
 import bomberman.mechanics.interfaces.EntityType;
 import bomberman.mechanics.interfaces.EventType;
-import bomberman.mechanics.worldbuilders.BasicWorldBuilder;
-import bomberman.mechanics.worldbuilders.TextWorldBuilder;
 import main.websockets.MessageSendable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +11,6 @@ import org.javatuples.Pair;
 import rest.UserProfile;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Room {
@@ -128,10 +125,22 @@ public class Room {
         }
     }
 
+    public void scheduleBombPlacement(UserProfile user) {
+        if (isActive) {
+            final int bombermanID = reversePlayerMap.get(user);
+
+            scheduledMovements.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB, bombermanID, 0, 0));
+
+            updateIfNeeded();
+        }
+    }
+
     private void passScheduledMovementsToWorld() {
-        for (WorldEvent movement: scheduledMovements)
-            world.addWorldEvent(movement);
-        scheduledMovements.clear();
+        WorldEvent event = scheduledMovements.poll();
+        while (event != null) {
+            world.addWorldEvent(event);
+            event = scheduledMovements.poll();
+        }
     }
 
     private void transmitEventsOnWorldCreation() {
@@ -162,7 +171,7 @@ public class Room {
             final long beforeUpdate = TimeHelper.now();
             passScheduledMovementsToWorld();
 
-            world.runGameCycle(previousTickDuration);
+            world.runGameLoop(previousTickDuration);
             final long gameLoopTook = TimeHelper.now() - beforeUpdate;
 
             TimeHelper.sleepFor(MINIMAL_TIME_STEP - gameLoopTook);
