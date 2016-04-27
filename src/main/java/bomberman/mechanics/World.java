@@ -5,11 +5,10 @@ import bomberman.service.Room;
 import bomberman.service.TimeHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.javatuples.Pair;
 import org.javatuples.Triplet;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class World implements EventStashable, UniqueIDManager, EventObtainable {
@@ -253,7 +252,24 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     }
 
     private void activateTilesWereSteppedOn(Bomberman actor) {
+        final float x = actor.getCoordinates()[0];
+        final float y = actor.getCoordinates()[1];
 
+        final float handicappedRadius = (Bomberman.DIAMETER - ACTION_TILE_HANDICAP_DIAMETER) / 2;
+
+        final Set<Pair<Integer, Integer>> uniqueTileCoordinates = new HashSet<>(4);
+
+        uniqueTileCoordinates.add(new Pair<>((int) Math.floor(x - handicappedRadius), (int) Math.floor(y - handicappedRadius)));
+        uniqueTileCoordinates.add(new Pair<>((int) Math.floor(x - handicappedRadius), (int) Math.floor(y + handicappedRadius)));
+        uniqueTileCoordinates.add(new Pair<>((int) Math.floor(x + handicappedRadius), (int) Math.floor(y - handicappedRadius)));
+        uniqueTileCoordinates.add(new Pair<>((int) Math.floor(x + handicappedRadius), (int) Math.floor(y + handicappedRadius)));
+
+        final Set<ITile> uniqueTiles = new HashSet<>(4);
+        for (Pair<Integer, Integer> uniqueCoordinate: uniqueTileCoordinates)
+            uniqueTiles.add(tileArray[uniqueCoordinate.getValue1()][uniqueCoordinate.getValue0()]);
+
+        for (ITile uniqueTile: uniqueTiles)
+            uniqueTile.applyAction(actor);
     }
 
     private final Queue<WorldEvent> newEventQueue = new LinkedList<>();       // Here are new events are stashed
