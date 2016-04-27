@@ -1,7 +1,10 @@
 package bomberman.mechanics;
 
 import bomberman.mechanics.interfaces.EntityType;
+import bomberman.mechanics.interfaces.EventStashable;
+import bomberman.mechanics.interfaces.EventType;
 import bomberman.mechanics.interfaces.IEntity;
+import bomberman.service.TimeHelper;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
 
@@ -10,7 +13,7 @@ import java.util.Queue;
 
 public class Bomberman implements IEntity {
 
-    public Bomberman(int id) {
+    public Bomberman(int id, EventStashable world) {
         this.id = id;
         bombSpawnTimerInitValue = BOMB_SPAWN_TIMER_BASE_VALUE;
         bombExplosionRange = BOMB_BASE_RANGE;
@@ -20,6 +23,7 @@ public class Bomberman implements IEntity {
         maxBombsCanBePlaced = BASE_BOMB_AMOUNT;
         currentPlaceableBombs = maxBombsCanBePlaced;
         maximalSpeed = BASE_MAX_SPEED;
+        this.world = world;
     }
 
     @Override
@@ -47,7 +51,6 @@ public class Bomberman implements IEntity {
     public void update(float deltaTime) {
         if (bombSpawnTimer >= 0)
             bombSpawnTimer =- deltaTime;
-
     }
 
     public boolean canSpawnBomb() {
@@ -62,8 +65,13 @@ public class Bomberman implements IEntity {
     // Use negative amounts for healing! =D
     @Override
     public void affectHealth(int amount) {
+        if (health > maxHealth)
+            health = maxHealth;
+
         health -= amount;
-        if (health > maxHealth) health = maxHealth;
+
+        if (health < 0)
+            world.addWorldEvent(new WorldEvent(EventType.TILE_REMOVED, EntityType.BOMBERMAN, id, x, y, TimeHelper.now()));
     }
 
     public void increaseMaxHealth() {
@@ -177,6 +185,7 @@ public class Bomberman implements IEntity {
     @SuppressWarnings("InstanceVariableNamingConvention")
     private float y;                // "yCoordinate" -> 'y'
     private final int id;           // "uniqueIdentificationNumber" -> "id"
+    EventStashable world;
 
 
     // Health Description
