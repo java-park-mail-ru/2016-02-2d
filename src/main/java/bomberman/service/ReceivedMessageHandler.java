@@ -7,10 +7,10 @@ import rest.UserProfile;
 import rest.WebErrorManager;
 
 public class ReceivedMessageHandler /*implements Runnable*/ {
-    public ReceivedMessageHandler(Room userRoom, JSONObject jsonMessage, Context globalContext) {
+    public ReceivedMessageHandler(UserProfile userProfile, Room userRoom, JSONObject jsonMessage) {
         room = userRoom;
         message = jsonMessage;
-        context = globalContext;
+        user = userProfile;
     }
 
     public boolean execute() {
@@ -19,13 +19,15 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
             if( WebErrorManager.showFieldsNotPresent(message, "id", "x", "y") != null)
                 return false;
             else
-                return doIfUserExists((user) -> room.scheduleBombermanMovement(user, message.getInt("x"), message.getInt("y")));
+                room.scheduleBombermanMovement(user, message.getInt("x"), message.getInt("y"));
+            return true;
         }
         if (messageType.equals("user_state_changed")) {
-            if (WebErrorManager.showFieldsNotPresent(message, "id", "isReady", "contentLoaded") != null)
+            if (WebErrorManager.showFieldsNotPresent(message, "isReady", "contentLoaded") != null)
                 return false;
             else
-                return doIfUserExists((user) -> room.updatePlayerState(user, message.getBoolean("isReady"), message.getBoolean("contentLoaded")));
+                room.updatePlayerState(user, message.getBoolean("isReady"), message.getBoolean("contentLoaded"));
+            return true;
         }
         if (messageType.equals("chat_message")) {
             if (WebErrorManager.showFieldsNotPresent(message, "user_id", "text") != null)
@@ -38,23 +40,7 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
         return false;
     }
 
-    private boolean doIfUserExists(Executor action)
-    {
-        final AccountService accountService = (AccountService) context.get(AccountService.class);
-        final UserProfile user = accountService.getUser(message.getLong("id"));
-
-        if (user == null)
-            return false;
-        else
-            action.execute(user);
-        return true;
-    }
-
-    private interface Executor {
-        void execute(UserProfile user);
-    }
-
+    private final UserProfile user;
     private final Room room;
     private final JSONObject message;
-    private final Context context;
 }

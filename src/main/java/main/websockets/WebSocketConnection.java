@@ -23,7 +23,6 @@ public class WebSocketConnection implements MessageSendable{
     public WebSocketConnection(UserProfile owner, Context globalContext) {
         user = owner;
         roomManager = (RoomManager) globalContext.get(RoomManager.class);
-        context = globalContext;
     }
 
     @OnWebSocketMessage
@@ -36,7 +35,7 @@ public class WebSocketConnection implements MessageSendable{
             return;
         }
 
-        if (!new ReceivedMessageHandler(room, message, context).execute())
+        if (!new ReceivedMessageHandler(user, room, message).execute())
             sendMessage("Bad message type!");
     }
 
@@ -65,7 +64,6 @@ public class WebSocketConnection implements MessageSendable{
     private Room room;
 
     private final RoomManager roomManager;
-    private final Context context;
 
     private static final Logger LOGGER = LogManager.getLogger(WebSocketConnection.class);
 }
