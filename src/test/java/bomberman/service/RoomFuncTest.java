@@ -78,7 +78,7 @@ public class RoomFuncTest {
         System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] user_state_changed was tested!");
     }
 
-    @After
+    //@After
     public void wasWorldTransmissionTested() {
         assertEquals(true, tileBroadcasts.isPassed());
         casesSuccesfullyTested++;

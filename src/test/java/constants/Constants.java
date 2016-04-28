@@ -193,4 +193,6 @@ public class Constants {
     public static final String USER_SESSION_ID = "TEST_SESSION_ID";
 
     private static final AtomicLong RANDOM_ID_GENERATOR = new AtomicLong(1);
+
+    public static final float SOME_ERROR_DELTA = 10e-3f;
 }

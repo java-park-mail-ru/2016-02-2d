@@ -177,7 +177,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     // Hard maths. PM @Xobotun to get an explanation, don't be shy!
     @SuppressWarnings("OverlyComplexMethod")
     private void tryMovingBomberman(Bomberman actor, float dx, float dy, long deltaT) {
-        if (dx == 0 && dy == 0)
+        if (dx == 0 && dy == 0 || deltaT <= 0)
             return;
 
         final int worldWidth = tileArray.length - 1;
@@ -194,11 +194,11 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         final float y = actor.getCoordinates()[1];
         final int iy = (int) Math.floor(y);
 
-        final float xSpeed = ((isMovingRight) ? 1 : -1) * actor.getMaximalSpeed() * (float)(dx / Math.sqrt(dx * dx + dy * dy));
-        final float ySpeed = ((isMovingDown) ? 1 : -1) * actor.getMaximalSpeed() * (float) (dy / Math.sqrt(dx * dx + dy * dy));
+        final float xSpeed = actor.getMaximalSpeed() * (float)(dx / Math.sqrt(dx * dx + dy * dy));
+        final float ySpeed = actor.getMaximalSpeed() * (float) (dy / Math.sqrt(dx * dx + dy * dy));
 
-        float predictedX = x + xSpeed * (deltaT / 1000);
-        float predictedY = y + ySpeed * (deltaT / 1000);
+        float predictedX = x + xSpeed * (deltaT / 1000f);
+        float predictedY = y + ySpeed * (deltaT / 1000f);
         final float radius = Bomberman.DIAMETER / 2;
 
         final float xBoundary = (float) (Math.floor(x) + ((isMovingRight) ? 1 : 0));

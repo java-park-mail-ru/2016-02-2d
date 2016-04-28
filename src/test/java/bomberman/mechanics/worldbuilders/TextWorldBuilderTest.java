@@ -46,8 +46,8 @@ public class TextWorldBuilderTest {
 
         assertEquals(expectedSpawns.length, actualSpawns.length);
         for (int i = 0; i < expectedSpawns.length; ++i) {
-            assertEquals(expectedSpawns[i][0], actualSpawns[i][0], SOME_ERROR_DELTA);
-            assertEquals(expectedSpawns[i][1], actualSpawns[i][1], SOME_ERROR_DELTA);
+            assertEquals(expectedSpawns[i][0], actualSpawns[i][0], Constants.SOME_ERROR_DELTA);
+            assertEquals(expectedSpawns[i][1], actualSpawns[i][1], Constants.SOME_ERROR_DELTA);
         }
     }
 
@@ -58,5 +58,5 @@ public class TextWorldBuilderTest {
     }
 
     private static Triplet<ITile[][], float[][], String> testWorldData;
-    private static final float SOME_ERROR_DELTA = 10e-3f;
+
 }
