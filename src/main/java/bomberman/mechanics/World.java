@@ -207,12 +207,12 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
             predictedX = worldWidth - radius;
         else if (x - radius >= 1 && !isMovingRight && predictedX - radius < xBoundary) {
                 final ITile leftTile = tileArray[iy][ix - 1];
-                if (!leftTile.isPassable())
+                if (leftTile != null && !leftTile.isPassable())
                     predictedX = xBoundary + radius;
                 else shouldCheckXCorner = true; }
         else if (x + radius >= worldWidth - 1 && isMovingRight && predictedX + radius > xBoundary) {
             final ITile rightTile = tileArray[iy][ix + 1];
-            if (!rightTile.isPassable())
+            if (rightTile != null && !rightTile.isPassable())
                 predictedX = xBoundary - radius;
             else shouldCheckXCorner = true; }
 
@@ -222,12 +222,12 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
             predictedY = worldHeight - radius;
         else if (x - radius >= 1 && !isMovingDown && predictedY - radius < yBoundary) {
             final ITile upTile = tileArray[iy][ix - 1];
-            if (!upTile.isPassable())
+            if (upTile != null && !upTile.isPassable())
                 predictedY = yBoundary + radius;
             else shouldCheckYCorner = true; }
         else if (x + radius >= worldHeight - 1 && isMovingDown && predictedY + radius > yBoundary) {
             final ITile downTile = tileArray[iy][ix + 1];
-            if (!downTile.isPassable())
+            if (downTile != null && !downTile.isPassable())
                 predictedY = yBoundary - radius;
             else shouldCheckYCorner = true; }
 

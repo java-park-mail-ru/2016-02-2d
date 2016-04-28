@@ -51,6 +51,7 @@ public class Bomberman implements IEntity {
     public void update(float deltaTime) {
         if (bombSpawnTimer >= 0)
             bombSpawnTimer =- deltaTime;
+        // else it can be somewhere below zero. xD (if dT is about 1000 ms)
     }
 
     public boolean canSpawnBomb() {

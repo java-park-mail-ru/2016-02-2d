@@ -75,23 +75,76 @@ public class WorldTest {
     }
 
     @Test
-    public void testCollisions() {
-        for (TestType variant: TestType.values()) {
-            world.getFreshEvents();
-            final List<WorldEvent> expected = new TestConditions().addEventsandGetExpectedResults(variant);
+    public void testBorderHorizontalCollisions() {
+        final TestType variant = TestType.BORDER_HORIZONTAL;
 
-            world.runGameLoop(1000);
+        final List<WorldEvent> expected = new TestConditions().addEventsandGetExpectedResults(variant);
 
-            assertMovementsEqual(expected, world.getFreshEvents(), variant);
-        }
+        world.runGameLoop(1000);
+
+        assertMovementsEqual(expected, world.getFreshEvents(), variant);
+    }
+    @Test
+    public void testInnerHorizontalCollisions() {
+        final TestType variant = TestType.INNER_HORIZONTAL;
+
+        final List<WorldEvent> expected = new TestConditions().addEventsandGetExpectedResults(variant);
+
+        world.runGameLoop(1000);
+
+        assertMovementsEqual(expected, world.getFreshEvents(), variant);
+    }
+
+    @Test
+    public void testBorderVerticalCollisions() {
+        final TestType variant = TestType.BORDER_VERTICAL;
+
+        final List<WorldEvent> expected = new TestConditions().addEventsandGetExpectedResults(variant);
+
+        world.runGameLoop(1000);
+
+        assertMovementsEqual(expected, world.getFreshEvents(), variant);
+    }
+    @Test
+    public void testInnerVerticalCollisions() {
+        final TestType variant = TestType.INNER_VERTICAL;
+
+        final List<WorldEvent> expected = new TestConditions().addEventsandGetExpectedResults(variant);
+
+        world.runGameLoop(1000);
+
+        assertMovementsEqual(expected, world.getFreshEvents(), variant);
+    }
+
+    @Test
+    public void testBorderDiagonalCollisions() {
+        final TestType variant = TestType.BORDER_DIAGONAL;
+
+        final List<WorldEvent> expected = new TestConditions().addEventsandGetExpectedResults(variant);
+
+        world.runGameLoop(1000);
+
+        assertMovementsEqual(expected, world.getFreshEvents(), variant);
+    }
+    @Test
+    public void testInnerDiagonalCollisions () {
+        final TestType variant = TestType.INNER_DIAGONAL;
+
+        final List<WorldEvent> expected = new TestConditions().addEventsandGetExpectedResults(variant);
+
+        world.runGameLoop(1000);
+
+        assertMovementsEqual(expected, world.getFreshEvents(), variant);
     }
 
     private static void assertMovementsEqual(List<WorldEvent> expected, Queue<WorldEvent> actual, TestType type) {
+        int id = 0;
         try {
             while (!actual.isEmpty()) {
                 final WorldEvent actualEvent = actual.poll();
                 for (WorldEvent expectedEvent : expected)
                     if (expectedEvent.getEntityID() == actualEvent.getEntityID()) {
+                        id = expectedEvent.getEntityID();
                         assertEquals(expectedEvent.getX(), actualEvent.getX(), Constants.SOME_ERROR_DELTA);
                         assertEquals(expectedEvent.getY(), actualEvent.getY(), Constants.SOME_ERROR_DELTA);
                     }
@@ -99,8 +152,9 @@ public class WorldTest {
             }
         } catch (AssertionError ex) {
             System.out.println();
-            System.out.println("Assertion failed during " + type + " test:");
+            System.out.println("Assertion failed during specimen #" + id + ' ' + type + " test");
             ex.printStackTrace(System.out);
+            fail();
         }
     }
 
@@ -194,11 +248,11 @@ public class WorldTest {
         private List<WorldEvent> expectedInnerHorizontalEvents() {
             final List<WorldEvent> result = new LinkedList<>();
 
-            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.TOP_LEFT_EDGE), 2.375f, 2.5f));
-            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.TOP_RIGHT_EDGE), 29.625f, 2.5f));
+            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.TOP_LEFT), 2.375f, 2.5f));
+            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.TOP_RIGHT), 29.625f, 2.5f));
 
-            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.BOTTOM_LEFT_EDGE), 2.375f, 29.5f));
-            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.BOTTOM_RIGHT_EDGE), 29.625f, 29.5f));
+            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.BOTTOM_LEFT), 2.375f, 29.5f));
+            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.BOTTOM_RIGHT), 29.625f, 29.5f));
 
             return result;
         }
@@ -213,11 +267,11 @@ public class WorldTest {
         private List<WorldEvent> expectedInnerVerticalEvents() {
             final List<WorldEvent> result = new LinkedList<>();
 
-            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.TOP_LEFT_EDGE), 2.5f, 2.375f));
-            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.BOTTOM_LEFT_EDGE), 2.5f, 29.625f));
+            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.TOP_LEFT), 2.5f, 2.375f));
+            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.BOTTOM_LEFT), 2.5f, 29.625f));
 
-            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.TOP_RIGHT_EDGE), 29.5f, 2.375f));
-            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.BOTTOM_RIGHT_EDGE), 29.5f, 29.625f));
+            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.TOP_RIGHT), 29.5f, 2.375f));
+            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.BOTTOM_RIGHT), 29.5f, 29.625f));
 
             return result;
         }
@@ -231,10 +285,10 @@ public class WorldTest {
         private List<WorldEvent> expectedInnerDiagonalEvents() {
             final List<WorldEvent> result = new LinkedList<>();
 
-            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.TOP_LEFT_EDGE), 2.375f, 2.375f));
-            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.BOTTOM_LEFT_EDGE), 2.375f, 29.625f));
-            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.TOP_RIGHT_EDGE), 29.625f, 2.375f));
-            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.BOTTOM_RIGHT_EDGE), 29.625f, 29.625f));
+            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.TOP_LEFT), 2.375f, 2.375f));
+            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.BOTTOM_LEFT), 2.375f, 29.625f));
+            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.TOP_RIGHT), 29.625f, 2.375f));
+            result.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermen.get(Location.BOTTOM_RIGHT), 29.625f, 29.625f));
 
             return result;
         }
