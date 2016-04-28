@@ -180,8 +180,8 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         if (dx == 0 && dy == 0 || deltaT <= 0)
             return;
 
-        final int worldWidth = tileArray.length - 1;
-        final int worldHeight = tileArray[0].length - 1;
+        final int worldWidth = tileArray.length;
+        final int worldHeight = tileArray[0].length;
 
         final boolean isMovingRight = dx > 0;
         final boolean isMovingDown = dy > 0;
