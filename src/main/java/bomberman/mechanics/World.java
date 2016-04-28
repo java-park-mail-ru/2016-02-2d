@@ -177,6 +177,9 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     // Hard maths. PM @Xobotun to get an explanation, don't be shy!
     @SuppressWarnings("OverlyComplexMethod")
     private void tryMovingBomberman(Bomberman actor, float dx, float dy, long deltaT) {
+        if (dx == 0 && dy == 0)
+            return;
+
         final int worldWidth = tileArray.length - 1;
         final int worldHeight = tileArray[0].length - 1;
 
@@ -241,7 +244,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
                     predictedX = x + ((isMovingRight) ? 1 : -1)* (float) Math.sqrt(radius * radius - (predictedY - y) * (predictedY - y));
         }
 
-        actor.setCoordinates(new float[]{x + predictedX, y + predictedY});
+        actor.setCoordinates(new float[]{ predictedX, predictedY});
         processedEventQueue.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, actor.getID(), predictedX, predictedY));
     }
 
@@ -258,12 +261,17 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         uniqueTileCoordinates.add(new Pair<>((int) Math.floor(x + handicappedRadius), (int) Math.floor(y - handicappedRadius)));
         uniqueTileCoordinates.add(new Pair<>((int) Math.floor(x + handicappedRadius), (int) Math.floor(y + handicappedRadius)));
 
+        for (Pair<Integer, Integer> uniqueCoordinate : uniqueTileCoordinates)
+            if (uniqueCoordinate.getValue0() < 0 || uniqueCoordinate.getValue0() > 31 || uniqueCoordinate.getValue1() < 0 || uniqueCoordinate.getValue1() > 31)
+                uniqueTileCoordinates.remove(uniqueCoordinate); // TODO: Temporary workaround! Fix movement code! Or test it!
+
         final Set<ITile> uniqueTiles = new HashSet<>(4);
         for (Pair<Integer, Integer> uniqueCoordinate: uniqueTileCoordinates)
             uniqueTiles.add(tileArray[uniqueCoordinate.getValue1()][uniqueCoordinate.getValue0()]);
 
         for (ITile uniqueTile: uniqueTiles)
-            uniqueTile.applyAction(actor);
+            if (uniqueTile != null)
+                uniqueTile.applyAction(actor);
     }
 
     private void tryPlacingBomb(int bombermanID) {

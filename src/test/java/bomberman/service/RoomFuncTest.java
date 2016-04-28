@@ -129,6 +129,18 @@ public class RoomFuncTest {
                     .put("x", 1).put("y", 1); // move somewhere.
             entry.getValue1().onMessage(message.toString());
         }
+
+        for (Pair<UserProfile, WebSocketConnection> entry : users) {
+            final JSONObject message = new JSONObject().put("type", "object_changed").put("id", entry.getValue0().getId())
+                    .put("x", 0).put("y", 1); // move somewhere.
+            entry.getValue1().onMessage(message.toString());
+        }
+
+        for (Pair<UserProfile, WebSocketConnection> entry : users) {
+            final JSONObject message = new JSONObject().put("type", "object_changed").put("id", entry.getValue0().getId())
+                    .put("x", 0).put("y", 0); // stop
+            entry.getValue1().onMessage(message.toString());
+        }
     }
 
     @SuppressWarnings("OverlyComplexMethod")    // This is just a switch("type") workaround.
