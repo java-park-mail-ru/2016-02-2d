@@ -261,10 +261,6 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         uniqueTileCoordinates.add(new Pair<>((int) Math.floor(x + handicappedRadius), (int) Math.floor(y - handicappedRadius)));
         uniqueTileCoordinates.add(new Pair<>((int) Math.floor(x + handicappedRadius), (int) Math.floor(y + handicappedRadius)));
 
-        for (Pair<Integer, Integer> uniqueCoordinate : uniqueTileCoordinates)
-            if (uniqueCoordinate.getValue0() < 0 || uniqueCoordinate.getValue0() > 31 || uniqueCoordinate.getValue1() < 0 || uniqueCoordinate.getValue1() > 31)
-                uniqueTileCoordinates.remove(uniqueCoordinate); // TODO: Temporary workaround! Fix movement code! Or test it!
-
         final Set<ITile> uniqueTiles = new HashSet<>(4);
         for (Pair<Integer, Integer> uniqueCoordinate: uniqueTileCoordinates)
             uniqueTiles.add(tileArray[uniqueCoordinate.getValue1()][uniqueCoordinate.getValue0()]);
