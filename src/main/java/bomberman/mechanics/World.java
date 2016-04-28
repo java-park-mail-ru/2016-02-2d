@@ -99,19 +99,16 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
         while (!newEventQueue.isEmpty())
         {
-            final WorldEvent elderEvent = newEventQueue.remove();
+            final WorldEvent elderEvent = newEventQueue.poll();
             switch (elderEvent.getEventType()){
                 case ENTITY_UPDATED:
                     processEntityUpdatedEvent(elderEvent);
-                    processedEventQueue.add(elderEvent);
                     break;
                 case TILE_SPAWNED:
                     processTileSpawnedEvent(elderEvent);
-                    processedEventQueue.add(elderEvent);
                     break;
                 case TILE_REMOVED:
                     processTileRemovedEvent(elderEvent);
-                    processedEventQueue.add(elderEvent);
                     break;
             }
         }
