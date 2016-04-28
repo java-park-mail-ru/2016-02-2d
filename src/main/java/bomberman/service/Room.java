@@ -5,11 +5,13 @@ import bomberman.mechanics.WorldEvent;
 import bomberman.mechanics.interfaces.EntityType;
 import bomberman.mechanics.interfaces.EventType;
 import main.websockets.MessageSendable;
+import main.websockets.WebSocketConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javatuples.Pair;
 import rest.UserProfile;
 
+import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -24,6 +26,7 @@ public class Room {
     public void createNewWorld(String type)
     {
         world = new World(type, playerMap.size(), this::broadcastFreshEvents);
+        worldSpawnDetails = new LinkedList<>(world.getFreshEvents());
     }
 
     public void assignBombermenToPlayers() {
@@ -60,6 +63,9 @@ public class Room {
 
         for (Map.Entry<UserProfile, MessageSendable> entry : websocketMap.entrySet())
             socket.sendMessage(MessageCreator.createUserJoinedMessage(entry.getKey()));
+
+        for (WorldEvent spawnEvent: worldSpawnDetails)
+            transmit(spawnEvent, socket);
 
         websocketMap.put(user, socket);
         readinessMap.put(user, new Pair<>(false, false));
@@ -143,6 +149,20 @@ public class Room {
         }
     }
 
+    private void transmit(WorldEvent event, MessageSendable socket) {
+        switch (event.getEventType()) {
+            case ENTITY_UPDATED:
+                socket.sendMessage(MessageCreator.createObjectChangedMessage(event));
+                break;
+            case TILE_SPAWNED:
+                socket.sendMessage(MessageCreator.createObjectSpawnedMessage(event));
+                break;
+            case TILE_REMOVED:
+                socket.sendMessage(MessageCreator.createObjectDesrtoyedMessage(event));
+                break;
+        }
+    }
+
     private void transmitEventsOnWorldCreation() {
         isActive = true;
         broadcastFreshEvents();
@@ -150,17 +170,17 @@ public class Room {
 
     private void broadcastFreshEvents() {
         for (WorldEvent event : world.getFreshEvents())
-        switch (event.getEventType()) {
-            case ENTITY_UPDATED:
-                broadcast(MessageCreator.createObjectChangedMessage(event));
-                break;
-            case TILE_SPAWNED:
-                broadcast(MessageCreator.createObjectSpawnedMessage(event));
-                break;
-            case TILE_REMOVED:
-                broadcast(MessageCreator.createObjectDesrtoyedMessage(event));
-                break;
-        }
+            switch (event.getEventType()) {
+                case ENTITY_UPDATED:
+                    broadcast(MessageCreator.createObjectChangedMessage(event));
+                    break;
+                case TILE_SPAWNED:
+                    broadcast(MessageCreator.createObjectSpawnedMessage(event));
+                    break;
+                case TILE_REMOVED:
+                    broadcast(MessageCreator.createObjectDesrtoyedMessage(event));
+                    break;
+            }
     }
 
     // http://gafferongames.com/game-physics/fix-your-timestep/
@@ -209,6 +229,7 @@ public class Room {
     public static final int MINIMAL_TIME_STEP = 25; //ms
 
     private final Queue<WorldEvent> scheduledMovements = new ConcurrentLinkedQueue<>();
+    private List<WorldEvent> worldSpawnDetails = new LinkedList<>();       // worldHistory, heh?
 
     public static final int DEFAULT_CAPACITY = 4;
     public static final int TIME_TO_WAIT_AFTER_READY = 3000; // ms
