@@ -175,7 +175,10 @@ public class Room {
                     broadcast(MessageCreator.createObjectChangedMessage(event));
                     break;
                 case TILE_SPAWNED:
-                    broadcast(MessageCreator.createObjectSpawnedMessage(event));
+                    if (event.getEntityType() == EntityType.BOMBERMAN)
+                        broadcast(MessageCreator.createBombermanSpawnedMessage(event, playerMap.get(event.getEntityID()).getId()));
+                    else
+                        broadcast(MessageCreator.createObjectSpawnedMessage(event));
                     break;
                 case TILE_REMOVED:
                     broadcast(MessageCreator.createObjectDesrtoyedMessage(event));

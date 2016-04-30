@@ -1,6 +1,7 @@
 package bomberman.service;
 
 import bomberman.mechanics.WorldEvent;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 import rest.UserProfile;
@@ -38,14 +39,13 @@ public class MessageCreator {
     }
 
     @SuppressWarnings("OverlyComplexMethod")
-    public static String createObjectSpawnedMessage(WorldEvent event) {
+    public static String createObjectSpawnedMessage(WorldEvent event) throws IllegalArgumentException {
         final JSONObject messageTemplate = new JSONObject();
         final String objectType;
 
         switch (event.getEntityType()) {
             case BOMBERMAN:
-                objectType = "bomberman";
-                break;
+                throw new IllegalArgumentException();
             case DESTRUCTIBLE_WALL:
                 objectType = "destructible_wall";
                 break;
@@ -81,6 +81,18 @@ public class MessageCreator {
         messageTemplate.put("type", "object_spawned");
         messageTemplate.put("id", event.getEntityID());
         messageTemplate.put("object_type", objectType);
+        messageTemplate.put("x", event.getX());
+        messageTemplate.put("y", event.getY());
+
+        return messageTemplate.toString();
+    }
+
+    public static String createBombermanSpawnedMessage(WorldEvent event, int userID) throws IllegalArgumentException {
+        final JSONObject messageTemplate = new JSONObject();
+
+        messageTemplate.put("type", "bomberman_spawned");
+        messageTemplate.put("id", event.getEntityID());
+        messageTemplate.put("user_id", userID);
         messageTemplate.put("x", event.getX());
         messageTemplate.put("y", event.getY());
 
