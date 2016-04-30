@@ -9,6 +9,10 @@ import java.util.*;
 
 public class RoomManagerImpl implements RoomManager {
 
+    public RoomManagerImpl() {
+        createNewRoom("any");
+    }
+
     @Override
     public Room assignUserToFreeRoom(UserProfile user, MessageSendable socket) {
         removeUserFromRoom(user);

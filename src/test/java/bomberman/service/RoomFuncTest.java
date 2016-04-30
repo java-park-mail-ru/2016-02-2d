@@ -37,6 +37,9 @@ public class RoomFuncTest {
 
             final WebSocketConnectionCreator servlet = new WebSocketConnectionCreator(context);
 
+            room = roomManager.getAllRooms().get(0);
+            room.createNewWorld("non-exisitng-name-for-basic-world");
+
             for (UserProfile user : createUsers()) {
                 final WebSocketConnection connection = Constants.GameMechanicsMocks.createMockedConnection(user, servlet);
                 final Session session = Constants.GameMechanicsMocks.createMockedSession(
@@ -47,9 +50,6 @@ public class RoomFuncTest {
                 connection.onOpen(session);
             }
 
-            room = roomManager.getAllRooms().get(0);
-            room.createNewWorld("non-exisitng-name-for-basic-world");
-
             run();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -59,6 +59,7 @@ public class RoomFuncTest {
 
     @After
     public void wasUserJoinedAndBroadcastTested() {
+        assertEquals(AMOUNT_OF_JOINED_BROADCASTS, joinedBroadcasts.getCounts());
         assertEquals(true, joinedBroadcasts.isPassed());    // room.broadcast() was tested here too.
         casesSuccesfullyTested++;
         System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] user_joined was tested!");
@@ -66,6 +67,7 @@ public class RoomFuncTest {
 
     @After
     public void wasUserLeftTested() {
+        assertEquals(AMOUNT_OF_LEFT_BROADCASTS, leftBroadcasts.getCounts());
         assertEquals(true, leftBroadcasts.isPassed());
         casesSuccesfullyTested++;
         System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] user_left was tested!");
@@ -73,13 +75,15 @@ public class RoomFuncTest {
 
     @After
     public void wasUserReadyTested() {
+        assertEquals(AMOUNT_OF_USER_READY_BROADCASTS, readyBroadcasts.getCounts());
         assertEquals(true, readyBroadcasts.isPassed());
         casesSuccesfullyTested++;
         System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] user_state_changed was tested!");
     }
 
-    //@After
+    @After
     public void wasWorldTransmissionTested() {
+        assertEquals(AMOUNT_OF_WORLD_TILES_BROADCASTS, tileBroadcasts.getCounts());
         assertEquals(true, tileBroadcasts.isPassed());
         casesSuccesfullyTested++;
         System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] world creation was tested!");
@@ -87,9 +91,18 @@ public class RoomFuncTest {
 
     @After
     public void wasWorldCreated() {
+        assertEquals(AMNT_OF_WORLD_CREATED_BROADCASTS, worldCreatedBroadcasts.getCounts());
         assertEquals(true, worldCreatedBroadcasts.isPassed());
         casesSuccesfullyTested++;
         System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] world_created was tested!");
+    }
+
+    @After
+    public void wereUsersMoved() {
+        assertEquals(AMOUNT_OF_USER_MOVED_BROADCASTS, userMovedBroadcasts.getCounts());
+        assertEquals(true, userMovedBroadcasts.isPassed());
+        casesSuccesfullyTested++;
+        System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] user movements were partly tested.");
     }
 
     private void run() {
@@ -165,14 +178,16 @@ public class RoomFuncTest {
         else //noinspection StatementWithEmptyBody
             if (jsonnedMessage.getString("type").equals("user_state_changed") && jsonnedMessage.getBoolean("contentLoaded"))
         {/* ignore */}
-        else if (jsonnedMessage.getString("type").equals("object_spawned") && !worldCreatedBroadcasts.isPassed())
-            tileBroadcasts.count(jsonnedMessage);
+        else if ((jsonnedMessage.getString("type").equals("object_spawned") || jsonnedMessage.getString("type").equals("bomberman_spawned")) && !worldCreatedBroadcasts.isPassed())
+                tileBroadcasts.count(jsonnedMessage);
         else if (jsonnedMessage.getString("type").equals("world_created") && !worldCreatedBroadcasts.isPassed())
             worldCreatedBroadcasts.count(jsonnedMessage);
+        else if (jsonnedMessage.getString("type").equals("object_changed"))
+            userMovedBroadcasts.count(jsonnedMessage);
         else
         {
             System.out.println(message);
-            //throw new UnsupportedOperationException(); // For messages not implemented yet. :)
+            throw new UnsupportedOperationException(); // For messages not implemented yet. :)
         }
     }
 
@@ -217,6 +232,8 @@ public class RoomFuncTest {
 
         public boolean isPassed() {return isPassed;}
 
+        public int getCounts() {return currentAmountOfBroadcasts;}
+
         protected final int totalAmountOfBroadcasts;
         private final int usersToBeMentioned;
 
@@ -257,11 +274,14 @@ public class RoomFuncTest {
     private static final int AMOUNT_OF_WORLD_TILES_BROADCASTS = 512;  // (tile_counts+bombermen)*4 = (31*4 + 4)*4 for basic world
     private static BroadcastsCounter tileBroadcasts = new SimpleBroadcastsCounter(AMOUNT_OF_WORLD_TILES_BROADCASTS);
 
-    private static final int AMNT_OF_WORLD_CREATED_BROADCASTS = 4;  // (tile_counts+bombermen)*4 = (31*4 + 4)*4 for basic world
+    private static final int AMNT_OF_WORLD_CREATED_BROADCASTS = 4;  // for each player
     private static BroadcastsCounter worldCreatedBroadcasts = new SimpleBroadcastsCounter(AMNT_OF_WORLD_CREATED_BROADCASTS);
 
+    private static final int AMOUNT_OF_USER_MOVED_BROADCASTS = 128;  // IDKW...
+    private static BroadcastsCounter userMovedBroadcasts = new SimpleBroadcastsCounter(AMOUNT_OF_USER_MOVED_BROADCASTS);
 
-    private static final int TOTAL_CASES_TO_TEST = 5;
+
+    private static final int TOTAL_CASES_TO_TEST = 6;
     private int casesSuccesfullyTested = 0;
 
 }

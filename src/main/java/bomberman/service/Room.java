@@ -176,7 +176,7 @@ public class Room {
                     break;
                 case TILE_SPAWNED:
                     if (event.getEntityType() == EntityType.BOMBERMAN)
-                        broadcast(MessageCreator.createBombermanSpawnedMessage(event, playerMap.get(event.getEntityID()).getId()));
+                        broadcast(MessageCreator.createBombermanSpawnedMessage(event, (int) playerMap.get(event.getEntityID()).getId()));
                     else
                         broadcast(MessageCreator.createObjectSpawnedMessage(event));
                     break;
@@ -191,20 +191,27 @@ public class Room {
     private void updateIfNeeded() {
         if (!updateScheduled) {
             updateScheduled = true;
-            final long beforeUpdate = TimeHelper.now();
-            passScheduledMovementsToWorld();
-
-            world.runGameLoop(previousTickDuration);
-            final long gameLoopTook = TimeHelper.now() - beforeUpdate;
-
-            TimeHelper.sleepFor(MINIMAL_TIME_STEP - gameLoopTook);
-            broadcastFreshEvents();
-
-            previousTickDuration = beforeUpdate - TimeHelper.now();
-            logGameCycleTime(previousTickDuration);
-
-            updateScheduled = world.shouldBeUpdated();
+            update();
         }
+    }
+
+    private void update() {
+        final long beforeUpdate = TimeHelper.now();
+        passScheduledMovementsToWorld();
+
+        world.runGameLoop(previousTickDuration);
+        final long gameLoopTook = TimeHelper.now() - beforeUpdate;
+
+        TimeHelper.sleepFor(MINIMAL_TIME_STEP - gameLoopTook);
+        broadcastFreshEvents();
+
+        previousTickDuration = TimeHelper.now() - beforeUpdate;
+        logGameCycleTime(gameLoopTook);
+
+        updateScheduled = world.shouldBeUpdated();
+
+        if (updateScheduled)
+            update();
     }
 
     private void logGameCycleTime(long timeSpentWhileRunning) {
@@ -226,8 +233,8 @@ public class Room {
     private final Map<UserProfile, Pair<Boolean, Boolean>> readinessMap = new HashMap<>(4);
 
     World world;
-    private boolean isActive = false;
-    private boolean updateScheduled = false;
+    private volatile boolean isActive = false;
+    private volatile boolean updateScheduled = false;
     private long previousTickDuration = MINIMAL_TIME_STEP;
     public static final int MINIMAL_TIME_STEP = 25; //ms
 
