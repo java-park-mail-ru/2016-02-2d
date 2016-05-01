@@ -22,7 +22,7 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
                 room.scheduleBombermanMovement(user, message.getInt("x"), message.getInt("y"));
             return true;
         }
-        if (messageType.equals("bomb_placed")) {
+        if (messageType.equals("bomb_spawned")) {
             room.scheduleBombPlacement(user);
             return true;
         }

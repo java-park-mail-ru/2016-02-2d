@@ -105,10 +105,21 @@ public class RoomFuncTest {
         System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] user movements were partly tested.");
     }
 
+    @After
+    public void wasBombOrRayBroadcasted() {
+        assertEquals(AMOUNT_OF_BOMB_OR_RAY_BROADCASTS, bombOrRayBroadcasts.getCounts());
+        assertEquals(true, bombOrRayBroadcasts.isPassed());
+        casesSuccesfullyTested++;
+        System.out.println("[" + casesSuccesfullyTested + '/' + TOTAL_CASES_TO_TEST + "] user movements were partly tested.");
+    }
+
     private void run() {
         makeUsersReady();
         makeUsersHaveContentLoaded();
+        TimeHelper.sleepFor(4000);
+        placeThreeBombs();
         makeUsersMove();
+        TimeHelper.sleepFor(2000);
         // New code here!
         logUsersOut();
     }
@@ -145,7 +156,7 @@ public class RoomFuncTest {
 
         for (Pair<UserProfile, WebSocketConnection> entry : users) {
             final JSONObject message = new JSONObject().put("type", "object_changed").put("id", entry.getValue0().getId())
-                    .put("x", 0).put("y", 1); // move somewhere.
+                    .put("x", -1).put("y", -1); // move somewhere.
             entry.getValue1().onMessage(message.toString());
         }
 
@@ -154,6 +165,16 @@ public class RoomFuncTest {
                     .put("x", 0).put("y", 0); // stop
             entry.getValue1().onMessage(message.toString());
         }
+    }
+
+    private void placeThreeBombs() {
+        int numOfBombs = 0;
+        for (Pair<UserProfile, WebSocketConnection> entry : users)
+            if (numOfBombs != 3) {
+                final JSONObject message = new JSONObject().put("type", "bomb_spawned");
+                entry.getValue1().onMessage(message.toString());
+                numOfBombs++;
+            }
     }
 
     @SuppressWarnings("OverlyComplexMethod")    // This is just a switch("type") workaround.
@@ -179,15 +200,17 @@ public class RoomFuncTest {
             if (jsonnedMessage.getString("type").equals("user_state_changed") && jsonnedMessage.getBoolean("contentLoaded"))
         {/* ignore */}
         else if ((jsonnedMessage.getString("type").equals("object_spawned") || jsonnedMessage.getString("type").equals("bomberman_spawned")) && !worldCreatedBroadcasts.isPassed())
-                tileBroadcasts.count(jsonnedMessage);
+            tileBroadcasts.count(jsonnedMessage);
         else if (jsonnedMessage.getString("type").equals("world_created") && !worldCreatedBroadcasts.isPassed())
             worldCreatedBroadcasts.count(jsonnedMessage);
         else if (jsonnedMessage.getString("type").equals("object_changed"))
             userMovedBroadcasts.count(jsonnedMessage);
+        else if ((jsonnedMessage.getString("type").equals("object_spawned")) && worldCreatedBroadcasts.isPassed())
+            bombOrRayBroadcasts.count(jsonnedMessage);
         else
         {
             System.out.println(message);
-            throw new UnsupportedOperationException(); // For messages not implemented yet. :)
+            //throw new UnsupportedOperationException(); // For messages not implemented yet. :)
         }
     }
 
@@ -280,8 +303,11 @@ public class RoomFuncTest {
     private static final int AMOUNT_OF_USER_MOVED_BROADCASTS = 128;  // IDKW...
     private static BroadcastsCounter userMovedBroadcasts = new SimpleBroadcastsCounter(AMOUNT_OF_USER_MOVED_BROADCASTS);
 
+    private static final int AMOUNT_OF_BOMB_OR_RAY_BROADCASTS = 18; // (1 bomb + 5 rays) * 3
+    private static BroadcastsCounter bombOrRayBroadcasts = new SimpleBroadcastsCounter(AMOUNT_OF_BOMB_OR_RAY_BROADCASTS);
 
-    private static final int TOTAL_CASES_TO_TEST = 6;
+
+    private static final int TOTAL_CASES_TO_TEST = 7;
     private int casesSuccesfullyTested = 0;
 
 }

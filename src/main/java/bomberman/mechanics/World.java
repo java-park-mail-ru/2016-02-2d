@@ -292,10 +292,24 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     }
 
     private void explodeBomb(WorldEvent event) {
-        final int x = (int) Math.floor(event.getX());
-        final int y = (int) Math.floor(event.getY());
+        int x = -1;
+        int y = -1;
+        Ownable bomb = null;
 
-        final Ownable bomb = (Ownable) tileArray[y][x];
+        for (int j = 0; j < tileArray.length; ++j)
+            for (int i = 0; i < tileArray[0].length; ++i)
+                if (tileArray[j][i] != null && tileArray[j][i].getID() == event.getEntityID()) {
+                    x = i;
+                    y = j;
+                    bomb = (Ownable) tileArray[y][x];
+                }
+
+        if (bomb == null) {
+            LOGGER.error("Non-existent bomb #" + event.getEntityID() + " has exploded! O_o");
+            return;
+        }
+
+
         final Bomberman owner = bomb.getOwner();
         final int radius = owner.getBombExplosionRange();
 
