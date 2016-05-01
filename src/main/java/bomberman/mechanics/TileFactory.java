@@ -50,6 +50,10 @@ public class TileFactory {
                 return newBonusDecreaseExplosionDelay(id, list);
             case BONUS_DECBOMBSPAWN:
                 return newBonusDecreaseSpawnDelay(id, list);
+            case BONUS_INCSPEED:
+                return newBonusIncreaseBombermanSpeed(id, list);
+            case BONUS_MOREBOMBS:
+                return newBonusIncreaseMaxBombs(id, list);
             default:
                 throw new IllegalArgumentException();
         }
@@ -67,6 +71,8 @@ public class TileFactory {
                 throw new IllegalArgumentException();
         }
     }
+
+    public static int getBonusCount() { return BONUS_COUNT; }
 
     private ITile newUndestructibleWall(int id) {
         return new UndestructibleWall(id);
@@ -97,7 +103,14 @@ public class TileFactory {
     private ITile newBonusDecreaseExplosionDelay(int id, EventStashable list){
         return new ActionTile(id, new DecreaseBombExplosionDelayFunctor(list), new NullBehavior(list), EntityType.BONUS_DECBOMBFUSE);
     }
+    private ITile newBonusIncreaseBombermanSpeed(int id, EventStashable list){
+        return new ActionTile(id, new IncreaseSpeedFunctor(list), new NullBehavior(list), EntityType.BONUS_INCSPEED);
+    }
 
+    private ITile newBonusIncreaseMaxBombs(int id, EventStashable list) {
+        return new ActionTile(id, new IncreaseSpawnableBombAmountFunctor(list), new NullBehavior(list), EntityType.BONUS_INCSPEED);
+    }
 
     private static final TileFactory SINGLETON = new TileFactory();
+    private static final int BONUS_COUNT = 7;
 }

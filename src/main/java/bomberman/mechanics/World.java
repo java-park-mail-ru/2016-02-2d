@@ -1,6 +1,7 @@
 package bomberman.mechanics;
 
 import bomberman.mechanics.interfaces.*;
+import bomberman.mechanics.tiles.behaviors.BombRayBehavior;
 import bomberman.service.Room;
 import bomberman.service.TimeHelper;
 import org.apache.logging.log4j.LogManager;
@@ -134,10 +135,11 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         LOGGER.debug("Processing object_destroyed");
         if (event.getEntityType() == EntityType.BOMB)
             explodeBomb(event);
-        if (event.getEntityType() == EntityType.BOMB_RAY)
+        else if (event.getEntityType() == EntityType.BOMB_RAY)
             dissipateBombRay(event);
-        if (event.getEntityType() == EntityType.BOMBERMAN)
+        else if (event.getEntityType() == EntityType.BOMBERMAN)
             killBomberman(event);
+        else removeTileByID(event.getEntityID());
     }
 
     private void assignBombermanMovement(WorldEvent event) {
@@ -295,6 +297,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         {
             tileArray[y][x] = TileFactory.getInstance().getNewTile(EntityType.BOMB, this, actor, getNextID());
             actor.takeOnePlaceableBomb();
+            actor.resetBombTimer();
             selfUpdatingEntities++;
             processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB, tileArray[y][x].getID(), x, y));
         }
@@ -356,6 +359,8 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
             newEventQueue.add(new WorldEvent(EventType.TILE_REMOVED, tileArray[y][x].getType(), tileArray[y][x].getID(), x, y));
             tileArray[y][x] = null;
             result = true;      // if destructible, destroy tile, spawn ray and break loop.
+            if (new Random(new Date().hashCode()).nextInt() % 100 + 1 < PERCENT_TO_SPAWN_BONUS)
+                TimeHelper.executeAfter((int) (BombRayBehavior.BOMB_RAY_DURATION * MILLISECONDS_IN_SECOND) + 100, () -> spawnrandomBonus(x, y));
         }
         if (tileArray[y][x] == null) {
             tileArray[y][x] = TileFactory.getInstance().getNewTile(EntityType.BOMB_RAY, this, owner, getNextID());
@@ -380,6 +385,38 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         processedEventQueue.add(event);
     }
 
+    private void spawnrandomBonus(int x, int y) {
+        final EntityType type;
+        switch (new Random(new Date().hashCode()).nextInt() % TileFactory.getBonusCount()) {
+            case 0:
+                type = EntityType.BONUS_INCMAXRANGE;
+                break;
+            case 1:
+                type = EntityType.BONUS_DECBOMBSPAWN;
+                break;
+            case 2:
+                type = EntityType.BONUS_DECBOMBFUSE;
+                break;
+            case 3:
+                type = EntityType.BONUS_INCMAXHP;
+                break;
+            case 4:
+                type = EntityType.BONUS_INCSPEED;
+                break;
+            case 5:
+                type = EntityType.BONUS_HEAL;
+                break;
+            case 6:
+                type = EntityType.BONUS_MOREBOMBS;
+                break;
+            default:
+                return;
+        }
+
+        final ITile bonusTile = TileFactory.getInstance().getNewTile(type, this, getNextID());
+        tileArray[y][x] = bonusTile;
+    }
+
     @Nullable
     private Bomberman getBombermanByID(int id) {
         Bomberman result = null;
@@ -399,6 +436,13 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
             for (ITile tile: row)
                 if (tile != null)
                     tile.update(deltaT);
+    }
+
+    private void removeTileByID(int id) {
+        for (int y = 0; y < tileArray.length; ++y)
+            for (int x = 0; x < tileArray[0].length; ++x)
+                if (tileArray[y][x] != null && tileArray[y][x].getID() == id)
+                    tileArray[y][x] = null;
     }
 
     private final Queue<WorldEvent> newEventQueue = new LinkedList<>();       // Here are new events are stashed
@@ -421,6 +465,8 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
     private int selfUpdatingEntities = 0;
 
     public static final float ACTION_TILE_HANDICAP_DIAMETER = 0.05f; // 0.75-0.05 will
+    public static final int PERCENT_TO_SPAWN_BONUS = 33;
+    private static final float MILLISECONDS_IN_SECOND = 1000f;
 
     private static final Logger LOGGER = LogManager.getLogger(World.class);
 }
