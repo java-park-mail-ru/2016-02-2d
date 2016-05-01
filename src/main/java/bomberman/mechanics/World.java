@@ -191,7 +191,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         final float y = actor.getCoordinates()[1];
         final int iy = (int) Math.floor(y);
 
-        final float xSpeed = actor.getMaximalSpeed() * (float)(dx / Math.sqrt(dx * dx + dy * dy));
+        final float xSpeed = actor.getMaximalSpeed() * (float) (dx / Math.sqrt(dx * dx + dy * dy));
         final float ySpeed = actor.getMaximalSpeed() * (float) (dy / Math.sqrt(dx * dx + dy * dy));
 
         float predictedX = x + xSpeed * (deltaT / 1000f);
@@ -201,32 +201,32 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         final float xBoundary = (float) (Math.floor(x) + ((isMovingRight) ? 1 : 0));
         final float yBoundary = (float) (Math.floor(y) + ((isMovingDown) ? 1 : 0));
 
-        if (predictedX - radius < 0)
+        if (predictedX - radius < 0 && x < 1)        // If leaving world borders to left
             predictedX = radius;
-        else if (predictedX + radius > worldWidth)
+        else if (predictedX + radius > worldWidth && x > worldWidth - 1)  // If leaving world borders to right
             predictedX = worldWidth - radius;
-        else if (x - radius >= 1 && !isMovingRight && predictedX - radius < xBoundary) {
+        else if (!isMovingRight && predictedX - radius < xBoundary) {    // If moving left and entering left tile
                 final ITile leftTile = tileArray[iy][ix - 1];
                 if (leftTile != null && !leftTile.isPassable())
-                    predictedX = xBoundary + radius;
-                else shouldCheckXCorner = true; }
-        else if (x + radius >= worldWidth - 1 && isMovingRight && predictedX + radius > xBoundary) {
+                    predictedX = xBoundary + radius;        // If should collide, collide
+                else shouldCheckXCorner = true; }           // else it is possible bomberman will collide to a corner.
+        else if (isMovingRight && predictedX + radius > xBoundary) {
             final ITile rightTile = tileArray[iy][ix + 1];
             if (rightTile != null && !rightTile.isPassable())
                 predictedX = xBoundary - radius;
             else shouldCheckXCorner = true; }
 
-        if (predictedY - radius < 0)
+        if (predictedY - radius < 0 && y < 1)
             predictedY = radius;
-        else if (predictedY + radius > worldHeight)
+        else if (predictedY + radius > worldHeight && y > worldHeight - 1)
             predictedY = worldHeight - radius;
-        else if (x - radius >= 1 && !isMovingDown && predictedY - radius < yBoundary) {
-            final ITile upTile = tileArray[iy][ix - 1];
+        else if (!isMovingDown && predictedY - radius < yBoundary) {
+            final ITile upTile = tileArray[iy - 1][ix];
             if (upTile != null && !upTile.isPassable())
                 predictedY = yBoundary + radius;
             else shouldCheckYCorner = true; }
-        else if (x + radius >= worldHeight - 1 && isMovingDown && predictedY + radius > yBoundary) {
-            final ITile downTile = tileArray[iy][ix + 1];
+        else if (isMovingDown && predictedY + radius > yBoundary) {
+            final ITile downTile = tileArray[iy + 1][ix];
             if (downTile != null && !downTile.isPassable())
                 predictedY = yBoundary - radius;
             else shouldCheckYCorner = true; }
@@ -234,7 +234,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         if (shouldCheckXCorner && shouldCheckYCorner)
         {
             final ITile cornerTile = tileArray[iy + ((isMovingDown) ? 1 : -1)][ix + ((isMovingRight) ? 1 : -1)];
-            if (!cornerTile.isPassable())
+            if (cornerTile != null && !cornerTile.isPassable())
                 if (Math.abs(xSpeed) > Math.abs(ySpeed))
                     predictedY = y + ((isMovingDown) ? 1 : -1) * (float) Math.sqrt(radius * radius - (predictedX - x) * (predictedX - x));
                 else

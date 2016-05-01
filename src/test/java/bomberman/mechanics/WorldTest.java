@@ -80,7 +80,7 @@ public class WorldTest {
 
         final List<WorldEvent> expected = new TestConditions().addEventsandGetExpectedResults(variant);
 
-        world.runGameLoop(1000);
+        world.runGameLoop(10000);
 
         assertMovementsEqual(expected, world.getFreshEvents(), variant);
     }
@@ -90,7 +90,7 @@ public class WorldTest {
 
         final List<WorldEvent> expected = new TestConditions().addEventsandGetExpectedResults(variant);
 
-        world.runGameLoop(1000);
+        world.runGameLoop(10000);
 
         assertMovementsEqual(expected, world.getFreshEvents(), variant);
     }
@@ -101,7 +101,7 @@ public class WorldTest {
 
         final List<WorldEvent> expected = new TestConditions().addEventsandGetExpectedResults(variant);
 
-        world.runGameLoop(1000);
+        world.runGameLoop(10000);
 
         assertMovementsEqual(expected, world.getFreshEvents(), variant);
     }
@@ -111,7 +111,7 @@ public class WorldTest {
 
         final List<WorldEvent> expected = new TestConditions().addEventsandGetExpectedResults(variant);
 
-        world.runGameLoop(1000);
+        world.runGameLoop(10000);
 
         assertMovementsEqual(expected, world.getFreshEvents(), variant);
     }
@@ -122,7 +122,7 @@ public class WorldTest {
 
         final List<WorldEvent> expected = new TestConditions().addEventsandGetExpectedResults(variant);
 
-        world.runGameLoop(1000);
+        world.runGameLoop(10000);
 
         assertMovementsEqual(expected, world.getFreshEvents(), variant);
     }
@@ -132,7 +132,7 @@ public class WorldTest {
 
         final List<WorldEvent> expected = new TestConditions().addEventsandGetExpectedResults(variant);
 
-        world.runGameLoop(1000);
+        world.runGameLoop(10000);
 
         assertMovementsEqual(expected, world.getFreshEvents(), variant);
     }
