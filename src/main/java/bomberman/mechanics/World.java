@@ -208,6 +208,15 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         final float xBoundary = (float) (Math.floor(x) + ((isMovingRight) ? 1 : 0));
         final float yBoundary = (float) (Math.floor(y) + ((isMovingDown) ? 1 : 0));
 
+        for (Bomberman bomberman : bombermen)           // Low-quality inter-bomberman collision checker.
+            if (bomberman.getID() != actor.getID()) {
+                final float xDistance = Math.abs(x - bomberman.getCoordinates()[0]);
+                final float yDistance = Math.abs(y - bomberman.getCoordinates()[1]);
+                final float distance = (float) Math.sqrt(xDistance * xDistance + yDistance * yDistance);
+                if (distance <= radius * 2)
+                    return;
+            }
+
         if (predictedX - radius < 0 && x < 1)        // If leaving world borders to left
             predictedX = radius;
         else if (predictedX + radius > worldWidth && x > worldWidth - 1)  // If leaving world borders to right
