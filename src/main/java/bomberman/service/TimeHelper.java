@@ -23,8 +23,11 @@ public class TimeHelper {
     }
 
     public static void executeAfter(int ms, Executor action) {
-        sleepFor(ms);
-        action.execute();
+        final Thread thread = new Thread(() -> {
+            sleepFor(ms);
+            action.execute();
+        });
+        thread.start();
     }
 
     public interface Executor {

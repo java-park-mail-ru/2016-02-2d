@@ -116,6 +116,10 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         tryMovingBombermen(deltaT);
     }
 
+    public int getBombermanCount() {
+        return bombermen.size();
+    }
+
     private void processEntityUpdatedEvent(WorldEvent event) {
         LOGGER.debug("Processing object_updated");
         assignBombermanMovement(event);
@@ -130,8 +134,10 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         LOGGER.debug("Processing object_destroyed");
         if (event.getEntityType() == EntityType.BOMB)
             explodeBomb(event);
-        // TODO: Bomb Ray dissipation
-        // TODO: Bonuses pickup?
+        if (event.getEntityType() == EntityType.BOMB_RAY)
+            dissipateBombRay(event);
+        if (event.getEntityType() == EntityType.BOMBERMAN)
+            killBomberman(event);
     }
 
     private void assignBombermanMovement(WorldEvent event) {
@@ -293,6 +299,7 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         final Bomberman owner = bomb.getOwner();
         final int radius = owner.getBombExplosionRange();
 
+        tileArray[y][x] = null;
         owner.returnOnePlaceableBomb();
         selfUpdatingEntities--;
 
@@ -313,6 +320,8 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
             if (y + i < tileArray.length)
                 if (destroyTileAndSpawnRay(x, y + i, owner))
                     break;
+
+        processedEventQueue.add(event);
     }
 
     private boolean destroyTileAndSpawnRay(int x, int y, Bomberman owner) {
@@ -331,6 +340,21 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
             processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB_RAY, tileArray[y][x].getID(), x, y));
         }
         return result;
+    }
+
+    private void dissipateBombRay(WorldEvent event) {
+        final int x = (int) Math.floor(event.getX());
+        final int y = (int) Math.floor(event.getY());
+
+        tileArray[y][x] = null;
+        selfUpdatingEntities--;
+
+        processedEventQueue.add(event);
+    }
+
+    private void killBomberman(WorldEvent event) {
+        bombermen.remove(getBombermanByID(event.getEntityID()));
+        processedEventQueue.add(event);
     }
 
     @Nullable

@@ -120,7 +120,7 @@ public class Room {
     }
 
     public void scheduleBombermanMovement(UserProfile user, int dirX, int dirY) {
-        if (isActive) {
+        if (isActive && !isFinished) {
             final int bombermanID = reversePlayerMap.get(user);
 
             scheduledMovements.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermanID, dirX, dirY, TimeHelper.now()));  // TODO: Should TimeHelper.now() be client's timestamp?
@@ -130,7 +130,7 @@ public class Room {
     }
 
     public void scheduleBombPlacement(UserProfile user) {
-        if (isActive) {
+        if (isActive && !isFinished) {
             final int bombermanID = reversePlayerMap.get(user);
 
             scheduledMovements.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB, bombermanID, 0, 0));
@@ -187,7 +187,7 @@ public class Room {
     // http://gafferongames.com/game-physics/fix-your-timestep/
     // Variable delta time variant
     private void updateIfNeeded() {
-        if (!updateScheduled) {
+        if (!updateScheduled && !isFinished) {
             updateScheduled = true;
             update();
         }
@@ -208,7 +208,9 @@ public class Room {
 
         updateScheduled = world.shouldBeUpdated();
 
-        if (updateScheduled)
+        stopIfGameIsOver();
+
+        if (updateScheduled && !isFinished)
             update();
     }
 
@@ -217,6 +219,21 @@ public class Room {
             LOGGER.warn("Room " + this.toString() + " updated. It took " + timeSpentWhileRunning + " >= " + Room.MINIMAL_TIME_STEP + "! Fix the bugs!");
         else
             LOGGER.debug("Room " + this.toString() + " updated. It took " + timeSpentWhileRunning + " < " + Room.MINIMAL_TIME_STEP + ". OK.");
+    }
+
+    private void stopIfGameIsOver() {
+        if (world.getBombermanCount() == 1) {
+            TimeHelper.executeAfter(TIME_TO_WAIT_ON_GAME_OVER, () -> {
+                if (!isFinished && world.getBombermanCount() == 1) {
+                    isFinished = true;
+                    broadcast(MessageCreator.createGameOverMessage(playerMap.get(world.getBombermenIDs()[0])));
+                }
+            });
+        }
+        if (world.getBombermanCount() == 0) {
+            isFinished = true;
+            broadcast(MessageCreator.createGameOverMessage(null));
+        }
     }
 
     // I can't determine hashCode and equals methods. :(
@@ -232,6 +249,7 @@ public class Room {
 
     World world;
     private volatile boolean isActive = false;
+    private volatile boolean isFinished = false;
     private volatile boolean updateScheduled = false;
     private long previousTickDuration = MINIMAL_TIME_STEP;
     public static final int MINIMAL_TIME_STEP = 25; //ms
@@ -241,6 +259,7 @@ public class Room {
 
     public static final int DEFAULT_CAPACITY = 4;
     public static final int TIME_TO_WAIT_AFTER_READY = 3000; // ms
+    public static final int TIME_TO_WAIT_ON_GAME_OVER = 500; // ms
 
     private static final Logger LOGGER = LogManager.getLogger(Room.class);
 }
