@@ -41,6 +41,9 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
 
             return true;
         }
+        if (messageType.equals("ping")) {
+            return true;
+        }
         return false;
     }
 
