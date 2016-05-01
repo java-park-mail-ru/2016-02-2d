@@ -128,7 +128,8 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
     private void processTileRemovedEvent(WorldEvent event) {
         LOGGER.debug("Processing object_destroyed");
-        // TODO: Bomb explosion
+        if (event.getEntityType() == EntityType.BOMB)
+            explodeBomb(event);
         // TODO: Bomb Ray dissipation
         // TODO: Bonuses pickup?
     }
@@ -279,8 +280,57 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         {
             tileArray[y][x] = TileFactory.getInstance().getNewTile(EntityType.BOMB, this, actor, getNextID());
             actor.takeOnePlaceableBomb();
+            selfUpdatingEntities++;
             processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB, tileArray[y][x].getID(), x, y));
         }
+    }
+
+    private void explodeBomb(WorldEvent event) {
+        final int x = (int) Math.floor(event.getX());
+        final int y = (int) Math.floor(event.getY());
+
+        final Ownable bomb = (Ownable) tileArray[y][x];
+        final Bomberman owner = bomb.getOwner();
+        final int radius = owner.getBombExplosionRange();
+
+        owner.returnOnePlaceableBomb();
+        selfUpdatingEntities--;
+
+        for (int i = 0; i >= -radius; --i)
+            if (x + i > 0)
+                if (destroyTileAndSpawnRay(x + i, y, owner))
+                    break;
+        for (int i = 1; i <= radius; ++i)
+            if (x + i < tileArray[0].length)
+                if (destroyTileAndSpawnRay(x + i, y, owner))
+                    break;
+
+        for (int i = 0; i >= -radius; --i)
+            if (y + i > 0)
+                if (destroyTileAndSpawnRay(x, y + i, owner))
+                    break;
+        for (int i = 1; i <= radius; ++i)
+            if (y + i < tileArray.length)
+                if (destroyTileAndSpawnRay(x, y + i, owner))
+                    break;
+    }
+
+    private boolean destroyTileAndSpawnRay(int x, int y, Bomberman owner) {
+        if (tileArray[y][x] != null && !tileArray[y][x].isDestructible())   // break if undestuctible
+            return true;
+        boolean result = false;
+
+        if (tileArray[y][x] != null && tileArray[y][x].isDestructible()) {
+            newEventQueue.add(new WorldEvent(EventType.TILE_REMOVED, tileArray[y][x].getType(), tileArray[y][x].getID(), x, y));
+            tileArray[y][x] = null;
+            result = true;      // if destructible, destroy tile, spawn ray and break loop.
+        }
+        if (tileArray[y][x] == null) {
+            tileArray[y][x] = TileFactory.getInstance().getNewTile(EntityType.BOMB_RAY, this, owner, getNextID());
+            selfUpdatingEntities++;
+            processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB_RAY, tileArray[y][x].getID(), x, y));
+        }
+        return result;
     }
 
     @Nullable
