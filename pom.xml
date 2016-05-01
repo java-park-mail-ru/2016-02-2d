@@ -26,6 +26,7 @@
         <org.hibernate.version>5.1.0.Final</org.hibernate.version>
         <org.apache.logging.log4j>2.5</org.apache.logging.log4j>
         <org.eclipse.jetty.websocket>9.3.9.M0</org.eclipse.jetty.websocket>
+        <org.imgscalr>4.2</org.imgscalr>
     </properties>
 
     <build>
@@ -160,6 +161,11 @@
             <groupId>org.eclipse.jetty.websocket</groupId>
             <artifactId>websocket-server</artifactId>
             <version>${org.eclipse.jetty.websocket}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>${org.imgscalr}</version>
         </dependency>
 
     </dependencies>

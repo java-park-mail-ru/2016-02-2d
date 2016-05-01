@@ -96,7 +96,7 @@ public class UsersTest extends JerseyTest {
     @Override
     protected Application configure() {
         final AccountService mockedAccountService = Constants.RestApplicationMocks.getMockedAccountService();
-        users = new Users(mockedAccountService);
+        users = new Users(mockedAccountService, "static", 80, 80);
         return new ResourceConfig(UsersTest.class);
     }
 

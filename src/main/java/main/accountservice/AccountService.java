@@ -32,6 +32,8 @@ public interface AccountService {
     @Nullable
     UserProfile getUser(@NotNull String login);
 
+    void updateUserpic(UserProfile user, String path);
+
     void deleteUser(@NotNull Long id);
 
     void updateUser(UserProfile user);

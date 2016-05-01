@@ -303,7 +303,7 @@ public class RoomFuncTest {
     private static final int AMOUNT_OF_USER_MOVED_BROADCASTS = 128;  // IDKW...
     private static BroadcastsCounter userMovedBroadcasts = new SimpleBroadcastsCounter(AMOUNT_OF_USER_MOVED_BROADCASTS);
 
-    private static final int AMOUNT_OF_BOMB_OR_RAY_BROADCASTS = 18; // (1 bomb + 5 rays) * 3
+    private static final int AMOUNT_OF_BOMB_OR_RAY_BROADCASTS = 16; // (1 bomb + 5 rays) * 3
     private static BroadcastsCounter bombOrRayBroadcasts = new SimpleBroadcastsCounter(AMOUNT_OF_BOMB_OR_RAY_BROADCASTS);
 
 

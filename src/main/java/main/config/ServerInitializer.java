@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 
 import java.util.Map;
+import java.util.Properties;
 
 public class ServerInitializer {
     public ServerInitializer(@Nullable String propertyFile) {
@@ -37,6 +38,7 @@ public class ServerInitializer {
         context.put(DataBaseService.class, createNewDBS());
         context.put(AccountService.class, createNewAccountService((DataBaseService) context.get(DataBaseService.class)));
         context.put(RoomManager.class, createNewRoomManager());
+        context.put(Properties.class, getPropertiesMap());
 
         return context;
     }

@@ -2,21 +2,32 @@ package rest;
 
 import main.accountservice.AccountService;
 
+import javax.imageio.ImageIO;
 import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
 import main.UserTokenManager;
+import org.imgscalr.Scalr;
 import org.json.*;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 @Singleton
 @Path("user/")
 public class Users {
 
-    public Users(AccountService accountService) {
+    public Users(AccountService accountService, String staticPath, int userpicWidth, int userpicHeight) {
         this.accountService = accountService;
+        this.staticPath = staticPath;
+        this.userpicWidth = userpicWidth;
+        this.userpicHeight = userpicHeight;
     }
 
     @PUT
@@ -133,6 +144,48 @@ public class Users {
             return WebErrorManager.authorizationRequired("Not logged in!");
     }
 
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateUserPic(HttpServletRequest request, @Context HttpHeaders headers) {
+        if (accountService.hasSessionID(UserTokenManager.getSIDStringFromHeaders(headers))) {
+
+            final RenderedImage newUserpic;
+            try {
+                final File uploadedUserpic  = (File) request.getPart("userpic");
+                final BufferedImage resizableImage = ImageIO.read(uploadedUserpic);
+
+                newUserpic = Scalr.resize(resizableImage, userpicWidth, userpicHeight);
+
+            } catch (Exception ex) {
+                return WebErrorManager.badRequest("Could not parse uploaded file!");
+            }
+
+            final UserProfile user = accountService.getBySessionID(UserTokenManager.getSIDStringFromHeaders(headers));
+            if (user != null) {
+
+                final String path;
+                if (user.getUserpicPath() == null)
+                    path = staticPath + "user" + user.getId() + ".jpg";
+                else
+                    path = user.getUserpicPath();
+
+                final File currentUserpic = new File(path);
+                try {
+                    ImageIO.write(newUserpic, ".jpg", currentUserpic);
+                } catch (IOException ex) {
+                    WebErrorManager.serverError("Could not save new picture!");
+                }
+                accountService.updateUserpic(user, path);
+
+                return Response.ok(new JSONObject().put("userpic", user.getId()).toString()).build();
+            } else
+                return WebErrorManager.serverError("Session exists, but user does not!");
+
+        } else
+            return WebErrorManager.authorizationRequired("Not logged in!");
+    }
+
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -155,4 +208,7 @@ public class Users {
 
 
     private final AccountService accountService;
+    private final String staticPath;
+    private final int userpicWidth;
+    private final int userpicHeight;
 }

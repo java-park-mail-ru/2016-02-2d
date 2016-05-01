@@ -90,6 +90,12 @@ public class AccountServiceImpl implements AccountService {
         return registeredUsers.getTop10Users();
     }
 
+    @Override
+    public void updateUserpic(UserProfile user, String path) {
+        user.setUserpicPath(path);
+        registeredUsers.save(user.getData());
+    }
+
     private final Map<String, Long> activeUsers = new HashMap<>();
     private DataBaseService registeredUsers;
 }

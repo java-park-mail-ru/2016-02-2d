@@ -16,7 +16,7 @@ public class UserProfileTest {
     @Test
     public void testToJson() throws JSONException {
         final JSONObject userJson = new UserProfile(new UserProfileData("", "")).toJson();
-        final JSONObject fieldsJson = new JSONObject().put("id", -1).put("login", "").put("score", 0);
+        final JSONObject fieldsJson = new JSONObject().put("id", -1).put("login", "").put("score", 0).put("userpic_path", JSONObject.NULL);
 
         assertEquals(fieldsJson.toString(), userJson.toString());
     }

@@ -40,7 +40,13 @@ public class UserProfile {
     }
 
     public JSONObject toJson(){
-        return new JSONObject().put("id", data.getId()).put("login", data.getLogin()).put("score", data.getScore());
+        final JSONObject description = new JSONObject().put("id", data.getId()).put("login", data.getLogin()).put("score", data.getScore());
+        if (getUserpicPath() == null)
+            description.put("userpic_path", JSONObject.NULL);
+        else
+            description.put("userpic_path", getUserpicPath());
+
+        return description;
     }
 
     @NotNull
@@ -69,6 +75,15 @@ public class UserProfile {
     @NotNull
     public UserProfileData getData() {
         return data;
+    }
+
+    @Nullable
+    public String getUserpicPath() {
+        return data.getUserpicPath();
+    }
+
+    public void setUserpicPath(String path) {
+        data.setUserpicPath(path);
     }
 
 
