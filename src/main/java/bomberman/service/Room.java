@@ -5,13 +5,11 @@ import bomberman.mechanics.WorldEvent;
 import bomberman.mechanics.interfaces.EntityType;
 import bomberman.mechanics.interfaces.EventType;
 import main.websockets.MessageSendable;
-import main.websockets.WebSocketConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javatuples.Pair;
 import rest.UserProfile;
 
-import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -158,7 +156,7 @@ public class Room {
                 socket.sendMessage(MessageCreator.createObjectSpawnedMessage(event));
                 break;
             case TILE_REMOVED:
-                socket.sendMessage(MessageCreator.createObjectDesrtoyedMessage(event));
+                socket.sendMessage(MessageCreator.createObjectDestroyedMessage(event));
                 break;
         }
     }
@@ -181,7 +179,7 @@ public class Room {
                         broadcast(MessageCreator.createObjectSpawnedMessage(event));
                     break;
                 case TILE_REMOVED:
-                    broadcast(MessageCreator.createObjectDesrtoyedMessage(event));
+                    broadcast(MessageCreator.createObjectDestroyedMessage(event));
                     break;
             }
     }

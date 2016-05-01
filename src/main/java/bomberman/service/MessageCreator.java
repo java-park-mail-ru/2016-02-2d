@@ -29,7 +29,7 @@ public class MessageCreator {
         return messageTemplate.toString();
     }
 
-    public static String createObjectDesrtoyedMessage(WorldEvent event) {
+    public static String createObjectDestroyedMessage(WorldEvent event) {
         final JSONObject messageTemplate = new JSONObject();
 
         messageTemplate.put("type", "object_destroyed");
