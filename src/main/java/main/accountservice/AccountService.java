@@ -24,6 +24,9 @@ public interface AccountService {
     Collection<UserProfile> getAllUsers();
 
     @Nullable
+    Collection<UserProfile> getTop10Users();
+
+    @Nullable
     UserProfile getUser(@NotNull Long id);
 
     @Nullable

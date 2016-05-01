@@ -84,6 +84,12 @@ public class AccountServiceImpl implements AccountService {
         registeredUsers = dataBaseService;
     }
 
+    @Nullable
+    @Override
+    public Collection<UserProfile> getTop10Users() {
+        return registeredUsers.getTop10Users();
+    }
+
     private final Map<String, Long> activeUsers = new HashMap<>();
     private DataBaseService registeredUsers;
 }

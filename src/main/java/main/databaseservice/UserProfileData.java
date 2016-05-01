@@ -3,6 +3,7 @@ package main.databaseservice;
 import javax.persistence.*;
 import java.io.Serializable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Entity
 @Table(name = "users")
@@ -49,6 +50,15 @@ public class UserProfileData implements Serializable {
         score = newScore;
     }
 
+    @Nullable
+    public String getUserpicPath() {
+        return userpicPath;
+    }
+
+    public void setUserpicPath(@Nullable String userpicPath) {
+        this.userpicPath = userpicPath;
+    }
+
     @Override
     public int hashCode() {
         int hash = 13;
@@ -81,6 +91,10 @@ public class UserProfileData implements Serializable {
 
     @Column(name = "user_score")
     private int score = 0;
+
+    @Nullable
+    @Column(name = "user_pic_path")
+    private String userpicPath = null;
 
     private static final long serialVersionUID = -8706689714326132798L;
 

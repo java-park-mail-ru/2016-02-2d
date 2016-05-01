@@ -102,10 +102,27 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
             final UserProfileDataDAO dao = new UserProfileDataDAO(session);
 
             final LinkedList<UserProfile> result = new LinkedList<>();
-            dao.readAll().stream().forEach((data) -> result.add(new UserProfile(data)));    // TODO: investigate how to reduce instantiations!
+            dao.readAll().stream().forEach((data) -> result.add(new UserProfile(data)));
             return result;
         } catch (HibernateException ex) {
             final String reason = "Could not get all users somewhy! O_o";
+            LOGGER.error(reason, ex);
+            return null;
+        }
+
+    }
+
+    @Override
+    @Nullable
+    public Collection<UserProfile> getTop10Users() {
+        try (Session session = sessionFactory.openSession()) {
+            final UserProfileDataDAO dao = new UserProfileDataDAO(session);
+
+            final LinkedList<UserProfile> result = new LinkedList<>();
+            dao.readTop10().stream().forEach((data) -> result.add(new UserProfile(data)));
+            return result;
+        } catch (HibernateException ex) {
+            final String reason = "Could not get Top10 users somewhy! O_o";
             LOGGER.error(reason, ex);
             return null;
         }

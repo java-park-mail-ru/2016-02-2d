@@ -62,6 +62,12 @@ public class DataBaseServiceHashMapImpl implements DataBaseService {
         loginToUser.remove(deletingUser.getLogin());
     }
 
+    @Nullable
+    @Override
+    @Deprecated
+    public Collection<UserProfile> getTop10Users() {
+        return getUsers(); // I'm lazy.
+    }
 
     private final AtomicLong idCounter = new AtomicLong();
     private final Map<String, UserProfile> loginToUser = new HashMap<>();

@@ -68,6 +68,22 @@ public class Users {
     }
 
     @GET
+    @Path("top10")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTop10Users() {
+        final JSONArray responseJSON = new JSONArray();
+
+        final Collection<UserProfile> userData = accountService.getTop10Users();
+        if (userData == null)
+            return WebErrorManager.serverError();
+
+        for (UserProfile user : userData)
+            responseJSON.put(user.toJson());
+
+        return Response.ok(responseJSON.toString()).build();
+    }
+
+    @GET
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserByID(@PathParam("id") Long id) {
