@@ -101,9 +101,9 @@ public class Room {
         isEveryoneReady = isEveryoneReadyTMP;
         hasEveryoneLoadedContent = hasEveryoneLoadedContentTMP;
 
-        if (hasEveryoneLoadedContent && isEveryoneReady)
+        if (websocketMap.size() > 1 && hasEveryoneLoadedContent && isEveryoneReady)
             TimeHelper.executeAfter(TIME_TO_WAIT_AFTER_READY, ()->
-                {if (hasEveryoneLoadedContent && isEveryoneReady) {
+                {if (websocketMap.size() > 1 && hasEveryoneLoadedContent && isEveryoneReady) {
                     assignBombermenToPlayers();
                     transmitEventsOnWorldCreation();
                     broadcast(MessageCreator.createWorldCreatedMessage(world.getName(), world.getWidth(), world.getHeight()));
@@ -224,8 +224,8 @@ public class Room {
     // I can't determine hashCode and equals methods. :(
 
     private int capacity = DEFAULT_CAPACITY;
-    private boolean isEveryoneReady = false;
-    private boolean hasEveryoneLoadedContent = false;
+    private volatile boolean isEveryoneReady = false;
+    private volatile boolean hasEveryoneLoadedContent = false;
 
     private final Map<Integer, UserProfile> playerMap = new HashMap<>(4);
     private final Map<UserProfile, Integer> reversePlayerMap = new HashMap<>(4);
