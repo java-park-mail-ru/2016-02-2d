@@ -7,12 +7,13 @@ import org.json.JSONObject;
 import rest.UserProfile;
 
 public class MessageCreator {
-    public static String createUserJoinedMessage(UserProfile joinee) {
+    public static String createUserJoinedMessage(UserProfile joinee, boolean isReady, boolean contentLoaded) {
         final JSONObject messageTemplate = new JSONObject();
 
         messageTemplate.put("type", "user_joined");
         messageTemplate.put("id", joinee.getId());
-        messageTemplate.put("isReady", false);
+        messageTemplate.put("isReady", isReady);
+        messageTemplate.put("contentLoaded", contentLoaded);
         messageTemplate.put("name", joinee.getLogin());
         messageTemplate.put("score", joinee.getScore());
         messageTemplate.put("userpic_path", JSONObject.NULL);

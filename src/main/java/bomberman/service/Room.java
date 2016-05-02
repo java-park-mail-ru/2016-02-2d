@@ -60,14 +60,14 @@ public class Room {
         hasEveryoneLoadedContent = false;
 
         for (Map.Entry<UserProfile, MessageSendable> entry : websocketMap.entrySet())
-            socket.sendMessage(MessageCreator.createUserJoinedMessage(entry.getKey()));
+            socket.sendMessage(MessageCreator.createUserJoinedMessage(entry.getKey(), readinessMap.get(entry.getKey()).getValue0(), readinessMap.get(entry.getKey()).getValue0()));
 
         for (WorldEvent spawnEvent: worldSpawnDetails)
             transmit(spawnEvent, socket);
 
         websocketMap.put(user, socket);
         readinessMap.put(user, new Pair<>(false, false));
-        broadcast(MessageCreator.createUserJoinedMessage(user));
+        broadcast(MessageCreator.createUserJoinedMessage(user, readinessMap.get(user).getValue0(), readinessMap.get(user).getValue1()));
     }
 
     public boolean hasPlayer(UserProfile user) {
