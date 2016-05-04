@@ -5,6 +5,7 @@ import bomberman.mechanics.interfaces.EventType;
 import bomberman.mechanics.interfaces.ITile;
 import bomberman.mechanics.interfaces.IWorldBuilder;
 import bomberman.mechanics.worldbuilders.TextWorldBuilder;
+import bomberman.mechanics.worldbuilders.WorldData;
 import constants.Constants;
 import org.javatuples.Triplet;
 import org.junit.Before;
@@ -29,10 +30,10 @@ public class WorldTest {
             spawnLocations.setAccessible(true);
 
             final IWorldBuilder strangeWorldBuilder = new TextWorldBuilder(new File("data/movement-test-world-do-not-alter.txt"));
-            final Triplet<ITile[][], float[][], String> worldData = strangeWorldBuilder.getWorldData(world, world);
+            final WorldData worldData = strangeWorldBuilder.getWorldData(world, world);
 
-            tileArray.set(world, worldData.getValue0());
-            spawnLocations.set(world, worldData.getValue1());
+            tileArray.set(world, worldData.getTileArray());
+            spawnLocations.set(world, worldData.getSpawnList());
             world.getFreshEvents();
 
             world.spawnBombermen(BOMBERMEN_AMOUNT);

@@ -11,8 +11,8 @@ import javax.inject.Singleton;
 public class BasicWorldBuilder implements IWorldBuilder {
 
     @Override
-    public Triplet<ITile[][], float[][], String> getWorldData(UniqueIDManager supplicant, EventStashable eventQueue) {
-        return new Triplet<>(getITileArray(supplicant, eventQueue), getBombermenSpawns(), getName());
+    public WorldData getWorldData(UniqueIDManager supplicant, EventStashable eventQueue) {
+        return new WorldData(getITileArray(supplicant, eventQueue), getBombermenSpawns(), getName());
     }
 
     private ITile[][] getITileArray(UniqueIDManager supplicant, EventStashable eventQueue) {

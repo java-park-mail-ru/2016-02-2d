@@ -1,5 +1,6 @@
 package bomberman.mechanics.worldbuilders;
 
+import bomberman.mechanics.World;
 import bomberman.mechanics.interfaces.ITile;
 import bomberman.mechanics.tiles.DestructibleWall;
 import bomberman.mechanics.tiles.UndestructibleWall;
@@ -21,7 +22,7 @@ public class TextWorldBuilderTest {
 
     @Test
     public void testGetITileArrayAndSpawnsArray() throws Exception {
-        final ITile[][] actualTileArray = testWorldData.getValue0();
+        final ITile[][] actualTileArray = testWorldData.getTileArray();
         final ITile[][] expectedTileArray = new ITile[32][32];
 
         assertEquals(expectedTileArray.length, actualTileArray.length);
@@ -41,7 +42,7 @@ public class TextWorldBuilderTest {
 
     @Test
     public void testGetBombermenSpawns() throws Exception {
-        final float[][] actualSpawns = testWorldData.getValue1();
+        final float[][] actualSpawns = testWorldData.getSpawnList();
         final float[][] expectedSpawns = new float[][]{{31.5f, 31.5f}};
 
         assertEquals(expectedSpawns.length, actualSpawns.length);
@@ -53,10 +54,10 @@ public class TextWorldBuilderTest {
 
     @Test
     public void testGetName() throws Exception {
-        final String worldName = testWorldData.getValue2();
+        final String worldName = testWorldData.getName();
         assertEquals("Unit test", worldName);
     }
 
-    private static Triplet<ITile[][], float[][], String> testWorldData;
+    private static WorldData testWorldData;
 
 }

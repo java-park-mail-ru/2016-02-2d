@@ -1,7 +1,7 @@
 package bomberman.mechanics.interfaces;
 
-import org.javatuples.Triplet;
+import bomberman.mechanics.worldbuilders.WorldData;
 
 public interface IWorldBuilder {
-    Triplet<ITile[][], float[][], String> getWorldData(UniqueIDManager supplicant, EventStashable eventQueue);
+    WorldData getWorldData(UniqueIDManager supplicant, EventStashable eventQueue);
 }

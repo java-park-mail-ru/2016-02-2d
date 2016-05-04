@@ -2,6 +2,7 @@ package bomberman.mechanics;
 
 import bomberman.mechanics.interfaces.*;
 import bomberman.mechanics.tiles.behaviors.BombRayBehavior;
+import bomberman.mechanics.worldbuilders.WorldData;
 import bomberman.service.Room;
 import bomberman.service.TimeHelper;
 import org.apache.logging.log4j.LogManager;
@@ -17,12 +18,12 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
 
     public World(String worldType, int numberOfPlayers, Runnable actionOnWorldUpdated) {
         final IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(worldType);
-        final Triplet<ITile[][], float[][], String> worldData = builder.getWorldData(this, this);
+        final WorldData worldData = builder.getWorldData(this, this);
 
         actionOnUpdate = actionOnWorldUpdated;
-        tileArray = worldData.getValue0();
-        spawnLocations = worldData.getValue1();
-        name = worldData.getValue2();
+        tileArray = worldData.getTileArray();
+        spawnLocations = worldData.getSpawnList();
+        name = worldData.getName();
         registerNewTiles();
     }
 

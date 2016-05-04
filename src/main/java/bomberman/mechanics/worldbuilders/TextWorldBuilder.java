@@ -59,11 +59,11 @@ public class TextWorldBuilder implements IWorldBuilder {
     }
 
     @Override
-    public Triplet<ITile[][], float[][], String> getWorldData(UniqueIDManager newSupplicant, EventStashable newEventQueue) {
+    public WorldData getWorldData(UniqueIDManager newSupplicant, EventStashable newEventQueue) {
         supplicant = newSupplicant;
         eventQueue = newEventQueue;
         generateWorldFromText();
-        return new Triplet<>(tileArray, getBombermenSpawns(), name);
+        return new WorldData(tileArray, getBombermenSpawns(), name);
     }
 
     private float[][] getBombermenSpawns() {
