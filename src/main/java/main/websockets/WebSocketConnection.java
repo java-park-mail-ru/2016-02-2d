@@ -11,6 +11,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.jetbrains.annotations.TestOnly;
 import org.json.JSONException;
 import org.json.JSONObject;
 import rest.UserProfile;
@@ -57,6 +58,17 @@ public class WebSocketConnection implements MessageSendable{
         } catch (IOException ex) {
             LOGGER.error("Could not send message to user #" + user.getId() + " (\"" + user.getLogin() + "\")!", ex);
         }
+    }
+
+
+    @TestOnly
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    @TestOnly
+    public void setSession(Session session) {
+        this.session = session;
     }
 
     private final UserProfile user;

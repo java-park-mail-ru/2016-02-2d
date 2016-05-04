@@ -2,14 +2,15 @@ package constants;
 
 import bomberman.mechanics.Bomberman;
 import bomberman.mechanics.World;
-import bomberman.mechanics.interfaces.EventStashable;
-import bomberman.mechanics.interfaces.UniqueIDManager;
+import bomberman.service.Room;
 import main.accountservice.AccountService;
 import main.accountservice.AccountServiceImpl;
 import main.UserTokenManager;
+import main.config.Context;
 import main.websockets.MessageSendable;
 import main.websockets.WebSocketConnection;
 import main.websockets.WebSocketConnectionCreator;
+import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.common.WebSocketSession;
@@ -22,6 +23,7 @@ import rest.UserProfile;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.HttpCookie;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -31,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -129,8 +132,20 @@ public class Constants {
             return session;
         }
 
-        public static MessageSendable uniqueMockMessageSendable() {
-            return mock(MessageSendable.class);
+        public static MessageSendable createMessageSendable(UserProfile owner, Room room) {
+            final WebSocketConnection connection = new WebSocketConnection(owner, mock(Context.class));
+
+            try {
+                connection.setRoom(room);
+                connection.setSession(createMockedSession((invocationOnMock) -> {
+                    return null;
+                }));
+            } catch (IOException ex) {
+                System.err.println("Sure your code haven't changed?");
+                ex.printStackTrace();
+            }
+
+            return connection;
         }
 
         public static World getMockedWorld() {

@@ -10,15 +10,16 @@ import rest.UserProfile;
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class RoomTest {
 
     @BeforeClass
     public static void init() {
-        MOCK_USERS.add(new Pair<>(Constants.customMockUserProfile("u1", "p1", "sid1", 1), Constants.GameMechanicsMocks.uniqueMockMessageSendable()));
-        MOCK_USERS.add(new Pair<>(Constants.customMockUserProfile("u2", "p2", "sid2", 2), Constants.GameMechanicsMocks.uniqueMockMessageSendable()));
-        MOCK_USERS.add(new Pair<>(Constants.customMockUserProfile("u3", "p3", "sid3", 3), Constants.GameMechanicsMocks.uniqueMockMessageSendable()));
-        MOCK_USERS.add(new Pair<>(Constants.customMockUserProfile("u4", "p4", "sid4", 4), Constants.GameMechanicsMocks.uniqueMockMessageSendable()));
+        MOCK_USERS.add(new Pair<>(Constants.customMockUserProfile("u1", "p1", "sid1", 1), mock(MessageSendable.class)));
+        MOCK_USERS.add(new Pair<>(Constants.customMockUserProfile("u2", "p2", "sid2", 2), mock(MessageSendable.class)));
+        MOCK_USERS.add(new Pair<>(Constants.customMockUserProfile("u3", "p3", "sid3", 3), mock(MessageSendable.class)));
+        MOCK_USERS.add(new Pair<>(Constants.customMockUserProfile("u4", "p4", "sid4", 4), mock(MessageSendable.class)));
     }
 
     @Test
