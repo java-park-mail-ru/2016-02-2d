@@ -30,7 +30,7 @@ public class WorldTest {
             spawnLocations.setAccessible(true);
 
             final IWorldBuilder strangeWorldBuilder = new TextWorldBuilder(new File("data/movement-test-world-do-not-alter.txt"));
-            final WorldData worldData = strangeWorldBuilder.getWorldData(world, world);
+            final WorldData worldData = strangeWorldBuilder.getWorldData(world);
 
             tileArray.set(world, worldData.getTileArray());
             spawnLocations.set(world, worldData.getSpawnList());

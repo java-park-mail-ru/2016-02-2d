@@ -1,11 +1,12 @@
 package bomberman.mechanics.tiles.behaviors;
 
+import bomberman.mechanics.World;
 import bomberman.mechanics.WorldEvent;
 import bomberman.mechanics.interfaces.EventStashable;
 import bomberman.mechanics.interfaces.EventType;
 
 public class BombRayBehavior extends ActionTileAbstractBehavior {
-    public BombRayBehavior(EventStashable eventList) {
+    public BombRayBehavior(World eventList) {
         super(eventList);
         bombTimer = BOMB_RAY_DURATION;
         hasDissipated = false;

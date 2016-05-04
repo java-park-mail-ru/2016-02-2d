@@ -36,7 +36,7 @@ public class TileFactory {
     }
 
     // ATTENTION! FALSE WARNING! It is just not fully implemented yet. We will use much more parameters soon.
-    public ITile getNewTile(EntityType type, EventStashable list, int id) throws IllegalArgumentException {
+    public ITile getNewTile(EntityType type, World list, int id) throws IllegalArgumentException {
         //noinspection EnumSwitchStatementWhichMissesCases
         switch (type)
         {
@@ -59,7 +59,7 @@ public class TileFactory {
         }
     }
 
-    public ITile getNewTile(EntityType type, EventStashable list, Bomberman owner, int id) throws IllegalArgumentException {
+    public ITile getNewTile(EntityType type, World list, Bomberman owner, int id) throws IllegalArgumentException {
         //noinspection EnumSwitchStatementWhichMissesCases
         switch (type)
         {
@@ -81,33 +81,33 @@ public class TileFactory {
         return new DestructibleWall(id);
     }
 
-    private ITile newBomb(int id, EventStashable list, Bomberman owner) {
+    private ITile newBomb(int id, World list, Bomberman owner) {
         return new OwnedActionTile(id, new NullFunctor(list), new BombBehavior(list, owner.getBombExplosionDelay()), EntityType.BOMB, owner);
     }
-    private ITile newBombRay(int id, EventStashable list, Bomberman owner) {
+    private ITile newBombRay(int id, World list, Bomberman owner) {
         return new OwnedActionTile(id, new NullFunctor(list), new BombRayBehavior(list), EntityType.BOMB_RAY, owner);
     }
 
-    private ITile newBonusHealAllHP(int id, EventStashable list){
+    private ITile newBonusHealAllHP(int id, World list){
         return new ActionTile(id, new HealAllHPFunctor(list), new NullBehavior(list), EntityType.BONUS_HEAL);
     }
-    private ITile newBonusIncreaseMaxHP(int id, EventStashable list){
+    private ITile newBonusIncreaseMaxHP(int id, World list){
         return new ActionTile(id, new IncreaseMaxHPFunctor(list), new NullBehavior(list), EntityType.BONUS_INCMAXHP);
     }
-    private ITile newBonusIncreaseBombRange(int id, EventStashable list){
+    private ITile newBonusIncreaseBombRange(int id, World list){
         return new ActionTile(id, new IncreaseBombRangeFunctor(list), new NullBehavior(list), EntityType.BONUS_INCMAXRANGE);
     }
-    private ITile newBonusDecreaseSpawnDelay(int id, EventStashable list){
+    private ITile newBonusDecreaseSpawnDelay(int id, World list){
         return new ActionTile(id, new DecreaseBombSpawnDelayFunctor(list), new NullBehavior(list), EntityType.BONUS_DECBOMBSPAWN);
     }
-    private ITile newBonusDecreaseExplosionDelay(int id, EventStashable list){
+    private ITile newBonusDecreaseExplosionDelay(int id, World list){
         return new ActionTile(id, new DecreaseBombExplosionDelayFunctor(list), new NullBehavior(list), EntityType.BONUS_DECBOMBFUSE);
     }
-    private ITile newBonusIncreaseBombermanSpeed(int id, EventStashable list){
+    private ITile newBonusIncreaseBombermanSpeed(int id, World list){
         return new ActionTile(id, new IncreaseSpeedFunctor(list), new NullBehavior(list), EntityType.BONUS_INCSPEED);
     }
 
-    private ITile newBonusIncreaseMaxBombs(int id, EventStashable list) {
+    private ITile newBonusIncreaseMaxBombs(int id, World list) {
         return new ActionTile(id, new IncreaseSpawnableBombAmountFunctor(list), new NullBehavior(list), EntityType.BONUS_INCSPEED);
     }
 

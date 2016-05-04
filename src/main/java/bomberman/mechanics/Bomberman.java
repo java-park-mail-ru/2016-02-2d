@@ -13,7 +13,7 @@ import java.util.Queue;
 
 public class Bomberman implements IEntity {
 
-    public Bomberman(int id, EventStashable world) {
+    public Bomberman(int id, World world) {
         this.id = id;
         bombSpawnTimerInitValue = BOMB_SPAWN_TIMER_BASE_VALUE;
         bombExplosionRange = BOMB_BASE_RANGE;
@@ -186,7 +186,7 @@ public class Bomberman implements IEntity {
     @SuppressWarnings("InstanceVariableNamingConvention")
     private float y;                // "yCoordinate" -> 'y'
     private final int id;           // "uniqueIdentificationNumber" -> "id"
-    EventStashable world;
+    World world;
 
 
     // Health Description

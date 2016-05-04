@@ -1,11 +1,12 @@
 package bomberman.mechanics.tiles.functors;
 
 import bomberman.mechanics.Bomberman;
+import bomberman.mechanics.World;
 import bomberman.mechanics.interfaces.EventStashable;
 
 public class BombRayFunctor extends ActionTileAbstractFunctor {
 
-    public BombRayFunctor(EventStashable eventList) {
+    public BombRayFunctor(World eventList) {
         super(eventList);
     }
 

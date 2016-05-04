@@ -1,9 +1,10 @@
 package bomberman.mechanics.tiles.behaviors;
 
+import bomberman.mechanics.World;
 import bomberman.mechanics.interfaces.EventStashable;
 
 public class NullBehavior extends ActionTileAbstractBehavior {
-    public NullBehavior(EventStashable eventList) {
+    public NullBehavior(World eventList) {
         super(eventList);
     }
 

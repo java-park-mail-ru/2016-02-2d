@@ -32,7 +32,7 @@ public class TileFactoryTest {
     @Test
     public void testGetNewRangeBonus() throws Exception {
         final TileFactory factory = TileFactory.getInstance();
-        final ITile tile = factory.getNewTile(EntityType.BONUS_INCMAXRANGE, Constants.GameMechanicsMocks.getEventStashable(), 0);
+        final ITile tile = factory.getNewTile(EntityType.BONUS_INCMAXRANGE, Constants.GameMechanicsMocks.getMockedWorld(), 0);
 
         assertNotNull(tile);
         assertEquals(EntityType.BONUS_INCMAXRANGE, tile.getType());
@@ -41,7 +41,7 @@ public class TileFactoryTest {
     @Test
     public void testGetNewSpawnTimeBonus() throws Exception {
         final TileFactory factory = TileFactory.getInstance();
-        final ITile tile = factory.getNewTile(EntityType.BONUS_DECBOMBSPAWN, Constants.GameMechanicsMocks.getEventStashable(), 0);
+        final ITile tile = factory.getNewTile(EntityType.BONUS_DECBOMBSPAWN, Constants.GameMechanicsMocks.getMockedWorld(), 0);
 
         assertNotNull(tile);
         assertEquals(EntityType.BONUS_DECBOMBSPAWN, tile.getType());
@@ -50,7 +50,7 @@ public class TileFactoryTest {
     @Test
     public void testGetNewExplosionTimeBonus() throws Exception {
         final TileFactory factory = TileFactory.getInstance();
-        final ITile tile = factory.getNewTile(EntityType.BONUS_DECBOMBFUSE, Constants.GameMechanicsMocks.getEventStashable(), 0);
+        final ITile tile = factory.getNewTile(EntityType.BONUS_DECBOMBFUSE, Constants.GameMechanicsMocks.getMockedWorld(), 0);
 
         assertNotNull(tile);
         assertEquals(EntityType.BONUS_DECBOMBFUSE, tile.getType());
@@ -59,7 +59,7 @@ public class TileFactoryTest {
     @Test
     public void testGetNewBomb() throws Exception {
         final TileFactory factory = TileFactory.getInstance();
-        final ITile tile = factory.getNewTile(EntityType.BOMB, Constants.GameMechanicsMocks.getEventStashable(), Constants.GameMechanicsMocks.getBomberman(), 0);
+        final ITile tile = factory.getNewTile(EntityType.BOMB, Constants.GameMechanicsMocks.getMockedWorld(), Constants.GameMechanicsMocks.getBomberman(), 0);
 
         assertNotNull(tile);
         assertEquals(EntityType.BOMB, tile.getType());
@@ -69,7 +69,7 @@ public class TileFactoryTest {
     @Test
     public void testGetNewBombRay() throws Exception {
         final TileFactory factory = TileFactory.getInstance();
-        final ITile tile = factory.getNewTile(EntityType.BOMB_RAY, Constants.GameMechanicsMocks.getEventStashable(), Constants.GameMechanicsMocks.getBomberman(), 0);
+        final ITile tile = factory.getNewTile(EntityType.BOMB_RAY, Constants.GameMechanicsMocks.getMockedWorld(), Constants.GameMechanicsMocks.getBomberman(), 0);
 
         assertNotNull(tile);
         assertEquals(EntityType.BOMB_RAY, tile.getType());

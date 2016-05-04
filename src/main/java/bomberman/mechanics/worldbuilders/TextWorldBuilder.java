@@ -1,6 +1,7 @@
 package bomberman.mechanics.worldbuilders;
 
 import bomberman.mechanics.TileFactory;
+import bomberman.mechanics.World;
 import bomberman.mechanics.interfaces.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,9 +60,8 @@ public class TextWorldBuilder implements IWorldBuilder {
     }
 
     @Override
-    public WorldData getWorldData(UniqueIDManager newSupplicant, EventStashable newEventQueue) {
+    public WorldData getWorldData(World newSupplicant) {
         supplicant = newSupplicant;
-        eventQueue = newEventQueue;
         generateWorldFromText();
         return new WorldData(tileArray, getBombermenSpawns(), name);
     }
@@ -105,11 +105,11 @@ public class TextWorldBuilder implements IWorldBuilder {
             case 'd':
                 return TileFactory.getInstance().getNewTile(EntityType.DESTRUCTIBLE_WALL, supplicant.getNextID());
             case 'E':
-                return TileFactory.getInstance().getNewTile(EntityType.BONUS_DECBOMBFUSE, eventQueue, supplicant.getNextID());
+                return TileFactory.getInstance().getNewTile(EntityType.BONUS_DECBOMBFUSE, supplicant, supplicant.getNextID());
             case 'P':
-                return TileFactory.getInstance().getNewTile(EntityType.BONUS_DECBOMBSPAWN, eventQueue, supplicant.getNextID());
+                return TileFactory.getInstance().getNewTile(EntityType.BONUS_DECBOMBSPAWN, supplicant, supplicant.getNextID());
             case 'R':
-                return TileFactory.getInstance().getNewTile(EntityType.BONUS_INCMAXRANGE, eventQueue, supplicant.getNextID());
+                return TileFactory.getInstance().getNewTile(EntityType.BONUS_INCMAXRANGE, supplicant, supplicant.getNextID());
             case 'S':
                 spawnList.add(new float[]{x + 0.5f, y + 0.5f});
                 return null;
@@ -120,8 +120,7 @@ public class TextWorldBuilder implements IWorldBuilder {
     }
 
 
-    private UniqueIDManager supplicant;
-    private EventStashable eventQueue;
+    private World supplicant;
     private ITile[][] tileArray;
     private final Queue<float[]> spawnList = new LinkedList<>();
     private String name = "REPORT AS A BUG";

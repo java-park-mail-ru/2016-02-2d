@@ -14,11 +14,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class World implements EventStashable, UniqueIDManager, EventObtainable {
+public class World {
 
     public World(String worldType, int numberOfPlayers, Runnable actionOnWorldUpdated) {
         final IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(worldType);
-        final WorldData worldData = builder.getWorldData(this, this);
+        final WorldData worldData = builder.getWorldData(this);
 
         actionOnUpdate = actionOnWorldUpdated;
         tileArray = worldData.getTileArray();
@@ -27,17 +27,14 @@ public class World implements EventStashable, UniqueIDManager, EventObtainable {
         registerNewTiles();
     }
 
-    @Override
     public void addWorldEvent(WorldEvent worldEvent) {
         newEventQueue.add(worldEvent);
     }
 
-    @Override
     public int getNextID() {
         return uidManager.getAndIncrement();
     }
 
-    @Override
     public Queue<WorldEvent> getFreshEvents() {
         final Queue<WorldEvent> newQueue = new LinkedList<>(processedEventQueue);
         processedEventQueue.clear();

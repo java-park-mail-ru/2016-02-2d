@@ -2,6 +2,7 @@ package bomberman.mechanics.worldbuilders;
 
 
 import bomberman.mechanics.TileFactory;
+import bomberman.mechanics.World;
 import bomberman.mechanics.interfaces.*;
 import org.javatuples.Triplet;
 
@@ -11,11 +12,11 @@ import javax.inject.Singleton;
 public class BasicWorldBuilder implements IWorldBuilder {
 
     @Override
-    public WorldData getWorldData(UniqueIDManager supplicant, EventStashable eventQueue) {
-        return new WorldData(getITileArray(supplicant, eventQueue), getBombermenSpawns(), getName());
+    public WorldData getWorldData(World supplicant) {
+        return new WorldData(getITileArray(supplicant), getBombermenSpawns(), getName());
     }
 
-    private ITile[][] getITileArray(UniqueIDManager supplicant, EventStashable eventQueue) {
+    private ITile[][] getITileArray(World supplicant) {
         // Array has dimensions YxX because java multi-dimensional arrays are arrays of arrays.
         // This means [first][] bracket pair is number of array we want to access.
         // And [][second] bracket pair is true position of an element we want to access.

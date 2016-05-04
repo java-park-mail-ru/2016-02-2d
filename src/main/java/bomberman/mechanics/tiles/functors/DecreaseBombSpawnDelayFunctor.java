@@ -1,13 +1,14 @@
 package bomberman.mechanics.tiles.functors;
 
 import bomberman.mechanics.Bomberman;
+import bomberman.mechanics.World;
 import bomberman.mechanics.WorldEvent;
 import bomberman.mechanics.interfaces.EventStashable;
 import bomberman.mechanics.interfaces.EventType;
 
 public class DecreaseBombSpawnDelayFunctor extends ActionTileAbstractFunctor {
 
-    public DecreaseBombSpawnDelayFunctor(EventStashable eventList) {
+    public DecreaseBombSpawnDelayFunctor(World eventList) {
         super(eventList);
     }
 

@@ -1,6 +1,7 @@
 package constants;
 
 import bomberman.mechanics.Bomberman;
+import bomberman.mechanics.World;
 import bomberman.mechanics.interfaces.EventStashable;
 import bomberman.mechanics.interfaces.UniqueIDManager;
 import main.accountservice.AccountService;
@@ -132,14 +133,9 @@ public class Constants {
             return mock(MessageSendable.class);
         }
 
-        public static UniqueIDManager getUniqueIDManager() {
+        public static World getMockedWorld() {
             configure();
-            return uniqueIDManager;
-        }
-
-        public static EventStashable getEventStashable() {
-            configure();
-            return EVENT_STASHABLE;
+            return WORLD;
         }
 
         public static Bomberman getBomberman() {
@@ -150,15 +146,8 @@ public class Constants {
         private static void configure() {
             if (!isConfigured) {
 
-                //noinspection InnerClassTooDeeplyNested
-                uniqueIDManager = new UniqueIDManager() {
-                    @Override
-                    public int getNextID() {
-                        return mockedIDGenerator.getAndIncrement();
-                    }
-
-                    private AtomicInteger mockedIDGenerator = new AtomicInteger();
-                };
+                final AtomicInteger mockedIDGenerator = new AtomicInteger();
+                when(WORLD.getNextID()).thenReturn(mockedIDGenerator.getAndIncrement());
 
                 when(BOMBERMAN.getID()).thenReturn((int) USER_ID);
 
@@ -166,8 +155,7 @@ public class Constants {
             }
         }
 
-        private static UniqueIDManager uniqueIDManager = null;
-        private static final EventStashable EVENT_STASHABLE = mock(EventStashable.class);
+        private static final World WORLD = mock(World.class);
         private static final Bomberman BOMBERMAN = mock(Bomberman.class);
 
         private static boolean isConfigured = false;

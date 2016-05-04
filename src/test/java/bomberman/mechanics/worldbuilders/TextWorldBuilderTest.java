@@ -17,7 +17,7 @@ public class TextWorldBuilderTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        testWorldData = new TextWorldBuilder(new File("data/unit-test-world-do-not-alter.txt")).getWorldData(Constants.GameMechanicsMocks.getUniqueIDManager(), Constants.GameMechanicsMocks.getEventStashable());
+        testWorldData = new TextWorldBuilder(new File("data/unit-test-world-do-not-alter.txt")).getWorldData(Constants.GameMechanicsMocks.getMockedWorld());
     }
 
     @Test
