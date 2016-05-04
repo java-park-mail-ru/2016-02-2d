@@ -12,6 +12,7 @@ import rest.UserProfile;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Room {
 
@@ -116,11 +117,11 @@ public class Room {
     }
 
     public boolean isActive() {
-        return isActive;
+        return isActive.get();
     }
 
     public void scheduleBombermanMovement(UserProfile user, int dirX, int dirY) {
-        if (isActive && !isFinished) {
+        if (isActive.get() && !isFinished.get()) {
             final int bombermanID = reversePlayerMap.get(user);
 
             scheduledMovements.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermanID, dirX, dirY, TimeHelper.now()));  // TODO: Should TimeHelper.now() be client's timestamp?
@@ -130,7 +131,7 @@ public class Room {
     }
 
     public void scheduleBombPlacement(UserProfile user) {
-        if (isActive && !isFinished) {
+        if (isActive.get() && !isFinished.get()) {
             final int bombermanID = reversePlayerMap.get(user);
 
             scheduledMovements.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB, bombermanID, 0, 0));
@@ -162,7 +163,7 @@ public class Room {
     }
 
     private void transmitEventsOnWorldCreation() {
-        isActive = true;
+        isActive.set(true);
         broadcastFreshEvents();
     }
 
@@ -187,8 +188,8 @@ public class Room {
     // http://gafferongames.com/game-physics/fix-your-timestep/
     // Variable delta time variant
     private void updateIfNeeded() {
-        if (!updateScheduled && !isFinished) {
-            updateScheduled = true;
+        if (!updateScheduled.get() && !isFinished.get()) {
+            updateScheduled.set(true);
             update();
         }
     }
@@ -206,11 +207,11 @@ public class Room {
         previousTickDuration = TimeHelper.now() - beforeUpdate;
         logGameCycleTime(gameLoopTook);
 
-        updateScheduled = world.shouldBeUpdated();
+        updateScheduled.set(world.shouldBeUpdated());
 
         stopIfGameIsOver();
 
-        if (updateScheduled && !isFinished)
+        if (updateScheduled.get() && !isFinished.get())
             update();
     }
 
@@ -224,14 +225,14 @@ public class Room {
     private void stopIfGameIsOver() {
         if (world.getBombermanCount() == 1) {
             TimeHelper.executeAfter(TIME_TO_WAIT_ON_GAME_OVER, () -> {
-                if (!isFinished && world.getBombermanCount() == 1) {
-                    isFinished = true;
+                if (!isFinished.get() && world.getBombermanCount() == 1) {
+                    isFinished.set(true);
                     broadcast(MessageCreator.createGameOverMessage(playerMap.get(world.getBombermenIDs()[0])));
                 }
             });
         }
         if (world.getBombermanCount() == 0) {
-            isFinished = true;
+            isFinished.set(true);
             broadcast(MessageCreator.createGameOverMessage(null));
         }
     }
@@ -248,9 +249,9 @@ public class Room {
     private final Map<UserProfile, Pair<Boolean, Boolean>> readinessMap = new HashMap<>(4);
 
     World world;
-    private volatile boolean isActive = false;
-    private volatile boolean isFinished = false;
-    private volatile boolean updateScheduled = false;
+    private AtomicBoolean isActive = new AtomicBoolean(false);
+    private AtomicBoolean isFinished = new AtomicBoolean(false);
+    private AtomicBoolean updateScheduled = new AtomicBoolean(false);
     private long previousTickDuration = MINIMAL_TIME_STEP;
     public static final int MINIMAL_TIME_STEP = 25; //ms
 
