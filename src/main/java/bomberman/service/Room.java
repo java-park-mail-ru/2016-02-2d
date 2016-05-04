@@ -140,6 +140,10 @@ public class Room {
         }
     }
 
+    public World getWorld() {
+        return world;
+    }
+
     private void passScheduledMovementsToWorld() {
         WorldEvent event = scheduledMovements.poll();
         while (event != null) {
