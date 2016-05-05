@@ -1,9 +1,11 @@
 package main;
 
 import main.accountservice.AccountService;
+import main.config.Context;
 import rest.Sessions;
 import rest.Users;
 
+import javax.inject.Inject;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import java.util.HashSet;
@@ -15,8 +17,8 @@ import java.util.Set;
 public class RestApplication extends Application {
 
     public RestApplication() {
-        final AccountService accountService = (AccountService) Main.getGlobalContext().get(AccountService.class);
-        final Map<String, String> properties = (Map<String, String>) Main.getGlobalContext().get(Properties.class);
+        final AccountService accountService = (AccountService) context.get(AccountService.class);
+        final Map<String, String> properties = (Map<String, String>) context.get(Properties.class);
         objects.add(new Users(accountService, properties.get("static_path"), Integer.parseInt(properties.get("userpic_width")), Integer.parseInt(properties.get("userpic_height"))));
         objects.add(new Sessions(accountService));
     }
@@ -25,6 +27,9 @@ public class RestApplication extends Application {
     public Set<Object> getSingletons() {
         return objects;
     }
+
+    @Inject
+    private Context context;
 
     private final HashSet<Object> objects = new HashSet<>();
 }
