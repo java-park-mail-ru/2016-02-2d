@@ -3,7 +3,6 @@ package bomberman.mechanics;
 import bomberman.mechanics.interfaces.*;
 import bomberman.mechanics.tiles.behaviors.BombRayBehavior;
 import bomberman.mechanics.worldbuilders.WorldData;
-import bomberman.service.Room;
 import bomberman.service.TimeHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

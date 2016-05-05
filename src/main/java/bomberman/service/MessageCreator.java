@@ -1,7 +1,6 @@
 package bomberman.service;
 
 import bomberman.mechanics.WorldEvent;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 import rest.UserProfile;

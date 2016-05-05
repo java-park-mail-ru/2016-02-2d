@@ -1,7 +1,5 @@
 package bomberman.service;
 
-import main.accountservice.AccountService;
-import main.config.Context;
 import org.json.JSONObject;
 import rest.UserProfile;
 import rest.WebErrorManager;

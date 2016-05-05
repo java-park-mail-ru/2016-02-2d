@@ -12,7 +12,6 @@ import main.UserTokenManager;
 import org.imgscalr.Scalr;
 import org.json.*;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
