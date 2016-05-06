@@ -1,14 +1,18 @@
 package rest;
 
+import main.Main;
 import main.accountservice.AccountService;
 
 import javax.imageio.ImageIO;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
 
 import main.UserTokenManager;
+import main.config.*;
 import org.imgscalr.Scalr;
 import org.json.*;
 
@@ -17,16 +21,23 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Properties;
 
 @Singleton
 @Path("user/")
 public class Users {
 
-    public Users(AccountService accountService, String staticPath, int userpicWidth, int userpicHeight) {
-        this.accountService = accountService;
-        this.staticPath = staticPath;
-        this.userpicWidth = userpicWidth;
-        this.userpicHeight = userpicHeight;
+
+    private main.config.Context context = Main.context;
+
+    public Users() {
+        this.accountService = (AccountService) context.get(AccountService.class);
+        final Map<String, String> properties = (Map<String, String>) context.get(Properties.class);
+
+        this.staticPath = properties.get("static_path");
+        this.userpicWidth = Integer.parseInt(properties.get("userpic_width"));
+        this.userpicHeight = Integer.parseInt(properties.get("userpic_height"));
     }
 
     @PUT

@@ -19,7 +19,7 @@ import java.util.Map;
 @SuppressWarnings("OverlyBroadThrowsClause")
 public class Main {
     public static void main(String[] args) throws Exception {
-        Context context = null;
+        //Context context = null;
         Map<String, String> properties = null;
 
         try {
@@ -41,9 +41,9 @@ public class Main {
         LOGGER.info("Starting at " + port + " port");
         final Server server = new Server(port);
 
-        final ResourceConfig config = createNewInjectableConfig(context);
+        //final ResourceConfig config = createNewInjectableConfig(context);
 
-        final ServletHolder restServletHolder = new ServletHolder(new ServletContainer(config));
+        final ServletHolder restServletHolder = new ServletHolder(ServletContainer.class);
         restServletHolder.setInitParameter("javax.ws.rs.Application", "main.RestApplication");
 
         final ServletHolder websocketServletHolder = new ServletHolder(new WebSocketConnectionServlet(context, Integer.parseInt(properties.get("ws_timeout"))));
@@ -68,6 +68,8 @@ public class Main {
         });
         return rc;
     }
+
+    public static Context context;
 
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
 }
