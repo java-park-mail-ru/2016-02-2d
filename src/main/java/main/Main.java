@@ -30,7 +30,7 @@ public class Main {
 
             properties = serverInitializer.getPropertiesMap();
             context = serverInitializer.fillNewContext();
-            UserTokenManager.changeHost(properties.get(""));
+            UserTokenManager.changeHost(properties.get("host"));
 
         } catch (Exception ex) {
             LOGGER.fatal("Could not setup server. Aborting...", ex);
