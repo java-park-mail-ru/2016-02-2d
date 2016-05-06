@@ -3,6 +3,9 @@ package rest;
 import constants.Constants;
 import main.accountservice.AccountService;
 import main.UserTokenManager;
+import main.config.*;
+import main.config.Context;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.javatuples.Pair;
@@ -10,9 +13,16 @@ import org.javatuples.Triplet;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.*;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 public class UsersTest extends JerseyTest {
 
@@ -95,9 +105,35 @@ public class UsersTest extends JerseyTest {
     // A bit of magic, without which nothing works.
     @Override
     protected Application configure() {
-        final AccountService mockedAccountService = Constants.RestApplicationMocks.getMockedAccountService();
-        users = new Users(mockedAccountService, "static", 80, 80);
-        return new ResourceConfig(UsersTest.class);
+        try {
+            final AccountService mockedAccountService = Constants.RestApplicationMocks.getMockedAccountService();
+            final main.config.Context context = new Context();
+            context.put(AccountService.class, mockedAccountService);
+
+            final Map<String, String> properties = new HashMap<>(3);
+            properties.put("static_path", "static/");
+            properties.put("userpic_width", "80");
+            properties.put("userpic_height", "80");
+            context.put(Properties.class, properties);
+
+            final ResourceConfig config = new ResourceConfig(Sessions.class);
+            final HttpServletRequest request = mock(HttpServletRequest.class);
+            //noinspection AnonymousInnerClassMayBeStatic
+            config.register(new AbstractBinder() {
+                @Override
+                protected void configure() {
+                    bind(context);
+                    bind(request).to(HttpServletRequest.class);
+                }
+            });
+
+            config.getInstances();
+            return config;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail();
+        }
+        return null;
     }
 
     private static class RequestFactory {

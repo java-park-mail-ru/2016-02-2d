@@ -3,12 +3,15 @@ package rest;
 import main.accountservice.AccountService;
 
 import javax.imageio.ImageIO;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
 
 import main.UserTokenManager;
+import main.config.*;
 import org.imgscalr.Scalr;
 import org.json.*;
 
@@ -17,22 +20,33 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Properties;
 
 @Singleton
 @Path("user/")
 public class Users {
 
-    public Users(AccountService accountService, String staticPath, int userpicWidth, int userpicHeight) {
-        this.accountService = accountService;
-        this.staticPath = staticPath;
-        this.userpicWidth = userpicWidth;
-        this.userpicHeight = userpicHeight;
+    @Inject
+    private main.config.Context context;
+
+    public void setup() {
+        if (!wasSetUp) {
+            wasSetUp = true;
+            final Map<String, String> properties = (Map<String, String>) context.get(Properties.class);
+
+            this.accountService = (AccountService) context.get(AccountService.class);
+            this.staticPath = properties.get("static_path");
+            this.userpicWidth = Integer.parseInt(properties.get("userpic_width"));
+            this.userpicHeight = Integer.parseInt(properties.get("userpic_height"));
+        }
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createUser(String jsonString, @Context HttpHeaders headers){
+        setup();
         accountService.logoutUser(UserTokenManager.getSIDStringFromHeaders(headers));
 
         final JSONObject jsonRequest;
@@ -65,6 +79,7 @@ public class Users {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers() {
+        setup();
         final JSONArray responseJSON = new JSONArray();
 
         final Collection<UserProfile> userData = accountService.getAllUsers();
@@ -81,6 +96,7 @@ public class Users {
     @Path("top10")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTop10Users() {
+        setup();
         final JSONArray responseJSON = new JSONArray();
 
         final Collection<UserProfile> userData = accountService.getTop10Users();
@@ -97,6 +113,7 @@ public class Users {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserByID(@PathParam("id") Long id) {
+        setup();
         final UserProfile user = accountService.getUser(id);
         if(user == null){
             return WebErrorManager.accessForbidden();
@@ -109,6 +126,7 @@ public class Users {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateUser(String jsonString, @Context HttpHeaders headers){
+        setup();
         if (accountService.hasSessionID(UserTokenManager.getSIDStringFromHeaders(headers)))
         {
             final JSONObject jsonRequest;
@@ -147,6 +165,7 @@ public class Users {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateUserPic(HttpServletRequest request, @Context HttpHeaders headers) {
+        setup();
         if (accountService.hasSessionID(UserTokenManager.getSIDStringFromHeaders(headers))) {
 
             final RenderedImage newUserpic;
@@ -189,6 +208,7 @@ public class Users {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteUser(@PathParam("id") Long id, @Context HttpHeaders headers){
+        setup();
         if (accountService.hasSessionID(UserTokenManager.getSIDStringFromHeaders(headers)))
         {
             final UserProfile supplicant = accountService.getBySessionID(UserTokenManager.getSIDStringFromHeaders(headers));
@@ -206,8 +226,10 @@ public class Users {
     }
 
 
-    private final AccountService accountService;
-    private final String staticPath;
-    private final int userpicWidth;
-    private final int userpicHeight;
+    private AccountService accountService;
+    private String staticPath;
+    private int userpicWidth;
+    private int userpicHeight;
+
+    private boolean wasSetUp = false;
 }

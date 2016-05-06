@@ -3,6 +3,9 @@ package rest;
 import constants.Constants;
 import main.accountservice.AccountService;
 import main.UserTokenManager;
+import main.config.*;
+import main.config.Context;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
@@ -11,9 +14,12 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 import org.glassfish.jersey.test.JerseyTest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.*;
 
 public class SessionsTest extends JerseyTest {
@@ -88,10 +94,28 @@ public class SessionsTest extends JerseyTest {
 
     @Override
     protected Application configure() {
+        try {
+            final AccountService mockedAccountService = Constants.RestApplicationMocks.getMockedAccountService();
+            final main.config.Context context = new Context();
+            context.put(AccountService.class, mockedAccountService);
 
-        final AccountService mockedAccountService = Constants.RestApplicationMocks.getMockedAccountService();
-        sessions = new Sessions(mockedAccountService);
-        return new ResourceConfig(SessionsTest.class);
+            final ResourceConfig config = new ResourceConfig(Sessions.class);
+            final HttpServletRequest request = mock(HttpServletRequest.class);
+            //noinspection AnonymousInnerClassMayBeStatic
+            config.register(new AbstractBinder() {
+                @Override
+                protected void configure() {
+                    bind(context);
+                    bind(request).to(HttpServletRequest.class);
+                }
+            });
+
+            return config;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail();
+        }
+        return null;
     }
 
     private static class RequestFactory {

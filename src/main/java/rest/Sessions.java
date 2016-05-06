@@ -2,26 +2,37 @@ package rest;
 
 import main.accountservice.AccountService;
 import main.UserTokenManager;
+import main.config.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
 
 @Singleton
 @Path("session/")
 public class Sessions {
 
-    public Sessions(AccountService accountService) {
-        this.accountService = accountService;
+    @Inject
+    private main.config.Context context;
+
+    public void setup() {
+        if (!wasSetUp) {
+            wasSetUp = true;
+            this.accountService = (AccountService) context.get(AccountService.class);
+        }
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response loginUser(String jsonString, @Context HttpHeaders headers){
+        setup();
+
         accountService.logoutUser(UserTokenManager.getSIDStringFromHeaders(headers));
 
         final JSONObject jsonRequest;
@@ -59,6 +70,7 @@ public class Sessions {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response isAuthenticated(@Context HttpHeaders headers) {
+        setup();
         if (accountService.hasSessionID(UserTokenManager.getSIDStringFromHeaders(headers))) {
             final UserProfile currentUser = accountService.getBySessionID(UserTokenManager.getSIDStringFromHeaders(headers));
             if (currentUser != null)
@@ -72,6 +84,7 @@ public class Sessions {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     public Response logoutUser(@Context HttpHeaders headers){
+        setup();
         final String sessionID = UserTokenManager.getSIDStringFromHeaders(headers);
         if (accountService.logoutUser(sessionID))
             return WebErrorManager.okRaw("You have succesfully logged out.").cookie(UserTokenManager.getNewNullCookie()).build();
@@ -79,6 +92,6 @@ public class Sessions {
             return WebErrorManager.okRaw("You was not logged in.").cookie(UserTokenManager.getNewNullCookie()).build();
     }
 
-
-    private final AccountService accountService;
+    private AccountService accountService;
+    private boolean wasSetUp = false;
 }
