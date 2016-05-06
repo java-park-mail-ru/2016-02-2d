@@ -13,13 +13,17 @@ import rest.UserProfile;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Room {
 
-    public Room(){}
+    public Room(){
+        id = ID_COUNTER.getAndIncrement();
+    }
 
     public Room(int overrideCapacity) {
         capacity = overrideCapacity;
+        id = ID_COUNTER.getAndIncrement();
     }
 
     public void createNewWorld(String type)
@@ -241,8 +245,23 @@ public class Room {
         }
     }
 
-    // I can't determine hashCode and equals methods. :(
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        final Room room = (Room) o;
+
+        return id == room.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    private int id;
     private int capacity = DEFAULT_CAPACITY;
     private volatile boolean isEveryoneReady = false;
     private volatile boolean hasEveryoneLoadedContent = false;
@@ -267,4 +286,5 @@ public class Room {
     public static final int TIME_TO_WAIT_ON_GAME_OVER = 500; // ms
 
     private static final Logger LOGGER = LogManager.getLogger(Room.class);
+    private static final AtomicInteger ID_COUNTER = new AtomicInteger();
 }

@@ -1,13 +1,11 @@
 package rest;
 
-import main.Main;
 import main.accountservice.AccountService;
 import main.UserTokenManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -16,11 +14,8 @@ import javax.ws.rs.core.*;
 @Path("session/")
 public class Sessions {
 
-
-    private main.config.Context context = Main.context;
-
-    public Sessions() {
-        this.accountService = (AccountService) context.get(AccountService.class);;
+    public Sessions(AccountService accountService) {
+        this.accountService = accountService;
     }
 
     @PUT
