@@ -55,7 +55,7 @@ public class WebSocketConnection implements MessageSendable{
     public void sendMessage(String message) {
         try {
             session.getRemote().sendString(message);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             LOGGER.error("Could not send message to user #" + user.getId() + " (\"" + user.getLogin() + "\")!", ex);
         }
     }
