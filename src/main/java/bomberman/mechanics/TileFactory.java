@@ -84,7 +84,7 @@ public class TileFactory {
         return new OwnedActionTile(id, new NullFunctor(list), new BombBehavior(list, owner.getBombExplosionDelay()), EntityType.BOMB, owner);
     }
     private ITile newBombRay(int id, World list, Bomberman owner) {
-        return new OwnedActionTile(id, new NullFunctor(list), new BombRayBehavior(list), EntityType.BOMB_RAY, owner);
+        return new OwnedActionTile(id, new BombRayFunctor(list), new BombRayBehavior(list), EntityType.BOMB_RAY, owner);
     }
 
     private ITile newBonusHealAllHP(int id, World list){
