@@ -21,7 +21,7 @@ public class UserTokenManager {
 
     @NotNull
     public static NewCookie getNewCookieWithSessionID(String sessionID) {
-        return getNewCookie(sessionID, COOKIE_MAX_AGE_SECONDS);
+        return getNewCookie(sessionID, cookieMaxAge);
     }
 
     @NotNull
@@ -41,6 +41,11 @@ public class UserTokenManager {
             host = newHost;
     }
 
+    public static void changeMaxAge(int seconds) {
+        if (seconds > 0)
+            cookieMaxAge = seconds;
+    }
+
     private static NewCookie getNewCookie(@Nullable String sessionID, int maxAge) {
         String sessionID1 = sessionID;
         if (sessionID1 == null)
@@ -48,10 +53,13 @@ public class UserTokenManager {
         return new NewCookie(COOKIE_NAME, sessionID1, "/", host, "This cookie is used to authenticate users in the Bomberman game.", maxAge, false);
     }
 
-    private static String host = "localhost";
-
     public static final String COOKIE_NAME = "BOMBERMAN-SESSION-TOKEN";
 
-    private static final int COOKIE_MAX_AGE_SECONDS = 3600;
+    private static final int COOKIE_MAX_AGE_SECONDS = 3660; // 1 hour
     private static final String SALT = "Just some words.";
+
+    private static String host = "localhost";
+    private static int cookieMaxAge = COOKIE_MAX_AGE_SECONDS;
+
+
 }

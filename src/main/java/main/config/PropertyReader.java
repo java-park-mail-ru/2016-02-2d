@@ -124,6 +124,6 @@ public class PropertyReader {
     private static final String DEFAULT_PROPERTIES_FILENAME_DEFAULT = "cfg/default.properties";
     private static final String PROPERTIES_FILENAME_DEFAULT = "cfg/server.properties";
     private static final String[] NECESSARY_FIELDS = new String[]{"ip", "port", "db_type", "db_domain", "db_port", "db_name", "db_user", "db_password", "db_creation_method", "userpic_width", "userpic_height", "static_path"};
-    private static final String[] UNNECESSARY_FIELDS = new String[]{"db_name_debug", "db_user_debug", "db_password_debug", "db_creation_method_debug", "db_root_password", "ws_timeout", "host"};
+    private static final String[] UNNECESSARY_FIELDS = new String[]{"db_name_debug", "db_user_debug", "db_password_debug", "db_creation_method_debug", "db_root_password", "ws_timeout", "host", "cookie_max_age"};
 
 }

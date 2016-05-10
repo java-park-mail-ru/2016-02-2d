@@ -2,8 +2,6 @@ package main;
 
 import main.config.Context;
 import main.config.ServerInitializer;
-import main.websockets.WebSocketConnection;
-import main.websockets.WebSocketConnectionCreator;
 import main.websockets.WebSocketConnectionServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -13,13 +11,15 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import rest.Sessions;
+import rest.Users;
 
 import java.util.Map;
 
 @SuppressWarnings("OverlyBroadThrowsClause")
 public class Main {
     public static void main(String[] args) throws Exception {
-        //Context context = null;
+        Context context = null;
         Map<String, String> properties = null;
 
         try {
@@ -31,6 +31,7 @@ public class Main {
             properties = serverInitializer.getPropertiesMap();
             context = serverInitializer.fillNewContext();
             UserTokenManager.changeHost(properties.get("host"));
+            UserTokenManager.changeMaxAge(Integer.parseInt(properties.get("cookie_max_age")));
 
         } catch (Exception ex) {
             LOGGER.fatal("Could not setup server. Aborting...", ex);
@@ -41,10 +42,9 @@ public class Main {
         LOGGER.info("Starting at " + port + " port");
         final Server server = new Server(port);
 
-        //final ResourceConfig config = createNewInjectableConfig(context);
+        final ResourceConfig config = createNewInjectableConfig(context);
 
-        final ServletHolder restServletHolder = new ServletHolder(ServletContainer.class);
-        restServletHolder.setInitParameter("javax.ws.rs.Application", "main.RestApplication");
+        final ServletHolder restServletHolder = new ServletHolder(new ServletContainer(config));
 
         final ServletHolder websocketServletHolder = new ServletHolder(new WebSocketConnectionServlet(context, Integer.parseInt(properties.get("ws_timeout"))));
 
@@ -59,7 +59,7 @@ public class Main {
     }
 
     private static ResourceConfig createNewInjectableConfig(Context context) {
-        final ResourceConfig rc  = new ResourceConfig(RestApplication.class);
+        final ResourceConfig rc  = new ResourceConfig(Users.class, Sessions.class);
         rc.register(new AbstractBinder() {
             @Override
             protected void configure() {
@@ -68,8 +68,6 @@ public class Main {
         });
         return rc;
     }
-
-    public static Context context;
 
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
 }
