@@ -1,6 +1,7 @@
 package main.config;
 
 import bomberman.service.RoomManager;
+import bomberman.service.RoomManagerConcurImpl;
 import bomberman.service.RoomManagerImpl;
 import main.accountservice.AccountService;
 import main.accountservice.AccountServiceImpl;
@@ -78,16 +79,20 @@ public class ServerInitializer {
         return dataBaseService;
     }
 
-    private static AccountService createNewAccountService(DataBaseService dataBaseService) {
+    private AccountService createNewAccountService(DataBaseService dataBaseService) {
         LOGGER.info("Instantiating AccountService...");
         final AccountService accountService = new AccountServiceImpl(dataBaseService);
         LOGGER.info("OK.");
         return accountService;
     }
 
-    private static RoomManager createNewRoomManager() {
+    private RoomManager createNewRoomManager() {
         LOGGER.info("Instantiating RoomManager...");
-        final RoomManager roomManager = new RoomManagerImpl();
+        int numOfThreads = RoomManagerConcurImpl.DEFAULT_THREADS_AMOUNT;
+        if (reader.getPropertyMap().containsKey("game_threads_number"))
+            numOfThreads = Integer.parseInt(reader.getPropertyMap().get("game_threads_number"));
+
+        final RoomManager roomManager = new RoomManagerConcurImpl(numOfThreads);
         LOGGER.info("OK.");
         return roomManager;
     }
