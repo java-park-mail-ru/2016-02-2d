@@ -83,6 +83,9 @@ public class Room {
         if (websocketMap.containsKey(user)) {
             websocketMap.remove(user);
             readinessMap.remove(user);
+
+            recalculateReadiness();
+
             broadcast(MessageCreator.createUserLeftMessage(user));
         }
     }
@@ -92,8 +95,15 @@ public class Room {
         readinessMap.put(user, new Pair<>(isReady, contentLoaded));
         broadcast(MessageCreator.createUserStateChangedMessage(user, isReady, contentLoaded));
 
+        recalculateReadiness();
+        startGameIfEveryoneIsReady();
+
+    }
+
+    private void recalculateReadiness() {
         boolean isEveryoneReadyTMP = true;
         boolean hasEveryoneLoadedContentTMP = true;
+
         for (Map.Entry<UserProfile, Pair<Boolean, Boolean>> entry : readinessMap.entrySet())
         {
             if (!entry.getValue().getValue0())
@@ -104,15 +114,17 @@ public class Room {
         isEveryoneReady = isEveryoneReadyTMP;
         hasEveryoneLoadedContent = hasEveryoneLoadedContentTMP;
 
+    }
+
+    private void startGameIfEveryoneIsReady() {
         if (websocketMap.size() > 1 && hasEveryoneLoadedContent && isEveryoneReady)
             TimeHelper.executeAfter(TIME_TO_WAIT_AFTER_READY, ()->
-                {if (websocketMap.size() > 1 && hasEveryoneLoadedContent && isEveryoneReady) {
-                    assignBombermenToPlayers();
-                    transmitEventsOnWorldCreation();
-                    broadcast(MessageCreator.createWorldCreatedMessage(world.getName(), world.getWidth(), world.getHeight()));
-                }
+            {if (websocketMap.size() > 1 && hasEveryoneLoadedContent && isEveryoneReady) {
+                assignBombermenToPlayers();
+                transmitEventsOnWorldCreation();
+                broadcast(MessageCreator.createWorldCreatedMessage(world.getName(), world.getWidth(), world.getHeight()));
+            }
             });
-            // else break;
     }
 
     public void broadcast(String message) {
