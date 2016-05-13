@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class RoomManagerImpl implements RoomManager {
 
@@ -19,10 +20,8 @@ public class RoomManagerImpl implements RoomManager {
     public Room assignUserToFreeRoom(UserProfile user, MessageSendable socket) {
         removeUserFromRoom(user);
 
-        Room room = nonFilledRooms.peek();
+        final Room room = getNonFilledNotActiveRoom();
 
-        if (room == null)
-            room = createNewRoom("");
         room.insertPlayer(user, socket);
         playerWhereabouts.put(user, room);
         if (room.isFilled())
@@ -43,7 +42,7 @@ public class RoomManagerImpl implements RoomManager {
                 allRooms.remove(room);
                 nonFilledRooms.remove(room);
             } else
-                if (!room.isActive())
+                if (!room.isActive() && !nonFilledRooms.contains(room))
                     nonFilledRooms.add(room);
         }
     }
@@ -51,6 +50,19 @@ public class RoomManagerImpl implements RoomManager {
     @Override
     public List<Room> getAllRooms() {
         return allRooms;
+    }
+
+    private Room getNonFilledNotActiveRoom() {
+        while (true) {
+            final Room room = nonFilledRooms.peek();
+            if (room == null)
+                return createNewRoom("");
+            else
+                if (room.isActive())
+                    nonFilledRooms.remove();
+                else
+                    return room;
+        }
     }
 
     private Room createNewRoom(String worldType) {
@@ -79,8 +91,11 @@ public class RoomManagerImpl implements RoomManager {
             final long beforeUpdate = TimeHelper.now();
             boolean wereAnyRoomUpdated = false;
 
-            for (Room room: allRooms)
-                room.updateIfNeeded(previousTickDuration);
+            for (Room room: allRooms) {
+                boolean wasRoomUpdated = room.updateIfNeeded(previousTickDuration);
+                if (!wereAnyRoomUpdated && wasRoomUpdated)
+                    wereAnyRoomUpdated = true;
+            }
 
             final long totalUpdateTook = TimeHelper.now() - beforeUpdate;
 
@@ -105,7 +120,7 @@ public class RoomManagerImpl implements RoomManager {
             LOGGER.debug("RoomManager " + this.toString() + " updated. It took " + timeSpentWhileRunning + " < " + Room.MINIMAL_TIME_STEP + ". OK.");
     }
 
-    private final Queue<Room> nonFilledRooms = new LinkedList<>();
+    private final Queue<Room> nonFilledRooms = new ConcurrentLinkedQueue<>();
     private final ArrayList<Room> allRooms = new ArrayList<>();
     private final Map<UserProfile, Room> playerWhereabouts = new HashMap<>();
 
