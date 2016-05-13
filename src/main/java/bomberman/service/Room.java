@@ -1,5 +1,6 @@
 package bomberman.service;
 
+import bomberman.mechanics.Bomberman;
 import bomberman.mechanics.World;
 import bomberman.mechanics.WorldEvent;
 import bomberman.mechanics.interfaces.EntityType;
@@ -137,15 +138,14 @@ public class Room {
     }
 
     public void scheduleBombermanMovement(UserProfile user, int dirX, int dirY) {
-        if (isActive.get() && !isFinished.get()) {
+        if (isActive.get() && !isFinished.get() && reversePlayerMap.containsKey(user)) {
             final int bombermanID = reversePlayerMap.get(user);
-
-            scheduledActions.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermanID, dirX, dirY, TimeHelper.now()));  // TODO: Should TimeHelper.now() be client's timestamp?
+                scheduledActions.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermanID, dirX, dirY, TimeHelper.now()));  // TODO: Should TimeHelper.now() be client's timestamp?
         }
     }
 
     public void scheduleBombPlacement(UserProfile user) {
-        if (isActive.get() && !isFinished.get()) {
+        if (isActive.get() && !isFinished.get() && reversePlayerMap.containsKey(user)) {
             final int bombermanID = reversePlayerMap.get(user);
 
             scheduledActions.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB, bombermanID, 0, 0));
@@ -196,6 +196,8 @@ public class Room {
                         broadcast(MessageCreator.createObjectSpawnedMessage(event));
                     break;
                 case TILE_REMOVED:
+                    if (event.getEntityType() == EntityType.BOMBERMAN)
+                        removeBombermenMappingOnDie(event.getEntityID());
                     broadcast(MessageCreator.createObjectDestroyedMessage(event));
                     break;
             }
@@ -220,6 +222,13 @@ public class Room {
         world.runGameLoop(deltaT);
         broadcastFreshEvents();
         stopIfGameIsOver();
+    }
+
+    private void removeBombermenMappingOnDie(int bombermanID) {
+        final UserProfile user = playerMap.get(bombermanID);
+
+        playerMap.remove(bombermanID);
+        reversePlayerMap.remove(user);
     }
 
     private void stopIfGameIsOver() {
