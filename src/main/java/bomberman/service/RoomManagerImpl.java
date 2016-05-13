@@ -8,7 +8,9 @@ import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RoomManagerImpl implements RoomManager {
 
@@ -92,7 +94,7 @@ public class RoomManagerImpl implements RoomManager {
             boolean wereAnyRoomUpdated = false;
 
             for (Room room: allRooms) {
-                boolean wasRoomUpdated = room.updateIfNeeded(previousTickDuration);
+                final boolean wasRoomUpdated = room.updateIfNeeded(previousTickDuration);
                 if (!wereAnyRoomUpdated && wasRoomUpdated)
                     wereAnyRoomUpdated = true;
             }
@@ -121,8 +123,8 @@ public class RoomManagerImpl implements RoomManager {
     }
 
     private final Queue<Room> nonFilledRooms = new ConcurrentLinkedQueue<>();
-    private final ArrayList<Room> allRooms = new ArrayList<>();
-    private final Map<UserProfile, Room> playerWhereabouts = new HashMap<>();
+    private final CopyOnWriteArrayList<Room> allRooms = new CopyOnWriteArrayList<>();
+    private final Map<UserProfile, Room> playerWhereabouts = new ConcurrentHashMap<>();
 
     private boolean shouldBeInterrupted = false;
 

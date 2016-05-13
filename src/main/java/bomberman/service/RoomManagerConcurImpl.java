@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RoomManagerConcurImpl implements RoomManager {
 
@@ -67,7 +68,7 @@ public class RoomManagerConcurImpl implements RoomManager {
     public static final int DEFAULT_THREADS_AMOUNT = 4;
 
     private final RoomManager[] roomManagers;
-    private final Map<UserProfile, RoomManager> playerWhereabouts = new HashMap<>();
+    private final Map<UserProfile, RoomManager> playerWhereabouts = new ConcurrentHashMap<>();
 
     private static final Logger LOGGER = LogManager.getLogger(RoomManagerConcurImpl.class);
 }
