@@ -1,5 +1,6 @@
 package main;
 
+import bomberman.service.RoomManager;
 import main.config.Context;
 import main.config.ServerInitializer;
 import main.websockets.WebSocketConnectionServlet;
@@ -53,6 +54,8 @@ public class Main {
         contextHandler.addServlet(restServletHolder, "/api/*");
 
         server.setHandler(contextHandler);
+
+        new Thread((RoomManager) context.get(RoomManager.class)).start();
 
         server.start();
         server.join();

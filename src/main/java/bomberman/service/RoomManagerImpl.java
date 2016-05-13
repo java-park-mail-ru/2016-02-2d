@@ -2,6 +2,8 @@ package bomberman.service;
 
 import bomberman.mechanics.WorldBuilderForeman;
 import main.websockets.MessageSendable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
@@ -69,7 +71,45 @@ public class RoomManagerImpl implements RoomManager {
             return null;
     }
 
+    @Override
+    public void run() {
+        long previousTickDuration = Room.MINIMAL_TIME_STEP;
+
+        while (!shouldBeInterrupted){
+            final long beforeUpdate = TimeHelper.now();
+            boolean wereAnyRoomUpdated = false;
+
+            for (Room room: allRooms)
+                room.updateIfNeeded(previousTickDuration);
+
+            final long totalUpdateTook = TimeHelper.now() - beforeUpdate;
+
+            TimeHelper.sleepFor(Room.MINIMAL_TIME_STEP - totalUpdateTook);
+
+            previousTickDuration = TimeHelper.now() - beforeUpdate;
+            logGameCycleTime(totalUpdateTook);
+
+            if (!wereAnyRoomUpdated)
+                TimeHelper.sleepFor(100);
+        }
+    }
+
+    public void interruptNow() {
+        shouldBeInterrupted = true;
+    }
+
+    private void logGameCycleTime(long timeSpentWhileRunning) {
+        if (timeSpentWhileRunning >= Room.MINIMAL_TIME_STEP)
+            LOGGER.warn("RoomManager " + this.toString() + " updated. It took " + timeSpentWhileRunning + " >= " + Room.MINIMAL_TIME_STEP + "! Fix the bugs!");
+        else
+            LOGGER.debug("RoomManager " + this.toString() + " updated. It took " + timeSpentWhileRunning + " < " + Room.MINIMAL_TIME_STEP + ". OK.");
+    }
+
     private final Queue<Room> nonFilledRooms = new LinkedList<>();
     private final ArrayList<Room> allRooms = new ArrayList<>();
     private final Map<UserProfile, Room> playerWhereabouts = new HashMap<>();
+
+    private boolean shouldBeInterrupted = false;
+
+    private static final Logger LOGGER = LogManager.getLogger(RoomManagerImpl.class);
 }

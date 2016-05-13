@@ -128,9 +128,7 @@ public class Room {
         if (isActive.get() && !isFinished.get()) {
             final int bombermanID = reversePlayerMap.get(user);
 
-            scheduledMovements.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermanID, dirX, dirY, TimeHelper.now()));  // TODO: Should TimeHelper.now() be client's timestamp?
-
-            updateIfNeeded();
+            scheduledActions.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermanID, dirX, dirY, TimeHelper.now()));  // TODO: Should TimeHelper.now() be client's timestamp?
         }
     }
 
@@ -138,9 +136,7 @@ public class Room {
         if (isActive.get() && !isFinished.get()) {
             final int bombermanID = reversePlayerMap.get(user);
 
-            scheduledMovements.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB, bombermanID, 0, 0));
-
-            updateIfNeeded();
+            scheduledActions.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB, bombermanID, 0, 0));
         }
     }
 
@@ -149,10 +145,10 @@ public class Room {
     }
 
     private void passScheduledMovementsToWorld() {
-        WorldEvent event = scheduledMovements.poll();
+        WorldEvent event = scheduledActions.poll();
         while (event != null) {
             world.addWorldEvent(event);
-            event = scheduledMovements.poll();
+            event = scheduledActions.poll();
         }
     }
 
@@ -195,39 +191,23 @@ public class Room {
 
     // http://gafferongames.com/game-physics/fix-your-timestep/
     // Variable delta time variant
-    private void updateIfNeeded() {
-        if (!updateScheduled.get() && !isFinished.get()) {
-            updateScheduled.set(true);
-            update();
+    public boolean updateIfNeeded(long deltaT) {
+        if (isActive.get() && !isFinished.get() && willWorldStateChangeOnNextTick()) {
+            update(deltaT);
+            return true;
         }
+        return false;
     }
 
-    private void update() {
-        final long beforeUpdate = TimeHelper.now();
+    private boolean willWorldStateChangeOnNextTick() {
+        return world.shouldBeUpdated() || !scheduledActions.isEmpty();
+    }
+
+    private void update(long deltaT) {
         passScheduledMovementsToWorld();
-
-        world.runGameLoop(previousTickDuration);
-        final long gameLoopTook = TimeHelper.now() - beforeUpdate;
-
-        TimeHelper.sleepFor(MINIMAL_TIME_STEP - gameLoopTook);
+        world.runGameLoop(deltaT);
         broadcastFreshEvents();
-
-        previousTickDuration = TimeHelper.now() - beforeUpdate;
-        logGameCycleTime(gameLoopTook);
-
-        updateScheduled.set(world.shouldBeUpdated());
-
         stopIfGameIsOver();
-
-        if (updateScheduled.get() && !isFinished.get())
-            update();
-    }
-
-    private void logGameCycleTime(long timeSpentWhileRunning) {
-        if (timeSpentWhileRunning >= Room.MINIMAL_TIME_STEP)
-            LOGGER.warn("Room " + this.toString() + " updated. It took " + timeSpentWhileRunning + " >= " + Room.MINIMAL_TIME_STEP + "! Fix the bugs!");
-        else
-            LOGGER.debug("Room " + this.toString() + " updated. It took " + timeSpentWhileRunning + " < " + Room.MINIMAL_TIME_STEP + ". OK.");
     }
 
     private void stopIfGameIsOver() {
@@ -278,7 +258,7 @@ public class Room {
     private long previousTickDuration = MINIMAL_TIME_STEP;
     public static final int MINIMAL_TIME_STEP = 25; //ms
 
-    private final Queue<WorldEvent> scheduledMovements = new ConcurrentLinkedQueue<>();
+    private final Queue<WorldEvent> scheduledActions = new ConcurrentLinkedQueue<>();
     private List<WorldEvent> worldSpawnDetails = new LinkedList<>();       // worldHistory, heh?
 
     public static final int DEFAULT_CAPACITY = 4;
