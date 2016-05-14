@@ -325,9 +325,10 @@ public class World {
         tileArray[y][x] = null;
         owner.returnOnePlaceableBomb();
         selfUpdatingEntities--;
+        processedEventQueue.add(event);
 
         for (int i = 0; i >= -radius; --i)
-            if (x + i > 0)
+            if (x + i >= 0)
                 if (destroyTileAndSpawnRay(x + i, y, owner))
                     break;
         for (int i = 1; i <= radius; ++i)
@@ -336,24 +337,23 @@ public class World {
                     break;
 
         for (int i = 0; i >= -radius; --i)
-            if (y + i > 0)
+            if (y + i >= 0)
                 if (destroyTileAndSpawnRay(x, y + i, owner))
                     break;
         for (int i = 1; i <= radius; ++i)
             if (y + i < tileArray.length)
                 if (destroyTileAndSpawnRay(x, y + i, owner))
                     break;
-
-        processedEventQueue.add(event);
     }
 
     private boolean destroyTileAndSpawnRay(int x, int y, Bomberman owner) {
-        if (tileArray[y][x] != null && !tileArray[y][x].isDestructible())   // break if undestuctible
+        if (tileArray[y][x] != null && !tileArray[y][x].isDestructible())   // stop if undestuctible
             return true;
         boolean result = false;
 
         if (tileArray[y][x] != null && tileArray[y][x].isDestructible()) {
             newEventQueue.add(new WorldEvent(EventType.TILE_REMOVED, tileArray[y][x].getType(), tileArray[y][x].getID(), x, y));
+
             tileArray[y][x] = null;
             result = true;      // if destructible, destroy tile, spawn ray and break loop.
             if (new Random(new Date().hashCode()).nextInt() % 100 + 1 < PERCENT_TO_SPAWN_BONUS)
@@ -371,7 +371,9 @@ public class World {
         final int x = (int) Math.floor(event.getX());
         final int y = (int) Math.floor(event.getY());
 
-        tileArray[y][x] = null;
+        if (tileArray[y][x].getID() == event.getEntityID())     // Workaround for one bomb_ray exploding over second one.
+            tileArray[y][x] = null;
+
         selfUpdatingEntities--;
 
         processedEventQueue.add(event);
