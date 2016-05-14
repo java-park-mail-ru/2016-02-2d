@@ -432,7 +432,7 @@ public class World {
         for (ITile[] row: tileArray)
             for (ITile tile: row)
                 if (tile != null)
-                    tile.update(deltaT);
+                    tile.update( ((float)deltaT) / 1000 );
     }
 
     private void removeTileByID(int id) {
