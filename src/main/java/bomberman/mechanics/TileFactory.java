@@ -39,8 +39,8 @@ public class TileFactory {
         //noinspection EnumSwitchStatementWhichMissesCases
         switch (type)
         {
-            case BONUS_HEAL:
-                return newBonusHealAllHP(id, list);
+            //case BONUS_HEAL:
+            //    return newBonusHealAllHP(id, list);
             case BONUS_INCMAXHP:
                 return newBonusIncreaseMaxHP(id, list);
             case BONUS_INCMAXRANGE:
@@ -111,5 +111,5 @@ public class TileFactory {
     }
 
     private static final TileFactory SINGLETON = new TileFactory();
-    private static final int BONUS_COUNT = 7;
+    private static final int BONUS_COUNT = 6;
 }

@@ -67,6 +67,12 @@ public class MessageCreator {
             case BONUS_DECBOMBFUSE:
                 objectType = "bonus_decrease_bomb_explosion_delay";
                 break;
+            case BONUS_INCSPEED:
+                objectType = "bonus_increase_speed";
+                break;
+            case BONUS_MOREBOMBS:
+                objectType = "bonus_bombs_amount";
+                break;
             case BOMB:
                 objectType = "bomb";
                 break;
