@@ -14,7 +14,7 @@ public class ReceivedMessageHandler /*implements Runnable*/ {
     public boolean execute() {
         final String messageType = message.getString("type");
         if (messageType.equals("object_changed")) {
-            if( WebErrorManager.showFieldsNotPresent(message, "id", "x", "y") != null)
+            if( WebErrorManager.showFieldsNotPresent(message, "x", "y") != null)
                 return false;
             else
                 room.scheduleBombermanMovement(user, message.getInt("x"), message.getInt("y"));

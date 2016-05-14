@@ -36,8 +36,10 @@ public class WebSocketConnection implements MessageSendable{
             return;
         }
 
-        if (!new ReceivedMessageHandler(user, room, message).execute())
+        if (!new ReceivedMessageHandler(user, room, message).execute()) {
             sendMessage("Bad message type!");
+            LOGGER.error("Could not handle message from user #" + user.getId() + " (\"" + user.getLogin() + "\")! Message text: " + message);
+        }
     }
 
     @OnWebSocketConnect
