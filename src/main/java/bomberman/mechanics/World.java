@@ -278,7 +278,7 @@ public class World {
             try {
                 uniqueTiles.add(tileArray[uniqueCoordinate.getValue1()][uniqueCoordinate.getValue0()]);
             } catch (ArrayIndexOutOfBoundsException ex) {
-                LOGGER.error(ex);
+                LOGGER.error("Error while activating tiles. Bomberman #" + actor.getID() + " on x: " + x + ", y: " + y + ". Error on tile x: " + uniqueCoordinate.getValue0() + ", y: " + uniqueCoordinate.getValue1() + '.', ex);
             }
 
         for (ITile uniqueTile: uniqueTiles)
