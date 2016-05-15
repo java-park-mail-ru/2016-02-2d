@@ -275,7 +275,11 @@ public class World {
 
         final Set<ITile> uniqueTiles = new HashSet<>(4);
         for (Pair<Integer, Integer> uniqueCoordinate: uniqueTileCoordinates)
-            uniqueTiles.add(tileArray[uniqueCoordinate.getValue1()][uniqueCoordinate.getValue0()]);
+            try {
+                uniqueTiles.add(tileArray[uniqueCoordinate.getValue1()][uniqueCoordinate.getValue0()]);
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                LOGGER.error(ex);
+            }
 
         for (ITile uniqueTile: uniqueTiles)
             if (uniqueTile != null)
