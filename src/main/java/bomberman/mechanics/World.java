@@ -194,11 +194,8 @@ public class World {
         final int worldWidth = tileArray.length;
         final int worldHeight = tileArray[0].length;
 
-        final boolean isMovingRight = dx > 0;
-        final boolean isMovingDown = dy > 0;
-
-        boolean shouldCheckXCorner = false;
-        boolean shouldCheckYCorner = false;
+        boolean shouldCheckXCorner = true;
+        boolean shouldCheckYCorner = true;
 
         final float x = actor.getCoordinates()[0];
         final int ix = (int) Math.floor(x);
@@ -212,8 +209,12 @@ public class World {
         float predictedY = y + ySpeed * deltaT;
         final float radius = Bomberman.DIAMETER / 2;
 
-        final float xBoundary = (float) (Math.floor(x) + ((isMovingRight) ? 1 : 0));
-        final float yBoundary = (float) (Math.floor(y) + ((isMovingDown) ? 1 : 0));
+        float xBoundary = ix;
+        float yBoundary = iy;
+        if (dx == 0 && x + radius > xBoundary + 1 || dx > 0)
+            xBoundary++;
+        if (dy == 0 && y + radius > yBoundary + 1 || dy > 0)
+            yBoundary++;
 
         for (Bomberman bomberman : bombermen)           // Low-quality inter-bomberman collision checker.
             if (bomberman.getID() != actor.getID()) {
@@ -224,45 +225,85 @@ public class World {
                     return;
             }
 
+
         if (predictedX - radius < 0 && x < 1)        // If leaving world borders to left
             predictedX = radius;
         else if (predictedX + radius > worldWidth && x > worldWidth - 1)  // If leaving world borders to right
             predictedX = worldWidth - radius;
-        else if (!isMovingRight && predictedX - radius < xBoundary) {    // If moving left and entering left tile
+
+        else if (dx < 0 && predictedX - radius < xBoundary) {    // If moving left and entering left tile
                 final ITile leftTile = tileArray[iy][ix - 1];
-                if (leftTile != null && !leftTile.isPassable())
+                if (leftTile != null && !leftTile.isPassable()) {
                     predictedX = xBoundary + radius;        // If should collide, collide
-                else shouldCheckXCorner = true; }           // else it is possible bomberman will collide to a corner.
-        else if (isMovingRight && predictedX + radius > xBoundary) {
+                    shouldCheckXCorner = false;             // else it is possible bomberman will collide to a corner.
+                }
+        }
+        else if (dx > 0 && predictedX + radius > xBoundary) {
             final ITile rightTile = tileArray[iy][ix + 1];
-            if (rightTile != null && !rightTile.isPassable())
+            if (rightTile != null && !rightTile.isPassable()) {
                 predictedX = xBoundary - radius;
-            else shouldCheckXCorner = true; }
+                shouldCheckXCorner = false;
+            }
+        }
+
 
         if (predictedY - radius < 0 && y < 1)
             predictedY = radius;
         else if (predictedY + radius > worldHeight && y > worldHeight - 1)
             predictedY = worldHeight - radius;
-        else if (!isMovingDown && predictedY - radius < yBoundary) {
-            final ITile upTile = tileArray[iy - 1][ix];
-            if (upTile != null && !upTile.isPassable())
-                predictedY = yBoundary + radius;
-            else shouldCheckYCorner = true; }
-        else if (isMovingDown && predictedY + radius > yBoundary) {
-            final ITile downTile = tileArray[iy + 1][ix];
-            if (downTile != null && !downTile.isPassable())
-                predictedY = yBoundary - radius;
-            else shouldCheckYCorner = true; }
 
-        if (shouldCheckXCorner && shouldCheckYCorner)
-        {
-            final ITile cornerTile = tileArray[iy + ((isMovingDown) ? 1 : -1)][ix + ((isMovingRight) ? 1 : -1)];
-            if (cornerTile != null && !cornerTile.isPassable())
-                if (Math.abs(xSpeed) > Math.abs(ySpeed))
-                    predictedY = y + ((isMovingDown) ? 1 : -1) * (float) Math.sqrt(radius * radius - (predictedX - x) * (predictedX - x));
-                else
-                    predictedX = x + ((isMovingRight) ? 1 : -1)* (float) Math.sqrt(radius * radius - (predictedY - y) * (predictedY - y));
+        else if (dy < 0 && predictedY - radius < yBoundary) {
+            final ITile upTile = tileArray[iy - 1][ix];
+            if (upTile != null && !upTile.isPassable()) {
+                predictedY = yBoundary + radius;
+                shouldCheckYCorner = false;
+            }
         }
+        else if (dy > 0 && predictedY + radius > yBoundary) {
+            final ITile downTile = tileArray[iy + 1][ix];
+            if (downTile != null && !downTile.isPassable()) {
+                predictedY = yBoundary - radius;
+                shouldCheckYCorner = false;
+            }
+        }
+
+
+        if (shouldCheckXCorner && shouldCheckYCorner && false) {
+            final ITile cornerTile = tileArray[(int)yBoundary][(int)xBoundary];
+
+            if (cornerTile != null && !cornerTile.isPassable())
+                if (Math.abs(xSpeed) > Math.abs(ySpeed)) {
+                    final float avoidCornerY = (float) Math.sqrt(radius * radius - (predictedX - x) * (predictedX - x));
+                    int direction = 0;
+                    if (y + radius > yBoundary)
+                        direction = -1;
+                    if (y - radius < yBoundary)
+                        direction = 1;
+
+                    predictedY = y + avoidCornerY * direction;
+                }
+                else {
+                    final float avoidCornerX = (float) Math.sqrt(radius * radius - (predictedY - y) * (predictedY - y));
+                    int direction = 0;
+                    if (x + radius > xBoundary)
+                        direction = -1;
+                    if (x - radius < xBoundary)
+                        direction = 1;
+
+                    predictedX = x + avoidCornerX * direction;
+                }
+        }
+
+        // Sanity check if timestep is too big
+        if (predictedX - radius < 0)
+            predictedX = radius;
+        if (predictedX + radius > worldWidth)
+            predictedX = worldWidth - radius;
+
+        if (predictedY - radius < 0)
+            predictedY = radius;
+        if (predictedY + radius > worldHeight)
+            predictedY = worldHeight - radius;
 
         actor.setCoordinates(new float[]{ predictedX, predictedY});
         processedEventQueue.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, actor.getID(), predictedX, predictedY));
