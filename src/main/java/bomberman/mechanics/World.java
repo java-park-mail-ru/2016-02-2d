@@ -386,7 +386,7 @@ public class World {
                 if (destroyTileAndSpawnRay(x + i, y, owner))
                     break;
 
-        for (int i = 0; i >= -radius; --i)
+        for (int i = -1; i >= -radius; --i)
             if (y + i >= 0)
                 if (destroyTileAndSpawnRay(x, y + i, owner))
                     break;
@@ -402,9 +402,8 @@ public class World {
         boolean result = false;
 
         if (tileArray[y][x] != null && tileArray[y][x].isDestructible()) {
-            newEventQueue.add(new WorldEvent(EventType.TILE_REMOVED, tileArray[y][x].getType(), tileArray[y][x].getID(), x, y));
-            processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB_RAY, tileArray[y][x].getID(), x, y));
-            tileArray[y][x] = null;
+            while (tileArray[y][x] != null)
+                processTileRemovedEvent(new WorldEvent(EventType.TILE_REMOVED, tileArray[y][x].getType(), tileArray[y][x].getID(), x, y));
 
             result = true;      // if destructible, destroy tile, spawn ray and break loop.
             if (new Random(new Date().hashCode()).nextInt() % 100 + 1 < PERCENT_TO_SPAWN_BONUS)
@@ -419,14 +418,8 @@ public class World {
     }
 
     private void dissipateBombRay(WorldEvent event) {
-        final int x = (int) Math.floor(event.getX());
-        final int y = (int) Math.floor(event.getY());
-
-        if (tileArray[y][x] != null && tileArray[y][x].getID() == event.getEntityID())     // Workaround for one bomb_ray exploding over second one.
-            tileArray[y][x] = null;
-
+        removeTileByID(event.getEntityID());
         selfUpdatingEntities--;
-
         processedEventQueue.add(event);
     }
 
