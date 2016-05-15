@@ -34,7 +34,6 @@ public class TileFactory {
 
     }
 
-    // ATTENTION! FALSE WARNING! It is just not fully implemented yet. We will use much more parameters soon.
     public ITile getNewTile(EntityType type, World list, int id) throws IllegalArgumentException {
         //noinspection EnumSwitchStatementWhichMissesCases
         switch (type)

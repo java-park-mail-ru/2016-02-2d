@@ -214,8 +214,8 @@ public class Bomberman implements IEntity {
     public static final int BOMB_AMOUNT_INCREMENT = 1;
 
     private float maximalSpeed;
-    public static final float BASE_MAX_SPEED = 0.5f;    // 0.5 tile per second
-    public static final float MAX_SPEED_INCREMENT = 0.25f; // 0.5 → 0.75 → 1.0 → 1.25 → 1.5. Higher the harder. :)
+    public static final float BASE_MAX_SPEED = 3f;    // 3 tiles per second
+    public static final float MAX_SPEED_INCREMENT = 0.5f; // 3.0 → 3.5 → 4 → 4.5 → 5.5 → 6.0/ Higher the harder. :)
     private Triplet<Float, Float, Long> movementDirection = new Triplet<>(0f, 0f, 0L);
     private Queue<Triplet<Float, Float, Long>> movementsDuringTick = new LinkedList<>();
 
