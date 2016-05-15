@@ -300,6 +300,7 @@ public class World {
         }
     }
 
+    @SuppressWarnings("OverlyComplexMethod")
     private void explodeBomb(WorldEvent event) {
         int x = -1;
         int y = -1;
@@ -440,8 +441,10 @@ public class World {
     private void removeTileByID(int id) {
         for (int y = 0; y < tileArray.length; ++y)
             for (int x = 0; x < tileArray[0].length; ++x)
-                if (tileArray[y][x] != null && tileArray[y][x].getID() == id)
+                if (tileArray[y][x] != null && tileArray[y][x].getID() == id) {
+                    processedEventQueue.add(new WorldEvent(EventType.TILE_REMOVED, tileArray[y][x].getType(), tileArray[y][x].getID(), x, y));
                     tileArray[y][x] = null;
+                }
     }
 
     private final Queue<WorldEvent> newEventQueue = new LinkedList<>();       // Here are new events are stashed
