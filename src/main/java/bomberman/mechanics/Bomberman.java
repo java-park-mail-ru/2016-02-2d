@@ -179,7 +179,7 @@ public class Bomberman implements IEntity {
     }
 
     public boolean shouldBeUpdated() {
-        return movementDirection.getValue0() != 0 && movementDirection.getValue1() != 0;
+        return movementDirection.getValue0() != 0 || movementDirection.getValue1() != 0;
     }
 
     // In-World desctription

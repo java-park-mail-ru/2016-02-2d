@@ -284,7 +284,7 @@ public class World {
         final Set<ITile> uniqueTiles = new HashSet<>(4);
         for (Pair<Integer, Integer> uniqueCoordinate: uniqueTileCoordinates)
             uniqueTiles.add(tileArray[uniqueCoordinate.getValue1()][uniqueCoordinate.getValue0()]);
-        
+
         for (ITile uniqueTile: uniqueTiles)
             if (uniqueTile != null)
                 uniqueTile.applyAction(actor);
@@ -362,8 +362,9 @@ public class World {
 
         if (tileArray[y][x] != null && tileArray[y][x].isDestructible()) {
             newEventQueue.add(new WorldEvent(EventType.TILE_REMOVED, tileArray[y][x].getType(), tileArray[y][x].getID(), x, y));
-
+            processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB_RAY, tileArray[y][x].getID(), x, y));
             tileArray[y][x] = null;
+
             result = true;      // if destructible, destroy tile, spawn ray and break loop.
             if (new Random(new Date().hashCode()).nextInt() % 100 + 1 < PERCENT_TO_SPAWN_BONUS)
                 TimeHelper.executeAfter((int) (BombRayBehavior.BOMB_RAY_DURATION * MILLISECONDS_IN_SECOND) + 100, () -> spawnrandomBonus(x, y));
@@ -472,7 +473,7 @@ public class World {
 
     private final Runnable actionOnUpdate;
 
-    private int selfUpdatingEntities = 1;
+    private int selfUpdatingEntities = 0;
 
     public static final float ACTION_TILE_HANDICAP_DIAMETER = 0.05f; // 0.75-0.05 will
     public static final int PERCENT_TO_SPAWN_BONUS = 33;
