@@ -62,8 +62,8 @@ public class Room {
     }
 
     public void insertPlayer(UserProfile user, MessageSendable socket) {
-        isEveryoneReady = false;
-        hasEveryoneLoadedContent = false;
+        isEveryoneReady.getAndSet(false);
+        hasEveryoneLoadedContent.getAndSet(false);
 
         for (Map.Entry<UserProfile, MessageSendable> entry : websocketMap.entrySet())
             socket.sendMessage(MessageCreator.createUserJoinedMessage(entry.getKey(), readinessMap.get(entry.getKey()).getValue0(), readinessMap.get(entry.getKey()).getValue0()));
@@ -98,7 +98,6 @@ public class Room {
 
         recalculateReadiness();
         startGameIfEveryoneIsReady();
-
     }
 
     private void recalculateReadiness() {
@@ -112,20 +111,23 @@ public class Room {
             if (!entry.getValue().getValue1())
                 hasEveryoneLoadedContentTMP = false;
         }
-        isEveryoneReady = isEveryoneReadyTMP;
-        hasEveryoneLoadedContent = hasEveryoneLoadedContentTMP;
+        isEveryoneReady.compareAndSet(!isEveryoneReadyTMP, isEveryoneReadyTMP);
+        hasEveryoneLoadedContent.compareAndSet(!hasEveryoneLoadedContentTMP, hasEveryoneLoadedContentTMP);
 
     }
 
     private void startGameIfEveryoneIsReady() {
-        if (websocketMap.size() > 1 && hasEveryoneLoadedContent && isEveryoneReady)
-            TimeHelper.executeAfter(TIME_TO_WAIT_AFTER_READY, ()->
-            {if (websocketMap.size() > 1 && hasEveryoneLoadedContent && isEveryoneReady) {
-                assignBombermenToPlayers();
-                transmitEventsOnWorldCreation();
-                broadcast(MessageCreator.createWorldCreatedMessage(world.getName(), world.getWidth(), world.getHeight()));
-            }
+        if (websocketMap.size() > 1 && hasEveryoneLoadedContent.get() && isEveryoneReady.get()) {
+            TimeHelper.executeAfter(TIME_TO_WAIT_AFTER_READY, () ->
+            {
+                recalculateReadiness();
+                if (websocketMap.size() > 1 && hasEveryoneLoadedContent.get() && isEveryoneReady.get() && !isActive.get()) {
+                    assignBombermenToPlayers();
+                    transmitEventsOnWorldCreation();
+                    broadcast(MessageCreator.createWorldCreatedMessage(world.getName(), world.getWidth(), world.getHeight()));
+                }
             });
+        }
     }
 
     public void broadcast(String message) {
@@ -138,14 +140,14 @@ public class Room {
     }
 
     public void scheduleBombermanMovement(UserProfile user, int dirX, int dirY) {
-        if (isActive.get() && !isFinished.get() && reversePlayerMap.containsKey(user)) {
+        if (isActive.get() && !isFinished && reversePlayerMap.containsKey(user)) {
             final int bombermanID = reversePlayerMap.get(user);
                 scheduledActions.add(new WorldEvent(EventType.ENTITY_UPDATED, EntityType.BOMBERMAN, bombermanID, dirX, dirY, TimeHelper.now()));  // TODO: Should TimeHelper.now() be client's timestamp?
         }
     }
 
     public void scheduleBombPlacement(UserProfile user) {
-        if (isActive.get() && !isFinished.get() && reversePlayerMap.containsKey(user)) {
+        if (isActive.get() && !isFinished && reversePlayerMap.containsKey(user)) {
             final int bombermanID = reversePlayerMap.get(user);
 
             scheduledActions.add(new WorldEvent(EventType.TILE_SPAWNED, EntityType.BOMB, bombermanID, 0, 0));
@@ -179,7 +181,7 @@ public class Room {
     }
 
     private void transmitEventsOnWorldCreation() {
-        isActive.set(true);
+        isActive.compareAndSet(false, true);
         broadcastFreshEvents();
     }
 
@@ -206,7 +208,7 @@ public class Room {
     // http://gafferongames.com/game-physics/fix-your-timestep/
     // Variable delta time variant
     public boolean updateIfNeeded(long deltaT) {
-        if (isActive.get() && !isFinished.get() && willWorldStateChangeOnNextTick()) {
+        if (isActive.get() && !isFinished && willWorldStateChangeOnNextTick()) {
             update(deltaT);
             return true;
         }
@@ -234,14 +236,14 @@ public class Room {
     private void stopIfGameIsOver() {
         if (world.getBombermanCount() == 1) {
             TimeHelper.executeAfter(TIME_TO_WAIT_ON_GAME_OVER, () -> {
-                if (!isFinished.get() && world.getBombermanCount() == 1) {
-                    isFinished.set(true);
+                if (!isFinished && world.getBombermanCount() == 1) {
+                    isFinished = true;
                     broadcast(MessageCreator.createGameOverMessage(playerMap.get(world.getBombermenIDs()[0])));
                 }
             });
         }
         if (world.getBombermanCount() == 0) {
-            isFinished.set(true);
+            isFinished = true;
             broadcast(MessageCreator.createGameOverMessage(null));
         }
     }
@@ -264,8 +266,8 @@ public class Room {
 
     private int id;
     private int capacity = DEFAULT_CAPACITY;
-    private volatile boolean isEveryoneReady = false;
-    private volatile boolean hasEveryoneLoadedContent = false;
+    private AtomicBoolean isEveryoneReady = new AtomicBoolean(false);
+    private AtomicBoolean hasEveryoneLoadedContent = new AtomicBoolean(false);
 
     private final Map<Integer, UserProfile> playerMap = new HashMap<>(4);
     private final Map<UserProfile, Integer> reversePlayerMap = new HashMap<>(4);
@@ -274,9 +276,7 @@ public class Room {
 
     World world;
     private AtomicBoolean isActive = new AtomicBoolean(false);
-    private AtomicBoolean isFinished = new AtomicBoolean(false);
-    private AtomicBoolean updateScheduled = new AtomicBoolean(false);
-    private long previousTickDuration = MINIMAL_TIME_STEP;
+    private volatile boolean isFinished = false;
     public static final int MINIMAL_TIME_STEP = 25; //ms
 
     private final Queue<WorldEvent> scheduledActions = new ConcurrentLinkedQueue<>();
