@@ -200,8 +200,8 @@ public class World {
         final float xSpeed = actor.getMaximalSpeed() * (float) (dx / Math.sqrt(dx * dx + dy * dy));
         final float ySpeed = actor.getMaximalSpeed() * (float) (dy / Math.sqrt(dx * dx + dy * dy));
 
-        float predictedX = x + xSpeed * (deltaT / 1000f);
-        float predictedY = y + ySpeed * (deltaT / 1000f);
+        float predictedX = x + xSpeed * deltaT;
+        float predictedY = y + ySpeed * deltaT;
         final float radius = Bomberman.DIAMETER / 2;
 
         final float xBoundary = (float) (Math.floor(x) + ((isMovingRight) ? 1 : 0));
@@ -434,7 +434,7 @@ public class World {
         for (ITile[] row: tileArray)
             for (ITile tile: row)
                 if (tile != null)
-                    tile.update( ((float)deltaT) / 1000 );
+                    tile.update(deltaT);
     }
 
     private void removeTileByID(int id) {

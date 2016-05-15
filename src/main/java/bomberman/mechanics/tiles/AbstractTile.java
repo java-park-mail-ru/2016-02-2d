@@ -40,7 +40,7 @@ public abstract class AbstractTile implements ITile{
 
     // May be overriden later.
     @Override
-    public void update(float deltaTime) {
+    public void update(long deltaT) {
         // Nothing to do
     }
 

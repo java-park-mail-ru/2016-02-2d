@@ -28,8 +28,8 @@ public class ActionTile extends AbstractTile {
     }
 
     @Override
-    public void update(float deltaTime) {
-        behavior.behave(deltaTime);
+    public void update(long deltaT) {
+        behavior.behave(deltaT);
     }
 
     @Override

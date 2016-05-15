@@ -15,7 +15,7 @@ public abstract class ActionTileAbstractBehavior {
         owner = newOwner;
     }
 
-    public abstract void behave(float deltaTime);
+    public abstract void behave(long deltaT);
 
     protected ActionTile owner;
     protected final World eventList;

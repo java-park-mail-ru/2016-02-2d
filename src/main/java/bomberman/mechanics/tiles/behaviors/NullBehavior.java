@@ -8,7 +8,7 @@ public class NullBehavior extends ActionTileAbstractBehavior {
     }
 
     @Override
-    public void behave(float deltaTime) {
+    public void behave(long deltaT) {
         // T_T
     }
 }

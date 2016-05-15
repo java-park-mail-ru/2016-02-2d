@@ -12,8 +12,8 @@ public class BombRayBehavior extends ActionTileAbstractBehavior {
     }
 
     @Override
-    public void behave(float deltaTime) {
-        bombTimer -= deltaTime;
+    public void behave(long deltaT) {
+        bombTimer -= deltaT;
         if (bombTimer <= 0 && !hasDissipated)
         {
             eventList.addWorldEvent(new WorldEvent(EventType.TILE_REMOVED, owner.getType(), owner.getID(), 0, 0));
@@ -21,8 +21,8 @@ public class BombRayBehavior extends ActionTileAbstractBehavior {
         }
     }
 
-    private float bombTimer;
+    private long bombTimer;
     private boolean hasDissipated;
 
-    public static final float BOMB_RAY_DURATION = 1.0f;
+    public static final long BOMB_RAY_DURATION = 1000; // 1 second
 }

@@ -46,9 +46,9 @@ public class Bomberman implements IEntity {
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void update(long deltaT) {
         if (bombSpawnTimer >= 0)
-            bombSpawnTimer =- deltaTime;
+            bombSpawnTimer =- deltaT;
         // else it can be somewhere below zero. xD (if dT is about 1000 ms)
     }
 
@@ -124,7 +124,7 @@ public class Bomberman implements IEntity {
         bombExplosionDelay *= BOMB_EXPLOSION_DELAY_MULTIPLIER;
     }
 
-    public float getBombExplosionDelay() {
+    public long getBombExplosionDelay() {
         return bombExplosionDelay;
     }
 
@@ -195,17 +195,17 @@ public class Bomberman implements IEntity {
 
 
     // Bomb Description
-    private float bombSpawnTimer;
-    private float bombSpawnTimerInitValue;
-    public static final float BOMB_SPAWN_TIMER_BASE_VALUE = 2.5f; // 2.5 seconds
+    private long bombSpawnTimer;
+    private long bombSpawnTimerInitValue;
+    public static final long BOMB_SPAWN_TIMER_BASE_VALUE = 2500; // 2.5 seconds
     public static final float BOMB_SPAWN_TIMER_MULTIPLIER = 0.8f; // Will be reduced by 1/5 of current value evry time. i.e 2.5->2->1.6->1.28
 
     private int bombExplosionRange;
     public static final int BOMB_BASE_RANGE = 1;    // 1 tile
     public static final int BOMB_RANGE_INCREMENT = 1;
 
-    private float bombExplosionDelay;
-    public static final float BOMB_BASE_EXPLOSION_DELAY = 2.0f;    // 2 seconds
+    private long bombExplosionDelay;
+    public static final long BOMB_BASE_EXPLOSION_DELAY = 2000;    // 2 seconds
     public static final float BOMB_EXPLOSION_DELAY_MULTIPLIER = 0.8f;
 
     private int currentPlaceableBombs;
