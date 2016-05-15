@@ -152,9 +152,12 @@ public class World {
 
     // Movements are not at the same time, they have bomberman spawn priorities over timestap priorities! Bad, yet should work on small deltaT intervals.
     private void tryMovingBombermen(long deltaT) {
-        for (Bomberman bomberman: bombermen) {
+
+        for (Bomberman bomberman : bombermen) {
             Triplet<Float, Float, Long> previousMovement = bomberman.getMovementDirection();
+            final boolean wasUpdating = bomberman.shouldBeUpdated();
             long timeSpentMoving = 0;
+
             while (bomberman.getMovementsDuringTick().peek() != null) {
                 final Triplet<Float, Float, Long> movement = bomberman.getMovementsDuringTick().poll();
 
@@ -171,6 +174,11 @@ public class World {
             }
 
             bomberman.setMovementDirection(previousMovement);
+
+            if (!wasUpdating && bomberman.shouldBeUpdated())
+                selfUpdatingEntities++;
+            if (wasUpdating && !bomberman.shouldBeUpdated())
+                selfUpdatingEntities--;
 
             tryMovingBomberman(bomberman, previousMovement.getValue0(), previousMovement.getValue1(), deltaT - timeSpentMoving);
             activateTilesWereSteppedOn(bomberman);
@@ -376,7 +384,7 @@ public class World {
         final int x = (int) Math.floor(event.getX());
         final int y = (int) Math.floor(event.getY());
 
-        if (tileArray[y][x].getID() == event.getEntityID())     // Workaround for one bomb_ray exploding over second one.
+        if (tileArray[y][x] != null && tileArray[y][x].getID() == event.getEntityID())     // Workaround for one bomb_ray exploding over second one.
             tileArray[y][x] = null;
 
         selfUpdatingEntities--;
@@ -468,7 +476,7 @@ public class World {
 
     private final Runnable actionOnUpdate;
 
-    private int selfUpdatingEntities = 0;
+    private int selfUpdatingEntities = 1;
 
     public static final float ACTION_TILE_HANDICAP_DIAMETER = 0.05f; // 0.75-0.05 will
     public static final int PERCENT_TO_SPAWN_BONUS = 33;
