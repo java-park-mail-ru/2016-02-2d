@@ -283,12 +283,8 @@ public class World {
 
         final Set<ITile> uniqueTiles = new HashSet<>(4);
         for (Pair<Integer, Integer> uniqueCoordinate: uniqueTileCoordinates)
-            try {
-                uniqueTiles.add(tileArray[uniqueCoordinate.getValue1()][uniqueCoordinate.getValue0()]);
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                LOGGER.error("Error while activating tiles. Bomberman #" + actor.getID() + " on x: " + x + ", y: " + y + ". Error on tile x: " + uniqueCoordinate.getValue0() + ", y: " + uniqueCoordinate.getValue1() + '.', ex);
-            }
-
+            uniqueTiles.add(tileArray[uniqueCoordinate.getValue1()][uniqueCoordinate.getValue0()]);
+        
         for (ITile uniqueTile: uniqueTiles)
             if (uniqueTile != null)
                 uniqueTile.applyAction(actor);
