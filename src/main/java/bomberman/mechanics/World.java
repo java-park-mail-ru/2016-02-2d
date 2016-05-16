@@ -446,10 +446,10 @@ public class World {
             case 4:
                 type = EntityType.BONUS_INCSPEED;
                 break;
+            //case 5:
+            //    type = EntityType.BONUS_HEAL;
+            //    break;
             case 5:
-                type = EntityType.BONUS_HEAL;
-                break;
-            case 6:
                 type = EntityType.BONUS_MOREBOMBS;
                 break;
             default:
