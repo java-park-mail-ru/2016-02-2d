@@ -485,6 +485,7 @@ public class World {
         for (int y = 0; y < tileArray.length; ++y)
             for (int x = 0; x < tileArray[0].length; ++x)
                 if (tileArray[y][x] != null && tileArray[y][x].getID() == id) {
+                    LOGGER.info("Removed tile #" + id + " from x:" + x + ", y:" + y + ". Sent as #" + tileArray[y][x].getID());
                     processedEventQueue.add(new WorldEvent(EventType.TILE_REMOVED, tileArray[y][x].getType(), tileArray[y][x].getID(), x, y));
                     tileArray[y][x] = null;
                 }

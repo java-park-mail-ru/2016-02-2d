@@ -53,7 +53,7 @@ public class Bomberman implements IEntity {
     }
 
     public boolean canSpawnBomb() {
-        return bombSpawnTimer <= 0 && currentPlaceableBombs >= 0;
+        return bombSpawnTimer <= 0 && currentPlaceableBombs > 0;
     }
 
 
