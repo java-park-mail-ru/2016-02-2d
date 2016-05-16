@@ -11,6 +11,7 @@ import org.javatuples.Triplet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class World {
@@ -194,9 +195,6 @@ public class World {
         final int worldWidth = tileArray.length;
         final int worldHeight = tileArray[0].length;
 
-        boolean shouldCheckXCorner = true;
-        boolean shouldCheckYCorner = true;
-
         final float x = actor.getCoordinates()[0];
         final int ix = (int) Math.floor(x);
         final float y = actor.getCoordinates()[1];
@@ -224,17 +222,13 @@ public class World {
 
         else if (dx < 0 && predictedX - radius < xBoundary) {    // If moving left and entering left tile
                 final ITile leftTile = tileArray[iy][ix - 1];
-                if (leftTile != null && !leftTile.isPassable()) {
+                if (leftTile != null && !leftTile.isPassable())
                     predictedX = xBoundary + radius;        // If should collide, collide
-                    shouldCheckXCorner = false;             // else it is possible bomberman will collide to a corner.
-                }
         }
         else if (dx > 0 && predictedX + radius > xBoundary) {
             final ITile rightTile = tileArray[iy][ix + 1];
-            if (rightTile != null && !rightTile.isPassable()) {
+            if (rightTile != null && !rightTile.isPassable())
                 predictedX = xBoundary - radius;
-                shouldCheckXCorner = false;
-            }
         }
 
 
@@ -245,44 +239,45 @@ public class World {
 
         else if (dy < 0 && predictedY - radius < yBoundary) {
             final ITile upTile = tileArray[iy - 1][ix];
-            if (upTile != null && !upTile.isPassable()) {
+            if (upTile != null && !upTile.isPassable())
                 predictedY = yBoundary + radius;
-                shouldCheckYCorner = false;
-            }
         }
         else if (dy > 0 && predictedY + radius > yBoundary) {
             final ITile downTile = tileArray[iy + 1][ix];
-            if (downTile != null && !downTile.isPassable()) {
+            if (downTile != null && !downTile.isPassable())
                 predictedY = yBoundary - radius;
-                shouldCheckYCorner = false;
-            }
         }
 
 
-        if (shouldCheckXCorner && shouldCheckYCorner) {
-            final ITile cornerTile = tileArray[(int)yBoundary][(int)xBoundary];
+        if (x > 0.5 && x < worldWidth - 0.5 && y > 0.5 && y < worldHeight - 0.5) {
+            final float xDeviationFromTileCenter = - (ix + 0.5f - predictedX);
+            final float yDeviationFromTileCenter = - (iy + 0.5f - predictedY);
 
-            if (cornerTile != null && !cornerTile.isPassable())
-                if (Math.abs(xSpeed) > Math.abs(ySpeed)) {
-                    final float avoidCornerY = (float) Math.sqrt(radius * radius - (predictedX - x) * (predictedX - x));
-                    int direction = 0;
-                    if (y + radius > yBoundary)
-                        direction = -1;
-                    if (y - radius < yBoundary)
-                        direction = 1;
+            final boolean shouldCheckX = Math.abs(xDeviationFromTileCenter) > 0.5f - radius;
+            final boolean shouldCheckY = Math.abs(yDeviationFromTileCenter) > 0.5f - radius;
 
-                    predictedY = y + avoidCornerY * direction;
+            if (shouldCheckX && shouldCheckY) {
+                final float distanceToXBorder = (0.5f - Math.abs(xDeviationFromTileCenter));
+                final float distanceToYBorder = (0.5f - Math.abs(yDeviationFromTileCenter));
+                final double squaredDistanceToCorner = distanceToXBorder * distanceToXBorder + distanceToYBorder * distanceToYBorder;
+
+                if (squaredDistanceToCorner < radius * radius) {
+                    final int yTile = iy + ((yDeviationFromTileCenter > 0) ? 1 : -1);
+                    final int xTile = ix + ((xDeviationFromTileCenter > 0) ? 1 : -1);
+                    final ITile cornerTile = tileArray[yTile][xTile];
+
+                    if (cornerTile != null && !cornerTile.isPassable())
+                        if (Math.abs(xSpeed) > Math.abs(ySpeed)) {
+                            final float yIntersectionCorrection = (float) Math.sqrt(radius * radius - distanceToXBorder * distanceToXBorder) - distanceToYBorder;
+                            final int direction = (yDeviationFromTileCenter > 0) ? -1 : 1;
+                            predictedY += yIntersectionCorrection * direction;
+                        } else {
+                            final float xIntersectionCorrection = (float) Math.sqrt(radius * radius - distanceToYBorder * distanceToYBorder) - distanceToXBorder;
+                            final int direction = (xDeviationFromTileCenter > 0) ? -1 : 1;
+                            predictedX += xIntersectionCorrection * direction;
+                        }
                 }
-                else {
-                    final float avoidCornerX = (float) Math.sqrt(radius * radius - (predictedY - y) * (predictedY - y));
-                    int direction = 0;
-                    if (x + radius > xBoundary)
-                        direction = -1;
-                    if (x - radius < xBoundary)
-                        direction = 1;
-
-                    predictedX = x + avoidCornerX * direction;
-                }
+            }
         }
 
         for (Bomberman bomberman : bombermen)           // Low-quality inter-bomberman collision checker.
@@ -407,7 +402,7 @@ public class World {
 
             result = true;      // if destructible, destroy tile, spawn ray and break loop.
             if (new Random(new Date().hashCode()).nextInt() % 100 + 1 < PERCENT_TO_SPAWN_BONUS)
-                TimeHelper.executeAfter((int) BombRayBehavior.BOMB_RAY_DURATION + 100, () -> spawnrandomBonus(x, y));
+                TimeHelper.executeAfter((int) BombRayBehavior.BOMB_RAY_DURATION + 10, () -> spawnrandomBonus(x, y));
         }
         if (tileArray[y][x] == null) {
             tileArray[y][x] = TileFactory.getInstance().getNewTile(EntityType.BOMB_RAY, this, owner, getNextID());
@@ -492,7 +487,7 @@ public class World {
     }
 
     private final Queue<WorldEvent> newEventQueue = new LinkedList<>();       // Here are new events are stashed
-    private final Queue<WorldEvent> processedEventQueue = new LinkedList<>(); // State describer will take events from this list.
+    private final Queue<WorldEvent> processedEventQueue = new ConcurrentLinkedQueue<>(); // State describer will take events from this list.
 
     private final AtomicInteger uidManager = new AtomicInteger(0);
 
