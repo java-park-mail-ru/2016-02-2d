@@ -126,7 +126,9 @@ public class World {
 
     private void processTileSpawnedEvent(WorldEvent event) {
         LOGGER.debug("Processing object_spawned");
-        tryPlacingBomb(event.getEntityID());
+        if (event.getEntityType() == EntityType.BOMB)
+            tryPlacingBomb(event.getEntityID());
+        else placeTile(event);
     }
 
     private void processTileRemovedEvent(WorldEvent event) {
@@ -401,8 +403,7 @@ public class World {
                 processTileRemovedEvent(new WorldEvent(EventType.TILE_REMOVED, tileArray[y][x].getType(), tileArray[y][x].getID(), x, y));
 
             result = true;      // if destructible, destroy tile, spawn ray and break loop.
-            if (new Random(new Date().hashCode()).nextInt() % 100 + 1 < PERCENT_TO_SPAWN_BONUS)
-                TimeHelper.executeAfter((int) BombRayBehavior.BOMB_RAY_DURATION + 10, () -> spawnrandomBonus(x, y));
+            TimeHelper.executeAfter((int) BombRayBehavior.BOMB_RAY_DURATION + 10, () -> decideToSpawnRandomBonus(x, y));
         }
         if (tileArray[y][x] == null) {
             tileArray[y][x] = TileFactory.getInstance().getNewTile(EntityType.BOMB_RAY, this, owner, getNextID());
@@ -423,37 +424,37 @@ public class World {
         processedEventQueue.add(event);
     }
 
-    private void spawnrandomBonus(int x, int y) {
-        final EntityType type;
-        switch (new Random(new Date().hashCode()).nextInt() % TileFactory.getBonusCount()) {
-            case 0:
-                type = EntityType.BONUS_INCMAXRANGE;
-                break;
-            case 1:
-                type = EntityType.BONUS_DECBOMBSPAWN;
-                break;
-            case 2:
-                type = EntityType.BONUS_DECBOMBFUSE;
-                break;
-            case 3:
-                type = EntityType.BONUS_INCMAXHP;
-                break;
-            case 4:
-                type = EntityType.BONUS_INCSPEED;
-                break;
-            //case 5:
-            //    type = EntityType.BONUS_HEAL;
-            //    break;
-            case 5:
-                type = EntityType.BONUS_MOREBOMBS;
-                break;
-            default:
-                return;
-        }
+    private void decideToSpawnRandomBonus(int x, int y) {
+        if (randomizer.nextInt() % 100 + 1 < PERCENT_TO_SPAWN_BONUS) {
+            final EntityType type;
+            switch (randomizer.nextInt() % TileFactory.getBonusCount()) {
+                case 0:
+                    type = EntityType.BONUS_INCMAXRANGE;
+                    break;
+                case 1:
+                    type = EntityType.BONUS_DECBOMBSPAWN;
+                    break;
+                case 2:
+                    type = EntityType.BONUS_DECBOMBFUSE;
+                    break;
+                case 3:
+                    type = EntityType.BONUS_INCMAXHP;
+                    break;
+                case 4:
+                    type = EntityType.BONUS_INCSPEED;
+                    break;
+                //case 5:
+                //    type = EntityType.BONUS_HEAL;
+                //    break;
+                case 5:
+                    type = EntityType.BONUS_MOREBOMBS;
+                    break;
+                default:
+                    return;
+            }
 
-        final ITile bonusTile = TileFactory.getInstance().getNewTile(type, this, getNextID());
-        tileArray[y][x] = bonusTile;
-        processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, type, bonusTile.getID(), x, y));
+            newEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, type, getNextID(), x, y));
+        }
     }
 
     @Nullable
@@ -486,10 +487,17 @@ public class World {
                 }
     }
 
-    private final Queue<WorldEvent> newEventQueue = new LinkedList<>();       // Here are new events are stashed
+    private void placeTile(WorldEvent event) {
+        final ITile newTile = TileFactory.getInstance().getNewTile(event.getEntityType(), this, event.getEntityID());
+        tileArray[(int) event.getY()][(int) event.getX()] = newTile;
+        processedEventQueue.add(event);
+    }
+
+    private final Queue<WorldEvent> newEventQueue = new ConcurrentLinkedQueue<>();       // Here are new events are stashed
     private final Queue<WorldEvent> processedEventQueue = new ConcurrentLinkedQueue<>(); // State describer will take events from this list.
 
     private final AtomicInteger uidManager = new AtomicInteger(0);
+    private final Random randomizer = new Random(TimeHelper.now());
 
     private final String name;
 
