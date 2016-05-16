@@ -216,15 +216,6 @@ public class World {
         if (dy == 0 && y + radius > yBoundary + 1 || dy > 0)
             yBoundary++;
 
-        for (Bomberman bomberman : bombermen)           // Low-quality inter-bomberman collision checker.
-            if (bomberman.getID() != actor.getID()) {
-                final float xDistance = Math.abs(x - bomberman.getCoordinates()[0]);
-                final float yDistance = Math.abs(y - bomberman.getCoordinates()[1]);
-                final float distance = (float) Math.sqrt(xDistance * xDistance + yDistance * yDistance);
-                if (distance <= radius * 2)
-                    return;
-            }
-
 
         if (predictedX - radius < 0 && x < 1)        // If leaving world borders to left
             predictedX = radius;
@@ -268,7 +259,7 @@ public class World {
         }
 
 
-        if (shouldCheckXCorner && shouldCheckYCorner && false) {
+        if (shouldCheckXCorner && shouldCheckYCorner) {
             final ITile cornerTile = tileArray[(int)yBoundary][(int)xBoundary];
 
             if (cornerTile != null && !cornerTile.isPassable())
@@ -293,6 +284,15 @@ public class World {
                     predictedX = x + avoidCornerX * direction;
                 }
         }
+
+        for (Bomberman bomberman : bombermen)           // Low-quality inter-bomberman collision checker.
+            if (bomberman.getID() != actor.getID()) {
+                final float xDistance = Math.abs(predictedX - bomberman.getCoordinates()[0]);
+                final float yDistance = Math.abs(predictedY - bomberman.getCoordinates()[1]);
+                final float distance = (float) Math.sqrt(xDistance * xDistance + yDistance * yDistance);
+                if (distance <= radius * 2 + ACTION_TILE_HANDICAP_DIAMETER)
+                    return;
+            }
 
         // Sanity check if timestep is too big
         if (predictedX - radius < 0)
@@ -407,7 +407,7 @@ public class World {
 
             result = true;      // if destructible, destroy tile, spawn ray and break loop.
             if (new Random(new Date().hashCode()).nextInt() % 100 + 1 < PERCENT_TO_SPAWN_BONUS)
-                TimeHelper.executeAfter((int) (BombRayBehavior.BOMB_RAY_DURATION * MILLISECONDS_IN_SECOND) + 100, () -> spawnrandomBonus(x, y));
+                TimeHelper.executeAfter((int) BombRayBehavior.BOMB_RAY_DURATION + 100, () -> spawnrandomBonus(x, y));
         }
         if (tileArray[y][x] == null) {
             tileArray[y][x] = TileFactory.getInstance().getNewTile(EntityType.BOMB_RAY, this, owner, getNextID());
@@ -486,7 +486,6 @@ public class World {
         for (int y = 0; y < tileArray.length; ++y)
             for (int x = 0; x < tileArray[0].length; ++x)
                 if (tileArray[y][x] != null && tileArray[y][x].getID() == id) {
-                    LOGGER.info("Removed tile #" + id + " from x:" + x + ", y:" + y + ". Sent as #" + tileArray[y][x].getID());
                     processedEventQueue.add(new WorldEvent(EventType.TILE_REMOVED, tileArray[y][x].getType(), tileArray[y][x].getID(), x, y));
                     tileArray[y][x] = null;
                 }
@@ -513,7 +512,6 @@ public class World {
 
     public static final float ACTION_TILE_HANDICAP_DIAMETER = 0.05f; // 0.75-0.05 will
     public static final int PERCENT_TO_SPAWN_BONUS = 33;
-    private static final float MILLISECONDS_IN_SECOND = 1000f;
 
     private static final Logger LOGGER = LogManager.getLogger(World.class);
 }
