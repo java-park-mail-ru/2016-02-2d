@@ -458,6 +458,7 @@ public class World {
 
         final ITile bonusTile = TileFactory.getInstance().getNewTile(type, this, getNextID());
         tileArray[y][x] = bonusTile;
+        processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, type, bonusTile.getID(), x, y));
     }
 
     @Nullable
