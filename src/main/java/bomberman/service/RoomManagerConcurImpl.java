@@ -52,26 +52,19 @@ public class RoomManagerConcurImpl implements RoomManager {
     }
 
     private RoomManager getAppropriateRoomManager() {
-        int minimalFillage = Integer.MAX_VALUE;
-        int maximalInactiveFillage = Integer.MAX_VALUE;
-        int minID = 0;
-
-        for (int i = 0; i < roomManagers.length; ++i)
-            if (roomManagers[i].getAllRooms().size() < minimalFillage) {
-                minimalFillage = roomManagers[i].getAllRooms().size();
-                minID = i;
-            }
-
-        return roomManagers[minID];
+        if (roomManagers[lastManager].getCurrentRoom().isActive())
+            lastManager = lastManager++ % roomManagers.length;
+        return roomManagers[lastManager];
     }
 
-    // Max wrote this code, not me...
-    private static Long getInactiveRoomsNumber(List<Room> roomList) {
-        return roomList.stream().filter(x -> !x.isActive()).collect(Collectors.counting());
+    @Override
+    public Room getCurrentRoom() {
+        return roomManagers[lastManager].getCurrentRoom();
     }
 
     public static final int DEFAULT_THREADS_AMOUNT = 4;
 
+    private int lastManager = 0;
     private final RoomManager[] roomManagers;
     private final Map<UserProfile, RoomManager> playerWhereabouts = new ConcurrentHashMap<>();
 

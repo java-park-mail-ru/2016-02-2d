@@ -86,6 +86,11 @@ public class RoomManagerImpl implements RoomManager {
     }
 
     @Override
+    public Room getCurrentRoom() {
+        return nonFilledRooms.peek();
+    }
+
+    @Override
     public void run() {
         long previousTickDuration = Room.MINIMAL_TIME_STEP;
 
