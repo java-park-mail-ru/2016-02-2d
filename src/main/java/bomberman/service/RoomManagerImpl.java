@@ -94,7 +94,14 @@ public class RoomManagerImpl implements RoomManager {
             boolean wereAnyRoomUpdated = false;
 
             for (Room room: allRooms) {
-                final boolean wasRoomUpdated = room.updateIfNeeded(previousTickDuration);
+                boolean wasRoomUpdated = false;
+                try {
+                    wasRoomUpdated = room.updateIfNeeded(previousTickDuration);
+                } catch (Exception e) {
+                    LOGGER.error("Room (" + room + ") has failed! Removing...");
+                    allRooms.remove(room);
+                    nonFilledRooms.remove(room);
+                }
                 if (!wereAnyRoomUpdated && wasRoomUpdated)
                     wereAnyRoomUpdated = true;
             }
