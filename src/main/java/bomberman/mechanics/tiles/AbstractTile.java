@@ -44,11 +44,10 @@ public abstract class AbstractTile implements ITile{
         // Nothing to do
     }
 
-    // Should be overriden later.
-    //@Override
-    //public boolean shouldBeDestroyed() {
-    //   return 0;
-    //}
+    @Override
+    public boolean shouldSpawnBonusOnDestruction() {
+        return false;
+    }
 
     //
     // Describers

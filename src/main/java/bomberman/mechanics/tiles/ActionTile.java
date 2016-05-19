@@ -23,11 +23,6 @@ public class ActionTile extends AbstractTile {
     }
 
     @Override
-    public boolean shouldBeDestroyed() {
-        return shouldBeDestroyed;
-    }
-
-    @Override
     public void update(long deltaT) {
         behavior.behave(deltaT);
     }

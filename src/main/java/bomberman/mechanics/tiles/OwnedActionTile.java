@@ -17,6 +17,11 @@ public class OwnedActionTile extends ActionTile implements Ownable {
         return owner;
     }
 
+    @Override
+    public boolean isPassable() {
+        return this.getType() != EntityType.BOMB;
+    }
+
     private final Bomberman owner;
 }
 

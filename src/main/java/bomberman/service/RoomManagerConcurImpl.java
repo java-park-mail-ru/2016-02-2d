@@ -1,14 +1,13 @@
 package bomberman.service;
 
-import bomberman.mechanics.WorldBuilderForeman;
 import main.websockets.MessageSendable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class RoomManagerConcurImpl implements RoomManager {
 
@@ -21,7 +20,7 @@ public class RoomManagerConcurImpl implements RoomManager {
 
     @Override
     public Room assignUserToFreeRoom(UserProfile user, MessageSendable socket) {
-        final RoomManager manager = getLessFilledManager();
+        final RoomManager manager = getAppropriateRoomManager();
 
         playerWhereabouts.put(user, manager);
         return manager.assignUserToFreeRoom(user, socket);
@@ -52,8 +51,9 @@ public class RoomManagerConcurImpl implements RoomManager {
             (new Thread(manager)).start();
     }
 
-    private RoomManager getLessFilledManager() {
+    private RoomManager getAppropriateRoomManager() {
         int minimalFillage = Integer.MAX_VALUE;
+        int maximalInactiveFillage = Integer.MAX_VALUE;
         int minID = 0;
 
         for (int i = 0; i < roomManagers.length; ++i)
@@ -63,6 +63,11 @@ public class RoomManagerConcurImpl implements RoomManager {
             }
 
         return roomManagers[minID];
+    }
+
+    // Max wrote this code, not me...
+    private static Long getInactiveRoomsNumber(List<Room> roomList) {
+        return roomList.stream().filter(x -> !x.isActive()).collect(Collectors.counting());
     }
 
     public static final int DEFAULT_THREADS_AMOUNT = 4;

@@ -16,12 +16,7 @@ public class UndestructibleWall extends AbstractTile{
     public boolean isPassable() {
         return false;
     }
-
-    @Override
-    public boolean shouldBeDestroyed() {
-        return false;
-    }
-
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
