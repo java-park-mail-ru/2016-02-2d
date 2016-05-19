@@ -3,6 +3,9 @@ package bomberman.service;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class TimeHelper {
 
@@ -23,11 +26,10 @@ public class TimeHelper {
     }
 
     public static void executeAfter(int ms, Executor action) {
-        final Thread thread = new Thread(() -> {
+        tasks.execute( () -> {
             sleepFor(ms);
             action.execute();
         });
-        thread.start();
     }
 
     public interface Executor {
@@ -36,4 +38,5 @@ public class TimeHelper {
 
     @NotNull
     private static Clock clock = Clock.systemUTC();
+    private static ExecutorService tasks = Executors.newCachedThreadPool();
 }
