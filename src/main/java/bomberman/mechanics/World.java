@@ -77,7 +77,7 @@ public class World {
     }
 
     public boolean shouldBeUpdated() {
-        return selfUpdatingEntities > 0 || !newEventQueue.isEmpty();
+        return selfUpdatingEntities > 0 || !newEventQueue.isEmpty() || !delayedEventQueue.isEmpty();
     }
 
     // Run only once at the very beginning
@@ -403,7 +403,7 @@ public class World {
                 processTileRemovedEvent(new WorldEvent(EventType.TILE_REMOVED, tileArray[y][x].getType(), tileArray[y][x].getID(), x, y));
 
             result = true;      // if destructible, destroy tile, spawn ray and break loop.
-            TimeHelper.executeAfter((int) BombRayBehavior.BOMB_RAY_DURATION + 10, () -> decideToSpawnRandomBonus(x, y));
+            decideToSpawnRandomBonus(x, y, BombRayBehavior.BOMB_RAY_DURATION);
         }
         if (tileArray[y][x] == null) {
             tileArray[y][x] = TileFactory.getInstance().getNewTile(EntityType.BOMB_RAY, this, owner, getNextID());
@@ -424,7 +424,7 @@ public class World {
         processedEventQueue.add(event);
     }
 
-    private void decideToSpawnRandomBonus(int x, int y) {
+    private void decideToSpawnRandomBonus(int x, int y, long delay) {
         if (randomizer.nextInt() % 100 + 1 < PERCENT_TO_SPAWN_BONUS) {
             final EntityType type;
             switch (randomizer.nextInt() % TileFactory.getBonusCount()) {
@@ -453,7 +453,7 @@ public class World {
                     return;
             }
 
-            newEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, type, getNextID(), x, y));
+            delayedEventQueue.add(new Pair<>(new WorldEvent(EventType.TILE_SPAWNED, type, getNextID(), x, y), TimeHelper.now() + delay));
         }
     }
 
@@ -476,6 +476,12 @@ public class World {
             for (ITile tile: row)
                 if (tile != null)
                     tile.update(deltaT);
+
+        for (Pair<WorldEvent, Long> event: delayedEventQueue)
+            if (TimeHelper.now() >= event.getValue1()) {
+                newEventQueue.add(event.getValue0());
+                delayedEventQueue.remove(event);
+            }
     }
 
     private void removeTileByID(int id) {
@@ -495,6 +501,7 @@ public class World {
 
     private final Queue<WorldEvent> newEventQueue = new ConcurrentLinkedQueue<>();       // Here are new events are stashed
     private final Queue<WorldEvent> processedEventQueue = new ConcurrentLinkedQueue<>(); // State describer will take events from this list.
+    private final List<Pair<WorldEvent, Long>> delayedEventQueue = new LinkedList<>();
 
     private final AtomicInteger uidManager = new AtomicInteger(0);
     private final Random randomizer = new Random(TimeHelper.now());
