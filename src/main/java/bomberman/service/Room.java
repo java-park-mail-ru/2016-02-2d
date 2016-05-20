@@ -61,7 +61,7 @@ public class Room {
         return websocketMap.isEmpty();
     }
 
-    public void insertPlayer(UserProfile user, MessageSendable socket) {
+    public synchronized void insertPlayer(UserProfile user, MessageSendable socket) {
         isEveryoneReady.getAndSet(false);
         hasEveryoneLoadedContent.getAndSet(false);
 
@@ -80,7 +80,7 @@ public class Room {
         return websocketMap.containsKey(user);
     }
 
-    public void removePlayer(UserProfile user) {
+    public synchronized void removePlayer(UserProfile user) {
         if (websocketMap.containsKey(user)) {
             websocketMap.remove(user);
             readinessMap.remove(user);
