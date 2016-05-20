@@ -87,7 +87,7 @@ public class RoomManagerImpl implements RoomManager {
 
     @Override
     public Room getCurrentRoom() {
-        return nonFilledRooms.peek();
+        return getNonFilledNotActiveRoom();
     }
 
     @Override
