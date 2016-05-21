@@ -25,7 +25,7 @@ public class WorldBuilderForeman {
         final ArrayList<String> names = builderSet.stream().map(Map.Entry::getKey).collect(Collectors.toCollection(ArrayList::new));
 
         final Random randomInt = new Random(new Date().hashCode());
-        return names.get(randomInt.nextInt() % names.size());
+        return names.get(Math.abs(randomInt.nextInt()) % names.size());
     }
 
     private static Map<String, IWorldBuilder> builders = TextWorldBuilder.getAllTextBuilders();
