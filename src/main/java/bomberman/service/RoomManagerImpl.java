@@ -104,7 +104,7 @@ public class RoomManagerImpl implements RoomManager {
                     wasRoomUpdated = room.updateIfNeeded(previousTickDuration);
                 } catch (Exception e) {
                     LOGGER.error("Room (" + room + ") has failed! Removing...", e);
-                    room.broadcast(MessageCreator.createGameOverMessage(null));
+                    try {room.broadcast(MessageCreator.createGameOverMessage(null)); } catch (Exception e2) {LOGGER.error("Could not forceover in (" + room + ") due to fatal crash!", e);}
                     allRooms.remove(room);
                     nonFilledRooms.remove(room);
                 }
