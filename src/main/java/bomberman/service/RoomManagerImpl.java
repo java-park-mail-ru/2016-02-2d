@@ -103,7 +103,7 @@ public class RoomManagerImpl implements RoomManager {
                 try {
                     wasRoomUpdated = room.updateIfNeeded(previousTickDuration);
                 } catch (Exception e) {
-                    LOGGER.error("Room (" + room + ") has failed! Removing...");
+                    LOGGER.error("Room (" + room + ") has failed! Removing...", e);
                     allRooms.remove(room);
                     nonFilledRooms.remove(room);
                 }
