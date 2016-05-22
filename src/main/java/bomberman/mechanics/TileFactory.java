@@ -10,6 +10,8 @@ import bomberman.mechanics.tiles.behaviors.BombBehavior;
 import bomberman.mechanics.tiles.behaviors.BombRayBehavior;
 import bomberman.mechanics.tiles.behaviors.NullBehavior;
 import bomberman.mechanics.tiles.functors.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Singleton;
 
@@ -29,6 +31,7 @@ public class TileFactory {
             case DESTRUCTIBLE_WALL:
                 return newDestructibleWall(id);
             default:
+                LOGGER.error("Impossible to spawn " + type + "with two arguments method.");
                 throw new IllegalArgumentException();
         }
 
@@ -53,6 +56,7 @@ public class TileFactory {
             case BONUS_MOREBOMBS:
                 return newBonusIncreaseMaxBombs(id, list);
             default:
+                LOGGER.error("Impossible to spawn " + type + "with three arguments method.");
                 throw new IllegalArgumentException();
         }
     }
@@ -66,6 +70,7 @@ public class TileFactory {
             case BOMB_RAY:
                 return newBombRay(id, list, owner);
             default:
+                LOGGER.error("Impossible to spawn " + type + "with four arguments method.");
                 throw new IllegalArgumentException();
         }
     }
@@ -111,4 +116,5 @@ public class TileFactory {
 
     private static final TileFactory SINGLETON = new TileFactory();
     private static final int BONUS_COUNT = 6;
+    private static final Logger LOGGER = LogManager.getLogger(TileFactory.class);
 }
