@@ -501,7 +501,7 @@ public class World {
 
     private final Queue<WorldEvent> newEventQueue = new ConcurrentLinkedQueue<>();       // Here are new events are stashed
     private final Queue<WorldEvent> processedEventQueue = new ConcurrentLinkedQueue<>(); // State describer will take events from this list.
-    private final List<Pair<WorldEvent, Long>> delayedEventQueue = new LinkedList<>();
+    private final Queue<Pair<WorldEvent, Long>> delayedEventQueue = new ConcurrentLinkedQueue<>();
 
     private final AtomicInteger uidManager = new AtomicInteger(0);
     private final Random randomizer = new Random(TimeHelper.now());
