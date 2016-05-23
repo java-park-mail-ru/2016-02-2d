@@ -109,6 +109,14 @@ public class TextWorldBuilder implements IWorldBuilder {
                 return TileFactory.getInstance().getNewTile(EntityType.BONUS_DECBOMBSPAWN, supplicant, supplicant.getNextID());
             case 'R':
                 return TileFactory.getInstance().getNewTile(EntityType.BONUS_INCMAXRANGE, supplicant, supplicant.getNextID());
+            case 'H':
+                return TileFactory.getInstance().getNewTile(EntityType.BONUS_HEAL, supplicant, supplicant.getNextID());
+            case 'M':
+                return TileFactory.getInstance().getNewTile(EntityType.BONUS_MOREBOMBS, supplicant, supplicant.getNextID());
+            case 'U':
+                return TileFactory.getInstance().getNewTile(EntityType.BONUS_INCMAXHP, supplicant, supplicant.getNextID());
+            case 'F':
+                return TileFactory.getInstance().getNewTile(EntityType.BONUS_INCSPEED, supplicant, supplicant.getNextID());
             case 'S':
                 spawnList.add(new float[]{x + 0.5f, y + 0.5f});
                 return null;
