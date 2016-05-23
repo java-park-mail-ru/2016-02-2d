@@ -11,6 +11,8 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
 import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,9 +68,22 @@ public class UsersTest extends JerseyTest {
         testDeleteUser(RequestFactory.getDeleteUserTestData(RequestFactory.DeleteUserType.DELETE_ANOTHER_USER));
     }
 
+    @Before
+    public void setContext() {
+        users.setContext(CONTEXT);
+    }
 
+    @BeforeClass
+    public static void makeContext() throws InstantiationException {
+        final AccountService mockedAccountService = Constants.RestApplicationMocks.getMockedAccountService();
+        CONTEXT.put(AccountService.class, mockedAccountService);
 
-
+        final Map<String, String> properties = new HashMap<>(3);
+        properties.put("static_path", "static/");
+        properties.put("userpic_width", "80");
+        properties.put("userpic_height", "80");
+        CONTEXT.put(Properties.class, properties);
+    }
     
     public void testCreateUser(Triplet<String, HttpHeaders, Response> data, boolean shouldHaveCookie){
         final Response response = users.createUser(data.getValue0(), data.getValue1());
@@ -106,23 +121,13 @@ public class UsersTest extends JerseyTest {
     @Override
     protected Application configure() {
         try {
-            final AccountService mockedAccountService = Constants.RestApplicationMocks.getMockedAccountService();
-            final main.config.Context context = new Context();
-            context.put(AccountService.class, mockedAccountService);
-
-            final Map<String, String> properties = new HashMap<>(3);
-            properties.put("static_path", "static/");
-            properties.put("userpic_width", "80");
-            properties.put("userpic_height", "80");
-            context.put(Properties.class, properties);
-
             final ResourceConfig config = new ResourceConfig(Sessions.class);
             final HttpServletRequest request = mock(HttpServletRequest.class);
             //noinspection AnonymousInnerClassMayBeStatic
             config.register(new AbstractBinder() {
                 @Override
                 protected void configure() {
-                    bind(context);
+                    bind(CONTEXT);
                     bind(request).to(HttpServletRequest.class);
                 }
             });
@@ -232,7 +237,8 @@ public class UsersTest extends JerseyTest {
     }
 
 
-    private Users users;
+    private static final Context CONTEXT = new Context();
+    private final Users users = new Users();
     private static final HttpHeaders NO_COOKIE_HEADERS = Constants.RestApplicationMocks.getNoCookieHeaders();
     private static final HttpHeaders OK_COOKIE_HEADERS = Constants.RestApplicationMocks.getOkCookieHeaders();
     private static final HttpHeaders WRONG_COOKIE_HEADERS = Constants.RestApplicationMocks.getWrongCookieHeaders();

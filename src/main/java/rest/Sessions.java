@@ -3,6 +3,7 @@ package rest;
 import main.accountservice.AccountService;
 import main.UserTokenManager;
 import main.config.*;
+import org.jetbrains.annotations.TestOnly;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +26,12 @@ public class Sessions {
             wasSetUp = true;
             this.accountService = (AccountService) context.get(AccountService.class);
         }
+    }
+
+    @TestOnly
+    public void setContext(main.config.Context context) {
+        wasSetUp = false;
+        this.context = context;
     }
 
     @PUT

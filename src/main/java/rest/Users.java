@@ -13,6 +13,7 @@ import javax.ws.rs.core.Context;
 import main.UserTokenManager;
 import main.config.*;
 import org.imgscalr.Scalr;
+import org.jetbrains.annotations.TestOnly;
 import org.json.*;
 
 import java.awt.image.BufferedImage;
@@ -40,6 +41,12 @@ public class Users {
             this.userpicWidth = Integer.parseInt(properties.get("userpic_width"));
             this.userpicHeight = Integer.parseInt(properties.get("userpic_height"));
         }
+    }
+
+    @TestOnly
+    public void setContext(main.config.Context context) {
+        wasSetUp = false;
+        this.context = context;
     }
 
     @PUT

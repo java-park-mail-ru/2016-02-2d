@@ -3,13 +3,14 @@ package rest;
 import constants.Constants;
 import main.accountservice.AccountService;
 import main.UserTokenManager;
-import main.config.*;
 import main.config.Context;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
 import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -63,6 +64,10 @@ public class SessionsTest extends JerseyTest {
         testLogout(RequestFactory.getLogoutTestData(RequestFactory.LogoutRequestType.LOGOUT_WRONG_COOKIE));
     }
 
+    @Before
+    public void setContext() {
+        sessions.setContext(CONTEXT);
+    }
 
 
 
@@ -92,20 +97,22 @@ public class SessionsTest extends JerseyTest {
         assertNotSame(SID, response.getCookies().get(UserTokenManager.COOKIE_NAME).getValue());
     }
 
+    @BeforeClass
+    public static void makeContext() throws InstantiationException {
+        final AccountService mockedAccountService = Constants.RestApplicationMocks.getMockedAccountService();
+        CONTEXT.put(AccountService.class, mockedAccountService);
+    }
+
     @Override
     protected Application configure() {
         try {
-            final AccountService mockedAccountService = Constants.RestApplicationMocks.getMockedAccountService();
-            final main.config.Context context = new Context();
-            context.put(AccountService.class, mockedAccountService);
-
             final ResourceConfig config = new ResourceConfig(Sessions.class);
             final HttpServletRequest request = mock(HttpServletRequest.class);
             //noinspection AnonymousInnerClassMayBeStatic
             config.register(new AbstractBinder() {
                 @Override
                 protected void configure() {
-                    bind(context);
+                    bind(CONTEXT);
                     bind(request).to(HttpServletRequest.class);
                 }
             });
@@ -197,7 +204,9 @@ public class SessionsTest extends JerseyTest {
     }
 
 
-    private Sessions sessions;
+    private static final Context CONTEXT = new Context();
+    private final Sessions sessions = new Sessions();
+
     private static final HttpHeaders NO_COOKIE_HEADERS = Constants.RestApplicationMocks.getNoCookieHeaders();
     private static final HttpHeaders OK_COOKIE_HEADERS = Constants.RestApplicationMocks.getOkCookieHeaders();
     private static final HttpHeaders WRONG_COOKIE_HEADERS = Constants.RestApplicationMocks.getWrongCookieHeaders();
