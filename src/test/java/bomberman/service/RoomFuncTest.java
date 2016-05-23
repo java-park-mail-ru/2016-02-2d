@@ -65,12 +65,17 @@ public class RoomFuncTest {
 
         users.forEach((user) -> room.scheduleBombPlacement(user));
 
-        TimeHelper.sleepFor(Room.TIME_TO_WAIT_ON_GAME_OVER * 10 + ALLOWED_TIME_ERROR + (long) (Bomberman.BOMB_BASE_EXPLOSION_DELAY * 1000));    // TODO: Rewrite update() to run in a separate thread!!!
+        for (int i = 0; i < LONG_ENOUGH_TIME / Room.MINIMAL_TIME_STEP; ++i)
+            room.updateIfNeeded(Room.MINIMAL_TIME_STEP);
+
+        TimeHelper.sleepFor(Room.TIME_TO_WAIT_ON_GAME_OVER + ALLOWED_TIME_ERROR);
+
         assertEquals(0, room.getWorld().getBombermenIDs().length);
     }
 
     private Set<UserProfile> users;
     private Room room;
 
-    private final static int ALLOWED_TIME_ERROR = 10; // ms
+    private static final int ALLOWED_TIME_ERROR = 10; // ms
+    private static final int LONG_ENOUGH_TIME = 10000; // ms
 }
