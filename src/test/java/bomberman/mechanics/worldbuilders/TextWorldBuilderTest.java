@@ -1,11 +1,9 @@
 package bomberman.mechanics.worldbuilders;
 
-import bomberman.mechanics.World;
 import bomberman.mechanics.interfaces.ITile;
 import bomberman.mechanics.tiles.DestructibleWall;
 import bomberman.mechanics.tiles.UndestructibleWall;
 import constants.Constants;
-import org.javatuples.Triplet;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

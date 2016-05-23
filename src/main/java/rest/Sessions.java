@@ -2,7 +2,6 @@ package rest;
 
 import main.accountservice.AccountService;
 import main.UserTokenManager;
-import main.config.*;
 import org.jetbrains.annotations.TestOnly;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,7 +11,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import javax.ws.rs.core.Context;
 
 @Singleton
 @Path("session/")
@@ -29,7 +27,7 @@ public class Sessions {
     }
 
     @TestOnly
-    public void setContext(main.config.Context context) {
+    public void setContext(@SuppressWarnings("SameParameterValue") main.config.Context context) {
         wasSetUp = false;
         this.context = context;
     }

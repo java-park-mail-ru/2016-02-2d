@@ -13,14 +13,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class World {
 
-    public World(String worldType, int numberOfPlayers, Runnable actionOnWorldUpdated) {
+    public World(String worldType) {
         final IWorldBuilder builder = WorldBuilderForeman.getWorldBuilderInstance(worldType);
         final WorldData worldData = builder.getWorldData(this);
 
-        actionOnUpdate = actionOnWorldUpdated;
         tileArray = worldData.getTileArray();
         spawnLocations = worldData.getSpawnList();
         name = worldData.getName();
@@ -61,7 +61,6 @@ public class World {
             bombermen.add(newBomberman);
             processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, newBomberman.getType(), newBomberman.getID(), spawnLocations[i][0], spawnLocations[i][1]));
         }
-        areBombermenSpawned = true;
     }
 
     public String getName() {
@@ -90,7 +89,6 @@ public class World {
                     processedEventQueue.add(new WorldEvent(EventType.TILE_SPAWNED, tile.getType(), tile.getID(), x, y));
             }
         }
-        areTilesPositioned = true;
     }
 
     public void runGameLoop(long deltaT) {
@@ -251,6 +249,7 @@ public class World {
         }
 
 
+        //noinspection OverlyComplexBooleanExpression,MagicNumber
         if (x > 0.5 && x < worldWidth - 0.5 && y > 0.5 && y < worldHeight - 0.5) {
             final float xDeviationFromTileCenter = - (ix + 0.5f - predictedX);
             final float yDeviationFromTileCenter = - (iy + 0.5f - predictedY);
@@ -320,12 +319,9 @@ public class World {
         uniqueTileCoordinates.add(new Pair<>((int) Math.floor(x + handicappedRadius), (int) Math.floor(y + handicappedRadius)));
 
         final Set<ITile> uniqueTiles = new HashSet<>(4);
-        for (Pair<Integer, Integer> uniqueCoordinate: uniqueTileCoordinates)
-            uniqueTiles.add(tileArray[uniqueCoordinate.getValue1()][uniqueCoordinate.getValue0()]);
+        uniqueTiles.addAll(uniqueTileCoordinates.stream().map(uniqueCoordinate -> tileArray[uniqueCoordinate.getValue1()][uniqueCoordinate.getValue0()]).collect(Collectors.toList()));
 
-        for (ITile uniqueTile: uniqueTiles)
-            if (uniqueTile != null)
-                uniqueTile.applyAction(actor);
+        uniqueTiles.stream().filter(uniqueTile -> uniqueTile != null).forEach(uniqueTile -> uniqueTile.applyAction(actor));
     }
 
     private void tryPlacingBomb(int bombermanID) {
@@ -403,7 +399,6 @@ public class World {
                 processTileRemovedEvent(new WorldEvent(EventType.TILE_REMOVED, tileArray[y][x].getType(), tileArray[y][x].getID(), x, y));
 
             result = true;      // if destructible, destroy tile, spawn ray and break loop.
-            decideToSpawnRandomBonus(x, y, BombRayBehavior.BOMB_RAY_DURATION);
         }
         if (tileArray[y][x] == null) {
             tileArray[y][x] = TileFactory.getInstance().getNewTile(EntityType.BOMB_RAY, this, owner, getNextID());
@@ -424,7 +419,7 @@ public class World {
         processedEventQueue.add(event);
     }
 
-    private void decideToSpawnRandomBonus(int x, int y, long delay) {
+    private void decideToSpawnRandomBonus(int x, int y) {
         if (randomizer.nextInt() % 100 + 1 < PERCENT_TO_SPAWN_BONUS) {
             final EntityType type;
             switch (randomizer.nextInt() % TileFactory.getBonusCount()) {
@@ -453,7 +448,7 @@ public class World {
                     return;
             }
 
-            delayedEventQueue.add(new Pair<>(new WorldEvent(EventType.TILE_SPAWNED, type, getNextID(), x, y), TimeHelper.now() + delay));
+            delayedEventQueue.add(new Pair<>(new WorldEvent(EventType.TILE_SPAWNED, type, getNextID(), x, y), TimeHelper.now() + BombRayBehavior.BOMB_RAY_DURATION));
         }
     }
 
@@ -477,17 +472,19 @@ public class World {
                 if (tile != null)
                     tile.update(deltaT);
 
-        for (Pair<WorldEvent, Long> event: delayedEventQueue)
-            if (TimeHelper.now() >= event.getValue1()) {
-                newEventQueue.add(event.getValue0());
-                delayedEventQueue.remove(event);
-            }
+        delayedEventQueue.stream().filter(event -> TimeHelper.now() >= event.getValue1()).forEach(event -> {
+            newEventQueue.add(event.getValue0());
+            delayedEventQueue.remove(event);
+        });
     }
 
     private void removeTileByID(int id) {
         for (int y = 0; y < tileArray.length; ++y)
             for (int x = 0; x < tileArray[0].length; ++x)
                 if (tileArray[y][x] != null && tileArray[y][x].getID() == id) {
+                    if (tileArray[y][x].shouldSpawnBonusOnDestruction())
+                        decideToSpawnRandomBonus(x, y);
+
                     processedEventQueue.add(new WorldEvent(EventType.TILE_REMOVED, tileArray[y][x].getType(), tileArray[y][x].getID(), x, y));
                     tileArray[y][x] = null;
                 }
@@ -512,11 +509,6 @@ public class World {
     private final ArrayList<Bomberman> bombermen = new ArrayList<>(4);
 
     private final float[][] spawnLocations;
-    private boolean areBombermenSpawned = false;
-    private boolean areTilesPositioned = false;
-    private boolean hasWorldReadyAcionFired = false;
-
-    private final Runnable actionOnUpdate;
 
     private int selfUpdatingEntities = 0;
 

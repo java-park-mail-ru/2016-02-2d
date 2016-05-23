@@ -27,12 +27,6 @@ public class PropertyReader {
         return propertyMap;
     }
 
-    public Set<Pair<String, Boolean>> getPropertiesNotPresent() {
-        if (propertyMap == null)
-            gatherPropertiesToMap();
-        return notPresentPropertiesSet;
-    }
-
     private void readAllProperties(@Nullable String filename) {
         if (filename == null)
             readPropertyFile(PROPERTIES_FILENAME_DEFAULT);

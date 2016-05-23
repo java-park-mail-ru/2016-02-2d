@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Clock;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 public class TimeHelper {
 
@@ -22,11 +21,11 @@ public class TimeHelper {
 
     @SuppressWarnings("StaticMethodNamingConvention")
     public static long now() {
-        return clock.millis();
+        return CLOCK.millis();
     }
 
     public static void executeAfter(int ms, Executor action) {
-        tasks.execute( () -> {
+        TASKS.execute( () -> {
             sleepFor(ms);
             action.execute();
         });
@@ -37,6 +36,6 @@ public class TimeHelper {
     }
 
     @NotNull
-    private static Clock clock = Clock.systemUTC();
-    private static ExecutorService tasks = Executors.newCachedThreadPool();
+    private static final Clock CLOCK = Clock.systemUTC();
+    private static final ExecutorService TASKS = Executors.newCachedThreadPool();
 }

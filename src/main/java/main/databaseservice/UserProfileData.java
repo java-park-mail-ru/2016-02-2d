@@ -21,10 +21,6 @@ public class UserProfileData implements Serializable {
         return login;
     }
 
-    public void setLogin(@NotNull String login) {
-        this.login = login;
-    }
-
     @NotNull
     public String getPassword() {
         return password;

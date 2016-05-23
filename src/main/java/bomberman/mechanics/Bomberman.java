@@ -24,12 +24,10 @@ public class Bomberman implements IEntity {
         this.world = world;
     }
 
-    @Override
     public float[] getCoordinates() {
         return new float[]{x, y};
     }
 
-    @Override
     public void setCoordinates(float[] coords) {
         x = coords[0];
         y = coords[1];
@@ -62,7 +60,6 @@ public class Bomberman implements IEntity {
     //
 
     // Use negative amounts for healing! =D
-    @Override
     public void affectHealth(int amount) {
         if (health > maxHealth)
             health = maxHealth;
@@ -76,10 +73,6 @@ public class Bomberman implements IEntity {
     public void increaseMaxHealth() {
         maxHealth += MAX_HEALTH_INCREMENT;
         health += MAX_HEALTH_INCREMENT;
-    }
-
-    public int getHealth() {
-        return health;
     }
 
     public int getMaxHealth() {
@@ -133,10 +126,6 @@ public class Bomberman implements IEntity {
     // Bomb Placement Actions
     //
 
-    public int getCurrentPlaceableBombAmount() {
-        return currentPlaceableBombs;
-    }
-
     public void takeOnePlaceableBomb() {
         currentPlaceableBombs--;
     }
@@ -188,7 +177,7 @@ public class Bomberman implements IEntity {
     @SuppressWarnings("InstanceVariableNamingConvention")
     private float y;                // "yCoordinate" -> 'y'
     private final int id;           // "uniqueIdentificationNumber" -> "id"
-    World world;
+    final World world;
 
 
     // Health Description
@@ -221,7 +210,7 @@ public class Bomberman implements IEntity {
     public static final float BASE_MAX_SPEED = 3f / 1000f;    // 3 tiles per second
     public static final float MAX_SPEED_INCREMENT = 0.5f / 1000f; // 3.0 → 3.5 → 4 → 4.5 → 5.5 → 6.0/ Higher the harder. :)
     private Triplet<Float, Float, Long> movementDirection = new Triplet<>(0f, 0f, 0L);
-    private Queue<Triplet<Float, Float, Long>> movementsDuringTick = new LinkedList<>();
+    private final Queue<Triplet<Float, Float, Long>> movementsDuringTick = new LinkedList<>();
 
     public static final float DIAMETER = 0.75f; // ¾ of a tile.
 }

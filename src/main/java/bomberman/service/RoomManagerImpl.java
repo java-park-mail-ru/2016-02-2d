@@ -15,7 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class RoomManagerImpl implements RoomManager {
 
     public RoomManagerImpl() {
-        createNewRoom("any");
+        createNewRoom();
     }
 
     @Override
@@ -49,16 +49,11 @@ public class RoomManagerImpl implements RoomManager {
         }
     }
 
-    @Override
-    public List<Room> getAllRooms() {
-        return allRooms;
-    }
-
     private Room getNonFilledNotActiveRoom() {
         while (true) {
             final Room room = nonFilledRooms.peek();
             if (room == null)
-                return createNewRoom("");
+                return createNewRoom();
             else
                 if (room.isActive())
                     nonFilledRooms.remove();
@@ -67,7 +62,7 @@ public class RoomManagerImpl implements RoomManager {
         }
     }
 
-    private Room createNewRoom(String worldType) {
+    private Room createNewRoom() {
         final Room room = new Room();
 
         room.createNewWorld(WorldBuilderForeman.getRandomWorldName());
@@ -94,16 +89,19 @@ public class RoomManagerImpl implements RoomManager {
     public void run() {
         long previousTickDuration = Room.MINIMAL_TIME_STEP;
 
-        while (!shouldBeInterrupted){
+        //noinspection InfiniteLoopStatement
+        while (true){
             final long beforeUpdate = TimeHelper.now();
             boolean wereAnyRoomUpdated = false;
 
             for (Room room: allRooms) {
                 boolean wasRoomUpdated = false;
+                //noinspection OverlyBroadCatchBlock
                 try {
                     wasRoomUpdated = room.updateIfNeeded(previousTickDuration);
                 } catch (Exception e) {
                     LOGGER.error("Room (" + room + ") has failed! Removing...", e);
+                    //noinspection OverlyBroadCatchBlock
                     try {room.broadcast(MessageCreator.createGameOverMessage(null)); } catch (Exception e2) {LOGGER.error("Could not forceover in (" + room + ") due to fatal crash!", e);}
                     allRooms.remove(room);
                     nonFilledRooms.remove(room);
@@ -124,10 +122,6 @@ public class RoomManagerImpl implements RoomManager {
         }
     }
 
-    public void interruptNow() {
-        shouldBeInterrupted = true;
-    }
-
     private void logGameCycleTime(long timeSpentWhileRunning) {
         if (timeSpentWhileRunning >= Room.MINIMAL_TIME_STEP)
             LOGGER.warn("RoomManager " + this.toString() + " updated. It took " + timeSpentWhileRunning + " >= " + Room.MINIMAL_TIME_STEP + "! Fix the bugs!");
@@ -138,8 +132,6 @@ public class RoomManagerImpl implements RoomManager {
     private final Queue<Room> nonFilledRooms = new ConcurrentLinkedQueue<>();
     private final CopyOnWriteArrayList<Room> allRooms = new CopyOnWriteArrayList<>();
     private final Map<UserProfile, Room> playerWhereabouts = new ConcurrentHashMap<>();
-
-    private boolean shouldBeInterrupted = false;
 
     private static final Logger LOGGER = LogManager.getLogger(RoomManagerImpl.class);
 }

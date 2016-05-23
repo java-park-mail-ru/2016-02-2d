@@ -44,6 +44,7 @@ public class BasicWorldBuilder implements IWorldBuilder {
         return new float[][]{{1.0f, 1.0f},{1.0f, (float)(DEFAULT_WORLD_HEIGHT - 1)},{(float)(DEFAULT_WORLD_WIDTH - 1), 1.0f},{(float)(DEFAULT_WORLD_HEIGHT - 1), (float)(DEFAULT_WORLD_WIDTH - 1)}};
     }
 
+    @SuppressWarnings("SameReturnValue")
     private String getName() {
         return "REPORT AS A BUG";
     }

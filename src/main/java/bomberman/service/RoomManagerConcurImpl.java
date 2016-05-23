@@ -1,13 +1,10 @@
 package bomberman.service;
 
 import main.websockets.MessageSendable;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import rest.UserProfile;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class RoomManagerConcurImpl implements RoomManager {
 
@@ -35,16 +32,6 @@ public class RoomManagerConcurImpl implements RoomManager {
     }
 
     @Override
-    public List<Room> getAllRooms() {
-        final List<Room> allRooms = new LinkedList<>();
-
-        for (RoomManager manager: roomManagers)
-            allRooms.addAll(manager.getAllRooms());
-
-        return allRooms;
-    }
-
-    @Override
     public void run() {
 
         for (RoomManager manager: roomManagers)
@@ -68,5 +55,4 @@ public class RoomManagerConcurImpl implements RoomManager {
     private final RoomManager[] roomManagers;
     private final Map<UserProfile, RoomManager> playerWhereabouts = new ConcurrentHashMap<>();
 
-    private static final Logger LOGGER = LogManager.getLogger(RoomManagerConcurImpl.class);
 }

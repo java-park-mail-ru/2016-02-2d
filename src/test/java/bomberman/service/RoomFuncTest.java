@@ -1,23 +1,14 @@
 package bomberman.service;
 
-import bomberman.mechanics.Bomberman;
-import bomberman.mechanics.World;
 import constants.Constants;
-import junit.framework.Assert;
-import main.websockets.MessageSendable;
-import main.websockets.WebSocketConnection;
-import org.javatuples.Pair;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import rest.UserProfile;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static junit.framework.Assert.assertNull;
 import static junit.framework.TestCase.assertEquals;
-import static org.mockito.Mockito.mock;
 
 public class RoomFuncTest {
 

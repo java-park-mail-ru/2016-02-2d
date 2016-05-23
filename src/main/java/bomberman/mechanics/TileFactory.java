@@ -91,6 +91,7 @@ public class TileFactory {
         return new OwnedActionTile(id, new BombRayFunctor(list), new BombRayBehavior(list), EntityType.BOMB_RAY, owner);
     }
 
+    @SuppressWarnings("unused")
     private ITile newBonusHealAllHP(int id, World list){
         return new ActionTile(id, new HealAllHPFunctor(list), new NullBehavior(list), EntityType.BONUS_HEAL);
     }

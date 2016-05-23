@@ -16,8 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rest.UserProfile;
 
-import java.io.IOException;
-
+@SuppressWarnings("unused")
 @WebSocket
 public class WebSocketConnection implements MessageSendable{
 
@@ -49,12 +48,13 @@ public class WebSocketConnection implements MessageSendable{
     }
 
     @OnWebSocketClose
-    public void onClose(int statusCode, String reason) {
+    public void onClose() {
         roomManager.removeUserFromRoom(user);
     }
 
     @Override
     public void sendMessage(String message) {
+        //noinspection OverlyBroadCatchBlock
         try {
             session.getRemote().sendString(message);
         } catch (Exception ex) {

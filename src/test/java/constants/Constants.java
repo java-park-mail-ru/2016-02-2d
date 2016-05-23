@@ -9,13 +9,9 @@ import main.UserTokenManager;
 import main.config.Context;
 import main.websockets.MessageSendable;
 import main.websockets.WebSocketConnection;
-import main.websockets.WebSocketConnectionCreator;
-import org.eclipse.jetty.util.IO;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.common.WebSocketSession;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.json.JSONObject;
 import org.mockito.stubbing.Answer;
 import rest.UserProfile;
@@ -23,17 +19,11 @@ import rest.UserProfile;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.net.HttpCookie;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -46,11 +36,6 @@ public class Constants {
         public static AccountService getMockedAccountService() {
             configure();
             return MOCKED_ACCOUNT_SERVICE;
-        }
-
-        public static UserProfile getMockedUserProfile() {
-            configure();
-            return MOCKED_USER_PROFILE;
         }
 
         public static HttpHeaders getNoCookieHeaders() {
@@ -111,18 +96,6 @@ public class Constants {
 
     public static class GameMechanicsMocks {
 
-        public static WebSocketConnection createMockedConnection(UserProfile user, WebSocketConnectionCreator servlet) {
-            final ServletUpgradeRequest mockedRequest = mock(ServletUpgradeRequest.class);
-            final List<HttpCookie> oneCookieList = new LinkedList<>();
-            oneCookieList.add(new HttpCookie(UserTokenManager.COOKIE_NAME, user.getSessionID()));
-            when(mockedRequest.getCookies()).thenReturn(oneCookieList);
-
-            final WebSocketConnection connection = (WebSocketConnection) servlet.createWebSocket(mockedRequest, mock(ServletUpgradeResponse.class));
-            assertNotNull(connection);
-
-            return connection;
-        }
-
         public static Session createMockedSession(Answer messageHandler) throws IOException {
             final Session session = mock(WebSocketSession.class);
             final RemoteEndpoint remote = mock(RemoteEndpoint.class);
@@ -137,9 +110,8 @@ public class Constants {
 
             try {
                 connection.setRoom(room);
-                connection.setSession(createMockedSession((invocationOnMock) -> {
-                    return null;
-                }));
+                //noinspection ConstantConditions
+                connection.setSession(createMockedSession((invocationOnMock) -> null));
             } catch (IOException ex) {
                 System.err.println("Sure your code haven't changed?");
                 ex.printStackTrace();

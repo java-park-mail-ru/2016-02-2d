@@ -1,6 +1,5 @@
 package main.accountservice;
 
-import main.databaseservice.DataBaseService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rest.UserProfile;
@@ -38,5 +37,4 @@ public interface AccountService {
 
     void updateUser(UserProfile user);
 
-    void changeDB(DataBaseService dataBaseService);
 }

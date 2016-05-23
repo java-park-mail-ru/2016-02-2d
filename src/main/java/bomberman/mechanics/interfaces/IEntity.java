@@ -1,7 +1,4 @@
 package bomberman.mechanics.interfaces;
 
 public interface IEntity extends Updateable, Describable{
-    float[] getCoordinates();
-    void setCoordinates(float[] coords);
-    void affectHealth(int amount);
 }

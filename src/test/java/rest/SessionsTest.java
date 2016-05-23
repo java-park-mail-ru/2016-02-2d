@@ -105,6 +105,7 @@ public class SessionsTest extends JerseyTest {
 
     @Override
     protected Application configure() {
+        //noinspection OverlyBroadCatchBlock
         try {
             final ResourceConfig config = new ResourceConfig(Sessions.class);
             final HttpServletRequest request = mock(HttpServletRequest.class);

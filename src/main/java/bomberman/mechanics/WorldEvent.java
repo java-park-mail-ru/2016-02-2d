@@ -13,7 +13,7 @@ public class WorldEvent {
         timestamp = 0;
     }
 
-    public WorldEvent(EventType eventType, EntityType entityType, int entityID, float x, float y, long timestamp) {
+    public WorldEvent(EventType eventType, @SuppressWarnings("SameParameterValue") EntityType entityType, int entityID, float x, float y, long timestamp) {
         this.eventType = eventType;
         this.entityType = entityType;
         this.entityID = entityID;

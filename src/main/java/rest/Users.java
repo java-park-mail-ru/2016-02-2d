@@ -8,10 +8,8 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import javax.ws.rs.core.Context;
 
 import main.UserTokenManager;
-import main.config.*;
 import org.imgscalr.Scalr;
 import org.jetbrains.annotations.TestOnly;
 import org.json.*;
@@ -34,7 +32,7 @@ public class Users {
     public void setup() {
         if (!wasSetUp) {
             wasSetUp = true;
-            final Map<String, String> properties = (Map<String, String>) context.get(Properties.class);
+            @SuppressWarnings("unchecked") final Map<String, String> properties = (Map<String, String>) context.get(Properties.class);
 
             this.accountService = (AccountService) context.get(AccountService.class);
             this.staticPath = properties.get("static_path");
@@ -44,7 +42,7 @@ public class Users {
     }
 
     @TestOnly
-    public void setContext(main.config.Context context) {
+    public void setContext(@SuppressWarnings("SameParameterValue") main.config.Context context) {
         wasSetUp = false;
         this.context = context;
     }
@@ -176,6 +174,7 @@ public class Users {
         if (accountService.hasSessionID(UserTokenManager.getSIDStringFromHeaders(headers))) {
 
             final RenderedImage newUserpic;
+            //noinspection OverlyBroadCatchBlock
             try {
                 final File uploadedUserpic  = (File) request.getPart("userpic");
                 final BufferedImage resizableImage = ImageIO.read(uploadedUserpic);

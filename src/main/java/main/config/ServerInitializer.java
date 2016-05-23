@@ -2,7 +2,6 @@ package main.config;
 
 import bomberman.service.RoomManager;
 import bomberman.service.RoomManagerConcurImpl;
-import bomberman.service.RoomManagerImpl;
 import main.accountservice.AccountService;
 import main.accountservice.AccountServiceImpl;
 import main.databaseservice.DataBaseService;
@@ -56,10 +55,12 @@ public class ServerInitializer {
                         break;
                     case "debug":
                         LOGGER.info("Launching with debug DB");
+                        //noinspection resource
                         dataBaseService = new DataBaseServiceMySQLImpl(reader.getPropertyMap(), DataBaseServiceMySQLImpl.DBTYPE.DEBUG);
                         break;
                     case "production":
                         LOGGER.info("Launching with production DB");
+                        //noinspection resource
                         dataBaseService = new DataBaseServiceMySQLImpl(reader.getPropertyMap(), DataBaseServiceMySQLImpl.DBTYPE.PRODUCTION);
                         break;
                     default:
@@ -68,6 +69,7 @@ public class ServerInitializer {
                 }
             else {
                 LOGGER.info("No DB type specified. Launching with production DB.");
+                //noinspection resource
                 dataBaseService = new DataBaseServiceMySQLImpl(reader.getPropertyMap());
             }
         } catch (Exception ex) {

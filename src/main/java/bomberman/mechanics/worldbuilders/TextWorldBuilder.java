@@ -38,7 +38,8 @@ public class TextWorldBuilder implements IWorldBuilder {
         BufferedReader strings = null;
         //noinspection OverlyBroadCatchBlock
         try {
-             strings = new BufferedReader(new FileReader(blueprint));
+            //noinspection resource,IOResourceOpenedButNotSafelyClosed
+            strings = new BufferedReader(new FileReader(blueprint));
 
             if (!strings.readLine().equals(CURRENT_VERSION))
                 throw new Exception();
@@ -92,7 +93,7 @@ public class TextWorldBuilder implements IWorldBuilder {
         }
     }
 
-    @SuppressWarnings("MagicNumber")
+    @SuppressWarnings({"MagicNumber", "OverlyComplexMethod"})
     @Nullable
     private ITile mapSymbolToTile(char c, int x, int y){
         switch (c)

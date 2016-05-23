@@ -2,12 +2,10 @@ package bomberman.mechanics;
 
 import bomberman.mechanics.interfaces.EntityType;
 import bomberman.mechanics.interfaces.EventType;
-import bomberman.mechanics.interfaces.ITile;
 import bomberman.mechanics.interfaces.IWorldBuilder;
 import bomberman.mechanics.worldbuilders.TextWorldBuilder;
 import bomberman.mechanics.worldbuilders.WorldData;
 import constants.Constants;
-import org.javatuples.Triplet;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,12 +15,14 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("MagicNumber")
 public class WorldTest {
 
     @Before
     public void setupStrangeWorld() {
+        //noinspection OverlyBroadCatchBlock
         try {
-            world = new World("basic-world", BOMBERMEN_AMOUNT, () -> {});
+            world = new World("basic-world");
 
             final Field tileArray = world.getClass().getDeclaredField("tileArray");
             tileArray.setAccessible(true);
@@ -46,6 +46,7 @@ public class WorldTest {
 
     }
 
+    @SuppressWarnings("OverlyComplexMethod")
     private void setupTestLocations() {
         final Queue<WorldEvent> spawns = world.getFreshEvents();
         assertEquals(BOMBERMEN_AMOUNT, spawns.size());
@@ -159,6 +160,7 @@ public class WorldTest {
         }
     }
 
+    @SuppressWarnings("MagicNumber")
     private class TestConditions {
         public List<WorldEvent> addEventsandGetExpectedResults(TestType type) {
             switch (type) {

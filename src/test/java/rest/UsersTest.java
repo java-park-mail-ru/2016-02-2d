@@ -3,7 +3,6 @@ package rest;
 import constants.Constants;
 import main.accountservice.AccountService;
 import main.UserTokenManager;
-import main.config.*;
 import main.config.Context;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -120,6 +119,7 @@ public class UsersTest extends JerseyTest {
     // A bit of magic, without which nothing works.
     @Override
     protected Application configure() {
+        //noinspection OverlyBroadCatchBlock
         try {
             final ResourceConfig config = new ResourceConfig(Sessions.class);
             final HttpServletRequest request = mock(HttpServletRequest.class);

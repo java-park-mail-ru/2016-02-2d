@@ -1,13 +1,10 @@
 package bomberman.service;
 
-import bomberman.mechanics.Bomberman;
 import bomberman.mechanics.World;
 import bomberman.mechanics.WorldEvent;
 import bomberman.mechanics.interfaces.EntityType;
 import bomberman.mechanics.interfaces.EventType;
 import main.websockets.MessageSendable;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.javatuples.Pair;
 import rest.UserProfile;
 
@@ -29,7 +26,7 @@ public class Room {
 
     public void createNewWorld(String type)
     {
-        world = new World(type, playerMap.size(), this::broadcastFreshEvents);
+        world = new World(type);
         worldSpawnDetails = new LinkedList<>(world.getFreshEvents());
     }
 
@@ -42,10 +39,6 @@ public class Room {
             reversePlayerMap.put(player.getKey(), bombermen[i]);
             ++i;
         }
-    }
-
-    public int getMaximalCapacity() {
-        return capacity;
     }
 
     public int getCurrentCapacity() {
@@ -121,6 +114,7 @@ public class Room {
             TimeHelper.executeAfter(TIME_TO_WAIT_AFTER_READY, () ->
             {
                 recalculateReadiness();
+                //noinspection OverlyComplexBooleanExpression
                 if (websocketMap.size() > 1 && hasEveryoneLoadedContent.get() && isEveryoneReady.get() && !isActive.get()) {
                     assignBombermenToPlayers();
                     transmitEventsOnWorldCreation();
@@ -264,10 +258,10 @@ public class Room {
         return id;
     }
 
-    private int id;
+    private final int id;
     private int capacity = DEFAULT_CAPACITY;
-    private AtomicBoolean isEveryoneReady = new AtomicBoolean(false);
-    private AtomicBoolean hasEveryoneLoadedContent = new AtomicBoolean(false);
+    private final AtomicBoolean isEveryoneReady = new AtomicBoolean(false);
+    private final AtomicBoolean hasEveryoneLoadedContent = new AtomicBoolean(false);
 
     private final Map<Integer, UserProfile> playerMap = new HashMap<>(4);
     private final Map<UserProfile, Integer> reversePlayerMap = new HashMap<>(4);
@@ -275,7 +269,7 @@ public class Room {
     private final Map<UserProfile, Pair<Boolean, Boolean>> readinessMap = new HashMap<>(4);
 
     World world;
-    private AtomicBoolean isActive = new AtomicBoolean(false);
+    private final AtomicBoolean isActive = new AtomicBoolean(false);
     private volatile boolean isFinished = false;
     public static final int MINIMAL_TIME_STEP = 25; //ms
 
@@ -286,6 +280,5 @@ public class Room {
     public static final int TIME_TO_WAIT_AFTER_READY = 3000; // ms
     public static final int TIME_TO_WAIT_ON_GAME_OVER = 500; // ms
 
-    private static final Logger LOGGER = LogManager.getLogger(Room.class);
     private static final AtomicInteger ID_COUNTER = new AtomicInteger();
 }

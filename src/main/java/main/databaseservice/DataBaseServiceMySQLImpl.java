@@ -41,16 +41,6 @@ public class DataBaseServiceMySQLImpl implements DataBaseService, AutoCloseable 
         }
     }
 
-    public String getLocalStatus() {
-        final String status;
-        try (Session session = sessionFactory.openSession()) {
-            final Transaction transaction = session.beginTransaction();
-            status = transaction.getStatus().toString();
-            transaction.commit();
-        }
-        return status;
-    }
-
     @Override
     public void save(UserProfileData dataSet) {
         try (Session session = sessionFactory.openSession()) {

@@ -23,6 +23,7 @@ public class Main {
         Context context = null;
         Map<String, String> properties = null;
 
+        //noinspection OverlyBroadCatchBlock
         try {
             String propertyFileName = null;
             if (args.length >= 1)

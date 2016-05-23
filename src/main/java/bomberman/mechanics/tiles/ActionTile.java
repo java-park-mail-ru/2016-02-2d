@@ -14,7 +14,6 @@ public class ActionTile extends AbstractTile {
         this.behavior = behavior;
         behavior.linkWithTile(this);
         this.entityType = entityType;
-        shouldBeDestroyed = false;
     }
 
     @Override
@@ -30,10 +29,6 @@ public class ActionTile extends AbstractTile {
     @Override
     public void applyAction(Bomberman bomberman) {
         functor.applyAction(bomberman);
-    }
-
-    public void markForDestruction() {
-        shouldBeDestroyed = true;
     }
 
     @Override
@@ -57,7 +52,6 @@ public class ActionTile extends AbstractTile {
         return entityType.hashCode();
     }
 
-    private boolean shouldBeDestroyed;
     private final ActionTileAbstractFunctor functor;
     private final ActionTileAbstractBehavior behavior;
     private final EntityType entityType;
