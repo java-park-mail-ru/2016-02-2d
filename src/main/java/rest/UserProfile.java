@@ -1,8 +1,8 @@
 package rest;
 
-import com.sun.istack.internal.Nullable;
-import main.TokenManager;
-import main.database.UserProfileData;
+import org.jetbrains.annotations.Nullable;
+import main.UserTokenManager;
+import main.databaseservice.UserProfileData;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -40,13 +40,19 @@ public class UserProfile {
     }
 
     public JSONObject toJson(){
-        return new JSONObject().put("id", data.getId()).put("login", data.getLogin()).put("score", data.getScore());
+        final JSONObject description = new JSONObject().put("id", data.getId()).put("login", data.getLogin()).put("score", data.getScore());
+        if (getUserpicPath() == null)
+            description.put("userpic_path", JSONObject.NULL);
+        else
+            description.put("userpic_path", getUserpicPath());
+
+        return description;
     }
 
     @NotNull
     public String getSessionID() {
         if (sessionID == null)
-            sessionID = TokenManager.getNewRandomSessionID(data.getLogin(), data.getId(), data.getScore(), data.getPassword());
+            sessionID = UserTokenManager.getNewRandomSessionID(data.getLogin(), data.getId(), data.getScore(), data.getPassword());
         return sessionID;
     }
 
@@ -69,6 +75,15 @@ public class UserProfile {
     @NotNull
     public UserProfileData getData() {
         return data;
+    }
+
+    @Nullable
+    public String getUserpicPath() {
+        return data.getUserpicPath();
+    }
+
+    public void setUserpicPath(String path) {
+        data.setUserpicPath(path);
     }
 
 

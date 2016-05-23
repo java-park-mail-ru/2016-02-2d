@@ -1,20 +1,29 @@
 package rest;
 
-import main.AccountServiceImpl;
-import main.TokenManager;
+import constants.Constants;
+import main.accountservice.AccountService;
+import main.UserTokenManager;
+import main.config.Context;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
 import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.*;
-import java.util.*;
 
-import static junit.framework.Assert.assertEquals;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class UsersTest extends JerseyTest {
 
@@ -58,9 +67,22 @@ public class UsersTest extends JerseyTest {
         testDeleteUser(RequestFactory.getDeleteUserTestData(RequestFactory.DeleteUserType.DELETE_ANOTHER_USER));
     }
 
+    @Before
+    public void setContext() {
+        users.setContext(CONTEXT);
+    }
 
+    @BeforeClass
+    public static void makeContext() throws InstantiationException {
+        final AccountService mockedAccountService = Constants.RestApplicationMocks.getMockedAccountService();
+        CONTEXT.put(AccountService.class, mockedAccountService);
 
-
+        final Map<String, String> properties = new HashMap<>(3);
+        properties.put("static_path", "static/");
+        properties.put("userpic_width", "80");
+        properties.put("userpic_height", "80");
+        CONTEXT.put(Properties.class, properties);
+    }
     
     public void testCreateUser(Triplet<String, HttpHeaders, Response> data, boolean shouldHaveCookie){
         final Response response = users.createUser(data.getValue0(), data.getValue1());
@@ -68,9 +90,9 @@ public class UsersTest extends JerseyTest {
         assertEquals(data.getValue2().toString(), response.toString());
         assertEquals(data.getValue2().getEntity().toString(), response.getEntity().toString());
         if (shouldHaveCookie)
-            assertEquals(SID, response.getCookies().get(TokenManager.COOKIE_NAME).getValue());
+            assertEquals(SID, response.getCookies().get(UserTokenManager.COOKIE_NAME).getValue());
         else
-            assertEquals(false, response.getCookies().containsKey(TokenManager.COOKIE_NAME));
+            assertEquals(false, response.getCookies().containsKey(UserTokenManager.COOKIE_NAME));
     }
 
     public void testGetUserByID(Pair<Long, Response> data) {
@@ -97,35 +119,26 @@ public class UsersTest extends JerseyTest {
     // A bit of magic, without which nothing works.
     @Override
     protected Application configure() {
-        final AccountServiceImpl mockedAccountService = mock(AccountServiceImpl.class);
-        final UserProfile user = mock(UserProfile.class);
-        users = new Users(mockedAccountService);
+        //noinspection OverlyBroadCatchBlock
+        try {
+            final ResourceConfig config = new ResourceConfig(Sessions.class);
+            final HttpServletRequest request = mock(HttpServletRequest.class);
+            //noinspection AnonymousInnerClassMayBeStatic
+            config.register(new AbstractBinder() {
+                @Override
+                protected void configure() {
+                    bind(CONTEXT);
+                    bind(request).to(HttpServletRequest.class);
+                }
+            });
 
-        when(mockedAccountService.createNewUser(LOGIN, PASSWORD)).thenReturn(user);
-        when(mockedAccountService.createNewUser(PASSWORD, LOGIN)).thenReturn(null);
-        when(mockedAccountService.getUser(LOGIN)).thenReturn(user);
-        when(mockedAccountService.getUser(ID)).thenReturn(user);
-        when(mockedAccountService.getBySessionID(SID)).thenReturn(user);
-        when(mockedAccountService.hasSessionID(SID)).thenReturn(true);
-        when(mockedAccountService.logoutUser(SID)).thenReturn(true);
-
-        when(user.toJson()).thenReturn(new JSONObject().put("id", ID).put("login", LOGIN).put("score", 0L));
-        when(user.getId()).thenReturn(ID);
-        when(user.getLogin()).thenReturn(LOGIN);
-        when(user.getPassword()).thenReturn(PASSWORD);
-        when(user.getSessionID()).thenReturn(SID);
-
-        final Map<String, Cookie> noCookieMap = new HashMap<>();
-        final Map<String, Cookie> okCookieMap = new HashMap<>();
-        okCookieMap.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID(SID));
-        final Map<String, Cookie> badCookieMap = new HashMap<>();
-        badCookieMap.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID("ERRONEOUS DATA"));
-
-        when(NO_COOKIE_HEADERS.getCookies()).thenReturn(noCookieMap);
-        when(OK_COOKIE_HEADERS.getCookies()).thenReturn(okCookieMap);
-        when(WRONG_COOKIE_HEADERS.getCookies()).thenReturn(badCookieMap);
-
-        return new ResourceConfig(UsersTest.class);
+            config.getInstances();
+            return config;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail();
+        }
+        return null;
     }
 
     private static class RequestFactory {
@@ -224,15 +237,16 @@ public class UsersTest extends JerseyTest {
     }
 
 
-    private static final HttpHeaders NO_COOKIE_HEADERS = mock(HttpHeaders.class);
-    private static final HttpHeaders OK_COOKIE_HEADERS = mock(HttpHeaders.class);
-    private static final HttpHeaders WRONG_COOKIE_HEADERS = mock(HttpHeaders.class);
-    private Users users;
-    private static final String LOGIN = "TEST_LOGIN";
-    private static final String PASSWORD = "TEST_PASSWORD";
-    private static final String SID = "TEST_SESSION_ID";
+    private static final Context CONTEXT = new Context();
+    private final Users users = new Users();
+    private static final HttpHeaders NO_COOKIE_HEADERS = Constants.RestApplicationMocks.getNoCookieHeaders();
+    private static final HttpHeaders OK_COOKIE_HEADERS = Constants.RestApplicationMocks.getOkCookieHeaders();
+    private static final HttpHeaders WRONG_COOKIE_HEADERS = Constants.RestApplicationMocks.getWrongCookieHeaders();
     @SuppressWarnings("ConstantNamingConvention")
-    private static final long ID = 0xDEADBEEFL;
+    private static final long ID = Constants.USER_ID;
+    private static final String LOGIN = Constants.USER_LOGIN;
+    private static final String PASSWORD = Constants.USER_PASSWORD;
+    private static final String SID = Constants.USER_SESSION_ID;
 
 
 }

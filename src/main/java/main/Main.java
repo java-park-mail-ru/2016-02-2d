@@ -1,79 +1,77 @@
 package main;
 
+import bomberman.service.RoomManager;
 import main.config.Context;
-import main.database.DataBaseHashMapImpl;
-import main.database.DataBaseRealImpl;
+import main.config.ServerInitializer;
+import main.websockets.WebSocketConnectionServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import rest.Sessions;
+import rest.Users;
+
+import java.util.Map;
 
 @SuppressWarnings("OverlyBroadThrowsClause")
 public class Main {
     public static void main(String[] args) throws Exception {
-        fillContext();
-        setCustomPort(args);
-        try { setDataBaseType(args);} catch (Exception ex) { System.out.println("Could not instantiate database.\nQuitting..."); System.exit(1);}
+        Context context = null;
+        Map<String, String> properties = null;
 
-        System.out.format("Starting at port: %d\n", port);
+        //noinspection OverlyBroadCatchBlock
+        try {
+            String propertyFileName = null;
+            if (args.length >= 1)
+                propertyFileName = args[0];
+            final ServerInitializer serverInitializer = new ServerInitializer(propertyFileName);
+
+            properties = serverInitializer.getPropertiesMap();
+            context = serverInitializer.fillNewContext();
+            UserTokenManager.changeHost(properties.get("host"));
+            UserTokenManager.changeMaxAge(Integer.parseInt(properties.get("cookie_max_age")));
+
+        } catch (Exception ex) {
+            LOGGER.fatal("Could not setup server. Aborting...", ex);
+            System.exit(1);
+        }
+
+        final int port = Integer.parseInt(properties.get("port"));
+        LOGGER.info("Starting at " + port + " port");
         final Server server = new Server(port);
-        final ServletContextHandler contextHandler = new ServletContextHandler(server, "/api/", ServletContextHandler.SESSIONS);
 
-        final ServletHolder servletHolder = new ServletHolder(ServletContainer.class);
-        servletHolder.setInitParameter("javax.ws.rs.Application","main.RestApplication");
+        final ResourceConfig config = createNewInjectableConfig(context);
 
-        contextHandler.addServlet(servletHolder, "/*");
+        final ServletHolder restServletHolder = new ServletHolder(new ServletContainer(config));
+
+        final ServletHolder websocketServletHolder = new ServletHolder(new WebSocketConnectionServlet(context, Integer.parseInt(properties.get("ws_timeout"))));
+
+        final ServletContextHandler contextHandler = new ServletContextHandler(server, "/*");
+        contextHandler.addServlet(websocketServletHolder, "/game");
+        contextHandler.addServlet(restServletHolder, "/api/*");
+
+        server.setHandler(contextHandler);
+
+        new Thread((RoomManager) context.get(RoomManager.class)).start();
+
         server.start();
         server.join();
     }
 
-    public static Context getContext() {
-        return CONTEXT;
-    }
-
-     private static void setCustomPort(String[] args) {
-         if (args.length >= 1)
-             port = Integer.valueOf(args[0]);
-         else {
-             System.out.format("No port specified. Launching at default %d port.", DEFAULT_PORT);
-             port = DEFAULT_PORT;
-         }
-    }
-
-    private static void setDataBaseType(String[] args) throws Exception {
-        final AccountService accountService = (AccountService) CONTEXT.get(AccountService.class);
-        if (args.length >= 1)
-            switch (args[1]) {
-                case "hash":
-                    System.out.format("Launching with HashDB");
-                    accountService.changeDB(new DataBaseHashMapImpl());
-                    break;
-                case "debug":
-                    System.out.format("Launching with debug DB");
-                    accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.DEBUG));
-                    break;
-                default:
-                    System.out.format("Launching with production DB");
-                    accountService.changeDB(new DataBaseRealImpl(DataBaseRealImpl.DBTYPE.PRODUCTION));
+    private static ResourceConfig createNewInjectableConfig(Context context) {
+        final ResourceConfig rc  = new ResourceConfig(Users.class, Sessions.class);
+        rc.register(new AbstractBinder() {
+            @Override
+            protected void configure() {
+                bind(context);
             }
-        else {
-            System.out.format("No DB type specified. Launching with production DB.");
-            accountService.changeDB(new DataBaseRealImpl());
-        }
+        });
+        return rc;
     }
 
-    private static void fillContext() throws Exception {
-        System.out.format("Initializing context...\n");
-        try {
-            CONTEXT.put(AccountService.class, new AccountServiceImpl());
-        } catch (InstantiationException ex) {
-            System.out.println("Cannot add AccountService to context. Aborting...");
-            throw new Exception(ex);
-        }
-    }
-
-
-    private static final Context CONTEXT = new Context();
-    private static int port;
-    private static final int DEFAULT_PORT = 8080;
+    private static final Logger LOGGER = LogManager.getLogger(Main.class);
 }

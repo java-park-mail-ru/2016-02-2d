@@ -6,7 +6,7 @@
 
     <groupId>Bomberman-server</groupId>
     <artifactId>Bomberman-server</artifactId>
-    <version>1.0</version>
+    <version>1.2.0-alpha</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,6 +24,9 @@
         <org.javatuples.version>1.2</org.javatuples.version>
         <mysql.version>5.1.38</mysql.version>
         <org.hibernate.version>5.1.0.Final</org.hibernate.version>
+        <org.apache.logging.log4j>2.5</org.apache.logging.log4j>
+        <org.eclipse.jetty.websocket>9.3.9.M0</org.eclipse.jetty.websocket>
+        <org.imgscalr>4.2</org.imgscalr>
     </properties>
 
     <build>
@@ -138,6 +141,31 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${org.hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${org.apache.logging.log4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${org.apache.logging.log4j}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-servlet</artifactId>
+            <version>${org.eclipse.jetty.websocket}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-server</artifactId>
+            <version>${org.eclipse.jetty.websocket}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+            <version>${org.imgscalr}</version>
         </dependency>
 
     </dependencies>

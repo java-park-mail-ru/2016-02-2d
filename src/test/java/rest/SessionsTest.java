@@ -1,20 +1,27 @@
 package rest;
 
-import main.TokenManager;
+import constants.Constants;
+import main.accountservice.AccountService;
+import main.UserTokenManager;
+import main.config.Context;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
 import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotSame;
-import static org.mockito.Mockito.*;
-import main.AccountServiceImpl;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+
 import org.glassfish.jersey.test.JerseyTest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.*;
-import java.util.*;
 
 public class SessionsTest extends JerseyTest {
 
@@ -57,6 +64,10 @@ public class SessionsTest extends JerseyTest {
         testLogout(RequestFactory.getLogoutTestData(RequestFactory.LogoutRequestType.LOGOUT_WRONG_COOKIE));
     }
 
+    @Before
+    public void setContext() {
+        sessions.setContext(CONTEXT);
+    }
 
 
 
@@ -66,9 +77,9 @@ public class SessionsTest extends JerseyTest {
         assertEquals(data.getValue2().toString(), response.toString());
         assertEquals(data.getValue2().getEntity().toString(), response.getEntity().toString());
         if (shouldHaveCookie)
-            assertEquals(SID, response.getCookies().get(TokenManager.COOKIE_NAME).getValue());
+            assertEquals(SID, response.getCookies().get(UserTokenManager.COOKIE_NAME).getValue());
         else
-            assertEquals(false, response.getCookies().containsKey(TokenManager.COOKIE_NAME));
+            assertEquals(false, response.getCookies().containsKey(UserTokenManager.COOKIE_NAME));
     }
 
     public void testIsAuthenticated(Pair<HttpHeaders, Response> data) {
@@ -83,39 +94,36 @@ public class SessionsTest extends JerseyTest {
 
         assertEquals(data.getValue1().toString(), response.toString());
         assertEquals(data.getValue1().getEntity().toString(), response.getEntity().toString());
-        assertNotSame(SID, response.getCookies().get(TokenManager.COOKIE_NAME).getValue());
+        assertNotSame(SID, response.getCookies().get(UserTokenManager.COOKIE_NAME).getValue());
     }
 
-    // TODO: move mocks into separate modules.
+    @BeforeClass
+    public static void makeContext() throws InstantiationException {
+        final AccountService mockedAccountService = Constants.RestApplicationMocks.getMockedAccountService();
+        CONTEXT.put(AccountService.class, mockedAccountService);
+    }
+
     @Override
     protected Application configure() {
+        //noinspection OverlyBroadCatchBlock
+        try {
+            final ResourceConfig config = new ResourceConfig(Sessions.class);
+            final HttpServletRequest request = mock(HttpServletRequest.class);
+            //noinspection AnonymousInnerClassMayBeStatic
+            config.register(new AbstractBinder() {
+                @Override
+                protected void configure() {
+                    bind(CONTEXT);
+                    bind(request).to(HttpServletRequest.class);
+                }
+            });
 
-        final AccountServiceImpl mockedAccountService = mock(AccountServiceImpl.class);
-        final UserProfile user = mock(UserProfile.class);
-        sessions = new Sessions(mockedAccountService);
-
-        when(mockedAccountService.getUser(LOGIN)).thenReturn(user);
-        when(mockedAccountService.getUser(ID)).thenReturn(user);
-        when(mockedAccountService.getBySessionID(SID)).thenReturn(user);
-        when(mockedAccountService.hasSessionID(SID)).thenReturn(true);
-        when(mockedAccountService.logoutUser(SID)).thenReturn(true);
-
-        when(user.getId()).thenReturn(ID);
-        when(user.getLogin()).thenReturn(LOGIN);
-        when(user.getPassword()).thenReturn(PASSWORD);
-        when(user.getSessionID()).thenReturn(SID);
-
-        final Map<String, Cookie> noCookieMap = new HashMap<>();
-        final Map<String, Cookie> okCookieMap = new HashMap<>();
-        okCookieMap.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID(SID));
-        final Map<String, Cookie> badCookieMap = new HashMap<>();
-        badCookieMap.put(TokenManager.COOKIE_NAME, TokenManager.getNewCookieWithSessionID("ERRONEOUS DATA"));
-
-        when(NO_COOKIE_HEADERS.getCookies()).thenReturn(noCookieMap);
-        when(OK_COOKIE_HEADERS.getCookies()).thenReturn(okCookieMap);
-        when(WRONG_COOKIE_HEADERS.getCookies()).thenReturn(badCookieMap);
-
-        return new ResourceConfig(SessionsTest.class);
+            return config;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail();
+        }
+        return null;
     }
 
     private static class RequestFactory {
@@ -182,7 +190,7 @@ public class SessionsTest extends JerseyTest {
             return WebErrorManager.authorizationRequired();
         }
         private static Response okLogoutResponse() {
-            return WebErrorManager.okRaw("You have succesfully logged out.").cookie(TokenManager.getNewNullCookie()).build();
+            return WebErrorManager.okRaw("You have succesfully logged out.").cookie(UserTokenManager.getNewNullCookie()).build();
         }
         private static Response wrongLogoutResponse() {
             return WebErrorManager.ok("You was not logged in.");
@@ -196,15 +204,16 @@ public class SessionsTest extends JerseyTest {
         public enum LogoutRequestType {LOGOUT_LOGGED, LOGOUT_NOT_LOGGED, LOGOUT_WRONG_COOKIE}
     }
 
-    private static final HttpHeaders NO_COOKIE_HEADERS = mock(HttpHeaders.class);
-    private static final HttpHeaders OK_COOKIE_HEADERS = mock(HttpHeaders.class);
-    private static final HttpHeaders WRONG_COOKIE_HEADERS = mock(HttpHeaders.class);
-    private Sessions sessions;
-    private static final String LOGIN = "TEST_LOGIN";
-    private static final String PASSWORD = "TEST_PASSWORD";
-    private static final String SID = "TEST_SESSION_ID";
+
+    private static final Context CONTEXT = new Context();
+    private final Sessions sessions = new Sessions();
+
+    private static final HttpHeaders NO_COOKIE_HEADERS = Constants.RestApplicationMocks.getNoCookieHeaders();
+    private static final HttpHeaders OK_COOKIE_HEADERS = Constants.RestApplicationMocks.getOkCookieHeaders();
+    private static final HttpHeaders WRONG_COOKIE_HEADERS = Constants.RestApplicationMocks.getWrongCookieHeaders();
     @SuppressWarnings("ConstantNamingConvention")
-    private static final long ID = 0xDEADBEEFL;
-
-
+    private static final long ID = Constants.USER_ID;
+    private static final String LOGIN = Constants.USER_LOGIN;
+    private static final String PASSWORD = Constants.USER_PASSWORD;
+    private static final String SID = Constants.USER_SESSION_ID;
 }

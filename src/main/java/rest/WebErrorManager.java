@@ -71,7 +71,7 @@ public class WebErrorManager {
     }
 
     @Nullable
-    public static JSONArray showFieldsNotPresent(@NotNull JSONObject json,@NotNull String[] requiredFields){
+    public static JSONArray showFieldsNotPresent(@NotNull JSONObject json, @NotNull String... requiredFields){
         JSONArray errorList = null;
         for (String field : requiredFields)
             if (!json.has(field)){

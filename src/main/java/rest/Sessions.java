@@ -1,28 +1,44 @@
 package rest;
 
-import main.AccountService;
-import main.TokenManager;
+import main.accountservice.AccountService;
+import main.UserTokenManager;
+import org.jetbrains.annotations.TestOnly;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
 @Singleton
-@Path("/session")
+@Path("session/")
 public class Sessions {
 
-    public Sessions(AccountService accountService) {
-        this.accountService = accountService;
+    @Inject
+    private main.config.Context context;
+
+    public void setup() {
+        if (!wasSetUp) {
+            wasSetUp = true;
+            this.accountService = (AccountService) context.get(AccountService.class);
+        }
+    }
+
+    @TestOnly
+    public void setContext(@SuppressWarnings("SameParameterValue") main.config.Context context) {
+        wasSetUp = false;
+        this.context = context;
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response loginUser(String jsonString, @Context HttpHeaders headers){
-        accountService.logoutUser(TokenManager.getSIDStringFromHeaders(headers));
+        setup();
+
+        accountService.logoutUser(UserTokenManager.getSIDStringFromHeaders(headers));
 
         final JSONObject jsonRequest;
         try {
@@ -33,7 +49,7 @@ public class Sessions {
 
         final String login;
         final String password;
-        final JSONArray errorList = WebErrorManager.showFieldsNotPresent(jsonRequest, new String[]{"login","password"});
+        final JSONArray errorList = WebErrorManager.showFieldsNotPresent(jsonRequest, "login","password");
         if (errorList == null){
             login = jsonRequest.get("login").toString();
             password = jsonRequest.get("password").toString();
@@ -46,7 +62,7 @@ public class Sessions {
             if (loggingUser.getPassword().equals(password))
             {
                 accountService.loginUser(loggingUser);
-                return Response.ok(new JSONObject().put("id", loggingUser.getId()).toString()).cookie(TokenManager.getNewCookieWithSessionID(loggingUser.getSessionID())).build();
+                return Response.ok(new JSONObject().put("id", loggingUser.getId()).toString()).cookie(UserTokenManager.getNewCookieWithSessionID(loggingUser.getSessionID())).build();
             }
             else
                 return WebErrorManager.authorizationRequired("Wrong login-password pair!");
@@ -59,8 +75,9 @@ public class Sessions {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response isAuthenticated(@Context HttpHeaders headers) {
-        if (accountService.hasSessionID(TokenManager.getSIDStringFromHeaders(headers))) {
-            final UserProfile currentUser = accountService.getBySessionID(TokenManager.getSIDStringFromHeaders(headers));
+        setup();
+        if (accountService.hasSessionID(UserTokenManager.getSIDStringFromHeaders(headers))) {
+            final UserProfile currentUser = accountService.getBySessionID(UserTokenManager.getSIDStringFromHeaders(headers));
             if (currentUser != null)
                 return Response.ok(new JSONObject().put("id", currentUser.getId()).toString()).build();
             else return WebErrorManager.serverError("Session exists, but no user is assigned to.");
@@ -72,13 +89,14 @@ public class Sessions {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     public Response logoutUser(@Context HttpHeaders headers){
-        final String sessionID = TokenManager.getSIDStringFromHeaders(headers);
+        setup();
+        final String sessionID = UserTokenManager.getSIDStringFromHeaders(headers);
         if (accountService.logoutUser(sessionID))
-            return WebErrorManager.okRaw("You have succesfully logged out.").cookie(TokenManager.getNewNullCookie()).build();
+            return WebErrorManager.okRaw("You have succesfully logged out.").cookie(UserTokenManager.getNewNullCookie()).build();
         else
-            return WebErrorManager.okRaw("You was not logged in.").cookie(TokenManager.getNewNullCookie()).build();
+            return WebErrorManager.okRaw("You was not logged in.").cookie(UserTokenManager.getNewNullCookie()).build();
     }
 
-
-    private final AccountService accountService;
+    private AccountService accountService;
+    private boolean wasSetUp = false;
 }
